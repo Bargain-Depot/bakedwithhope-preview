@@ -34,3 +34,6 @@
  .orders-page .guided-next{padding:13px 18px;font-size:13px}
  .orders-page .guided-back{padding:11px 13px;font-size:12px}
 }
+
+/* Keep the mobile viewport clear while the bag is empty. */
+.orders-page:not(.bag-has-items) .mobilebar{display:none!important}
