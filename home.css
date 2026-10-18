@@ -112,3 +112,11 @@ html,body{height:100%;overflow:hidden}
 .video-backdrop video{object-position:center center}
 .video-backdrop:after{background:linear-gradient(180deg,rgba(24,14,16,.30),rgba(24,14,16,.58) 35%,rgba(24,14,16,.76) 76%,rgba(24,14,16,.42))}
 }
+
+/* New Dirty Sodas launch story: maintain original promotional graphic uncropped */
+.soda-feature{background:linear-gradient(130deg,#f6e8e2,#e6c9c8)}
+.soda-frame{width:min(100%,420px);padding:11px;background:#fffaf6}
+.soda-frame .lux-image{background:#efe4dc;padding:0}
+.soda-frame .lux-image img{height:min(67vh,610px);object-fit:contain;width:100%;max-width:100%;object-position:center}
+@media(max-width:800px){.soda-feature .slide-inner{gap:8px}.soda-feature .copy h1{font-size:clamp(38px,10vw,48px)}.soda-feature .copy p{font-size:12px}.soda-frame{width:min(70vw,280px);padding:7px}.soda-frame .lux-image img{height:min(39dvh,345px);object-fit:contain}.soda-feature .visual{min-height:0}}
+@media(max-width:380px) and (max-height:750px){.soda-frame .lux-image img{height:min(30dvh,235px)}}
