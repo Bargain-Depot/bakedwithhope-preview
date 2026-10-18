@@ -78,6 +78,12 @@ function renderSteps(){
     instruction.append(back);
   }
 }
+const prevBagRender=renderBag;
+renderBag=function(){
+  prevBagRender();
+  document.body.classList.toggle('bag-has-items',bag.length>0);
+};
+document.body.classList.toggle('bag-has-items',bag.length>0);
 const prevRender=render;
 render=function(){prevRender();renderSteps()};
 document.addEventListener('click',e=>{
