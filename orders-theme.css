@@ -1,0 +1,43 @@
+/* Dedicated boutique ordering experience */
+body.orders-page{background:#fff9f5;color:#4a302d;overflow-x:hidden}
+.orders-page .shop-header{position:sticky;top:0;z-index:25;background:#fffaf7;border-bottom:1px solid #ead9d3;box-shadow:0 3px 18px #4a302d08}
+.orders-page .shop-nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.orders-page .shop-brand{font:clamp(23px,2.5vw,32px) 'DM Serif Display',serif;text-decoration:none;color:#4a302d;white-space:nowrap}
+.orders-page .shop-brand span{color:#ac7180}
+.orders-page .shop-nav nav{display:flex;gap:24px;align-items:center;font-size:13px;font-weight:700}
+.orders-page .shop-nav nav a{text-decoration:none;color:#6b4d49}
+.orders-page .shop-nav nav a:hover{text-decoration:underline}
+.orders-page .shop-nav-actions{display:flex;align-items:center;gap:8px}
+.orders-page .shop-nav-actions .bagbtn,.orders-page .club-nav{white-space:nowrap;padding:11px 17px;border-radius:99px;font-size:12px;min-width:0}
+.orders-page .shop-intro{background:linear-gradient(125deg,#fff2f0 0%,#f9e5df 60%,#f4d6d9);border-bottom:1px solid #ebd6d0}
+.orders-page .shop-intro-inner{display:flex;align-items:center;justify-content:space-between;gap:25px;padding-top:44px;padding-bottom:45px}
+.orders-page .shop-intro h1{font:normal clamp(44px,6vw,78px)/1.08 'DM Serif Display',serif;margin:11px 0 15px;letter-spacing:-.018em}
+.orders-page .shop-intro h1 em{color:#b46d80;font-weight:400}
+.orders-page .shop-intro p{font-size:15px;line-height:1.7;color:#775b55;max-width:670px}
+.orders-page .shop-intro-accent{width:175px;height:175px;flex:0 0 auto;border:1px solid #ddbac1;background:#fff9f4;border-radius:50%;display:grid;place-items:center;text-align:center;font:29px/1.2 'DM Serif Display',serif;transform:rotate(7deg);box-shadow:0 18px 40px #744e5020;color:#9e6274}
+.orders-page .shop-back{display:inline-block;margin-top:7px;font-weight:700;color:#85515e;text-decoration:none}
+.orders-page .menu{padding-top:58px;padding-bottom:60px;background:#fff9f5}
+.orders-page .sectionhead{text-align:left;max-width:800px;margin-bottom:30px}
+.orders-page .sectionhead h2{font:normal clamp(34px,4vw,52px)/1.12 'DM Serif Display',serif}
+.orders-page .tabs{display:flex;flex-wrap:wrap;gap:8px;position:relative;padding:8px 0 20px;z-index:2}
+.orders-page .tab{font-size:13px;padding:12px 17px;border-radius:99px}
+.orders-page .tab.active{box-shadow:0 3px 12px #4a302d1a}
+.orders-page .builder{grid-template-columns:minmax(0,1fr)!important;width:100%;max-width:1040px;margin:0 auto;min-width:0}
+.orders-page #builder{min-width:0}
+.orders-page .cart{display:none!important}
+.orders-page .products{grid-template-columns:repeat(3,minmax(0,1fr))}
+.orders-page .product{overflow:hidden}
+.orders-page .product img{width:100%;height:210px;object-fit:contain;background:#f7eeea}
+.orders-page .productbody{padding:14px}
+.orders-page .club-section{padding:60px 0}
+.orders-page .shop-footer{background:#4c3432;color:#fff9f6;padding:30px 0}
+.orders-page .shop-footer .shell{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.orders-page .shop-footer span{font:25px 'DM Serif Display',serif}
+.orders-page .shop-footer p{font-size:12px}
+.orders-page .shop-footer a{color:#fff;font-weight:700}
+.orders-page .mobilebar{z-index:18}
+.orders-page .shop-intro,.orders-page #order,.orders-page #sweetClub{scroll-margin-top:85px}
+.orders-page .club-punches{grid-template-columns:repeat(6,minmax(0,1fr))}
+.orders-page .products .product .view-details{margin-top:10px}
+@media(max-width:860px){.orders-page .shop-nav nav{display:none}.orders-page .shop-intro-accent{width:125px;height:125px;font-size:22px}.orders-page .products{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-page .shop-footer .shell{flex-wrap:wrap}}
+@media(max-width:600px){.orders-page .shop-nav{padding:0 15px;min-height:65px;gap:6px}.orders-page .shop-brand{font-size:22px;letter-spacing:-.03em}.orders-page .shop-nav-actions{gap:5px}.orders-page .club-nav{display:none}.orders-page .shop-nav-actions .bagbtn{font-size:11px;padding:9px 12px}.orders-page .shop-intro-inner{padding-top:28px;padding-bottom:28px}.orders-page .shop-intro h1{font-size:43px}.orders-page .shop-intro p{font-size:13px}.orders-page .shop-intro-accent{display:none}.orders-page .menu{padding-top:32px}.orders-page .tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:13px}.orders-page .tab{flex:0 0 auto;scroll-snap-align:start;padding:10px 13px}.orders-page .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.orders-page .product img{height:150px}.orders-page .productbody{padding:10px}.orders-page .product h3{font-size:14px}.orders-page .product .circle{width:28px;height:28px}.orders-page .mix-grid{grid-template-columns:1fr}.orders-page .shop-footer{padding-bottom:95px}.orders-page .shop-footer .shell{display:block}.orders-page .club-section{padding:35px 0}.orders-page .shop-intro,.orders-page #order,.orders-page #sweetClub{scroll-margin-top:67px}}
