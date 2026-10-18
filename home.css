@@ -62,3 +62,27 @@ html,body{height:100%;overflow:hidden}
  .story .visual{flex-shrink:1}
 }
 @media(max-width:380px) and (max-height:750px){.visual img{height:clamp(125px,23dvh,170px);width:min(70vw,260px)}}
+
+/* Luxury editorial photo frames — consistent across desktop and mobile */
+.visual{overflow:visible}
+.lux-frame{position:relative;width:min(100%,485px);margin:0;padding:14px 14px 11px;background:linear-gradient(145deg,#fffefa,#faf4ed);border:1px solid #dbccbc;border-radius:9px;box-shadow:0 22px 55px rgba(58,35,31,.16),0 2px 5px rgba(58,35,31,.06)}
+.lux-frame:before{content:"";position:absolute;inset:6px;pointer-events:none;border:1px solid rgba(154,119,93,.25);border-radius:5px}
+.lux-image{position:relative;display:grid;place-items:center;background:linear-gradient(145deg,#f4e6df,#f8f0e8);border:1px solid rgba(165,130,113,.21);border-radius:3px;overflow:hidden;padding:9px;min-height:130px}
+.lux-frame .lux-image img{display:block;width:100%;height:min(47vh,440px);object-fit:contain;object-position:center;border-radius:0;box-shadow:none;background:transparent}
+.lux-frame figcaption{position:relative;margin:13px 0 2px;text-align:center;color:#8d6b64;letter-spacing:.19em;font-size:10px;font-weight:700;line-height:1.4}
+.story-photo .lux-frame{width:min(100%,440px);padding:12px 12px 10px;background:#fffdfa}
+.story-photo .lux-image{background:#f3eee7;padding:5px}
+.story-photo .lux-frame .lux-image img{height:min(39vh,350px);object-fit:contain}
+@media(max-width:800px){
+ .visual{width:100%;min-width:0;flex-shrink:1}
+ .lux-frame{width:min(100%,295px);padding:9px 9px 7px;border-radius:7px;box-shadow:0 12px 27px rgba(58,35,31,.13),0 2px 4px rgba(58,35,31,.05)}
+ .lux-frame:before{inset:4px;border-radius:4px}
+ .lux-image{padding:5px;min-height:0}
+ .lux-frame .lux-image img{height:clamp(135px,23dvh,205px);max-width:100%;width:100%;object-fit:contain;object-position:center}
+ .lux-frame figcaption{font-size:8px;letter-spacing:.15em;margin:9px 0 2px}
+ .story-photo .lux-frame{width:min(72vw,250px);padding:8px}
+ .story-photo .lux-image{padding:4px}
+ .story-photo .lux-frame .lux-image img{height:clamp(90px,16dvh,142px);width:100%;object-fit:contain}
+ .story-photo .lux-frame figcaption{font-size:7px;margin-top:7px}
+}
+@media(max-width:380px) and (max-height:750px){.lux-frame .lux-image img{height:clamp(105px,18dvh,145px)}.story-photo .lux-frame .lux-image img{height:95px}}
