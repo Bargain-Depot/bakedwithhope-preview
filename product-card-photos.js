@@ -1,4 +1,4 @@
-/* Product photos from Tina: files are expected in /product-photos/ once binary assets are uploaded. */
+/* Product photos from Tina: files are expected at repository root once binary assets are uploaded. */
 (()=>{
   'use strict';
   const assets={
@@ -7,7 +7,7 @@
     bar3:'cake-bar-cookies-and-cream.webp',
     bar4:'cake-bar-funfetti-kitty.webp'
   };
-  const base='product-photos/';
+  const base='';
   for(const x of catalog){
     if(assets[x.id]){
       x.fallbackPhoto=x.img;
