@@ -3,10 +3,8 @@
 'use strict';
 const sizes={ 'Mini Cakes':[1,2,4,6,8,12], 'Cookie Bars':[1,2,4,6] };
 const phases={};
-let lastCategory='';
 const getPhase=()=>phases[category]||'size';
 const setPhase=p=>{phases[category]=p;render();document.getElementById('builder')?.scrollIntoView({behavior:'smooth',block:'start'})};
-const safeText=t=>String(t).replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[k]));
 function renderSteps(){
   const root=document.getElementById('builder');
   if(!root||category==='Dirty Sodas')return;
