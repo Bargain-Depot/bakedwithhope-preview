@@ -181,3 +181,21 @@
  .orders-page .ux-tres-qty>span{width:100%}
  .orders-page .ux-product-media img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;transform:none!important;filter:none!important;mask:none!important;-webkit-mask:none!important}
 }
+
+/* BWH storefront live availability (read-only Apps Script) */
+.orders-page .bwh-order-status{border:1px solid #e9cbd2;border-radius:20px;margin:20px auto 27px;background:#fff0f3;padding:21px 26px;max-width:850px;text-align:center;box-shadow:0 9px 30px #76475c0b}
+.orders-page .bwh-status-eyebrow{font-size:10px;letter-spacing:.17em;font-weight:800;color:#a36577}
+.orders-page .bwh-order-status h2{font:normal clamp(27px,4vw,38px)/1.15 'DM Serif Display',serif;margin:5px 0 9px;color:#8c4d63}
+.orders-page .bwh-order-status p{font-size:14px;line-height:1.7;margin:0;color:#76555d;white-space:pre-line;overflow-wrap:anywhere}
+.orders-page .bwh-status-open{background:#fff8f4;border-color:#e8d6cb}
+.orders-page .bwh-stock-item{position:relative}
+.orders-page.bwh-sold-out .bwh-stock-item::after{content:"SOLD OUT ♡";position:absolute;top:12px;left:12px;border-radius:999px;z-index:2;padding:7px 12px;font:800 10px 'DM Sans',sans-serif;letter-spacing:.09em;background:#fff3f5;color:#935a6a;border:1px solid #e3beca;pointer-events:none;box-shadow:0 4px 15px #58383b12}
+.orders-page.bwh-sold-out .ux-quantity button,.orders-page.bwh-sold-out .ux-tres-controls button{cursor:not-allowed;opacity:.55}
+.orders-page .ux-product-grid{align-items:stretch}
+.orders-page .ux-product-media{position:relative;isolation:isolate;display:grid!important;place-items:center!important;overflow:hidden!important;padding:14px!important;background:#fff8f4!important}
+.orders-page .ux-product-media img,.orders-page .ux-picked-slot img{display:block!important;object-fit:contain!important;object-position:50% 50%!important;max-width:100%!important;max-height:100%!important;margin:auto!important;transform:none!important;filter:none!important;-webkit-mask:none!important;mask:none!important}
+.orders-page .ux-product-media img{width:100%!important;height:100%!important}
+.orders-page .ux-picked-slot{display:grid;place-items:center;overflow:hidden}
+.orders-page .ux-picked-slot img{width:100%!important;height:100%!important}
+@media(max-width:760px){.orders-page .bwh-order-status{padding:15px;margin:16px 0 20px}.orders-page .ux-product-media{height:170px!important;padding:8px!important}}
+@media(max-width:430px){.orders-page .ux-product-media{height:140px!important;padding:6px!important}.orders-page.bwh-sold-out .bwh-stock-item::after{top:7px;left:7px;font-size:9px;padding:5px 8px}}
