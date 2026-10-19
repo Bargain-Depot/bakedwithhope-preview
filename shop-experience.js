@@ -34,7 +34,7 @@ const packagingCharge=()=>state.packaging==='ribbon'?2:state.packaging==='card'?
 const eventCharge=()=>packagingCharge()+(full()&&state.topper?2:0)+(full()&&state.glitter?2:0);
 const sodaBase=()=>4;
 const baseCost=()=>state.category==='Dirty Sodas'?sodaBase():full()?35:chosen().price;
-const totalCost=()=>baseCost()+(isMixed()||state.category==='Cookie Bars'||state.category==='Dirty Sodas'?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
+const totalCost=()=>baseCost()+((state.category==='Build Your Own Treat Box'||state.category==='Cookie Bars'||state.category==='Dirty Sodas')?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
 const complete=()=>{
  if(!hasFlavors())return true;
  if(numberSelected()!==limit())return false;
@@ -99,7 +99,7 @@ function productList(){
   const count=state.picks[p.id]||0;
   const allowAdd=!atLimit&&!(state.category==='Sweet Bundles'&&selectedType(p.type)>=(p.type==='cakes'?chosen().cakes:chosen().bars));
   const img=photo(p);
-  const showTres=!isMixed()&&!showBars&&p.type==='cakes'&&p.id!=='caramel';
+  const showTres=(!isMixed()||state.category==='Sweet Bundles')&&!showBars&&p.type==='cakes'&&p.id!=='caramel';
   return '<article class="ux-product '+(full()?'ux-flavor-card':'')+'">'+(full()?'':'<div class="ux-product-media"><img src="'+esc(img)+'" loading="lazy" alt="'+esc(p.name)+'"></div>')+'<div class="ux-product-body"><span class="ux-micro">'+(p.type==='bars'?'COOKIE BAR':full()?'8×8 CAKE':'MINI CAKE')+'</span><h4>'+esc(p.name)+'</h4><div class="ux-quantity"><button type="button" aria-label="Remove '+esc(p.name)+'" data-ux-minus="'+p.id+'" '+(count===0?'disabled':'')+'>−</button><span aria-live="polite">'+count+'</span><button type="button" aria-label="Add '+esc(p.name)+'" data-ux-plus="'+p.id+'" '+(!allowAdd?'disabled':'')+'>+</button></div>'+(showTres&&count>0?'<div class="ux-tres-qty"><span>Tres Leches <small>+'+fmt(full()?4:1)+'/cake</small></span><div class="ux-tres-controls"><button type="button" data-ux-tres-minus="'+p.id+'" aria-label="One fewer '+esc(p.name)+' Tres Leches" '+(!(state.tres[p.id]>0)?'disabled':'')+'>−</button><strong>'+(state.tres[p.id]||0)+' of '+count+'</strong><button type="button" data-ux-tres-plus="'+p.id+'" aria-label="One more '+esc(p.name)+' Tres Leches" '+((state.tres[p.id]||0)>=count?'disabled':'')+'>+</button></div></div>':p.id==='caramel'&&!isMixed()&&!showBars?'<small class="ux-included">Tres Leches included</small>':'')+'</div></article>';
  }).join('')+'</div>'+(complete()?'<p class="ux-ready">♡ Your box is ready to review!</p>':'<p class="ux-note">Choose '+(max-sel)+' more '+(max-sel===1?'treat':'treats')+' to continue.</p>');
 }
