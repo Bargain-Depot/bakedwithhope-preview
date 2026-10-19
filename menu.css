@@ -12,3 +12,15 @@
 @media(max-width:850px){#mini-cakes .product-photo,#cookie-bars .product-photo{height:210px}#dirty-sodas .product-photo{height:280px}}
 @media(max-width:600px){#mini-cakes .product-photo,#cookie-bars .product-photo{height:165px}#dirty-sodas .product-photo{height:235px}.product-photo::before{inset:5px;border-radius:9px}}
 @media(prefers-reduced-motion:reduce){.product-card{transition:none}}
+
+/* Softer cohesive product photography treatment (preserves originals).
+   A feathered edge blends photography into a single studio-like backdrop. */
+.product-photo{background:#f4e9e4!important;isolation:isolate;padding:14px!important}
+.product-photo::before{display:none!important}
+.product-photo::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(244,233,228,.42) 74%,#f4e9e4 100%);mix-blend-mode:normal}
+.product-photo img{object-fit:contain!important;mask-image:radial-gradient(ellipse 74% 77% at 50% 50%,#000 62%,rgba(0,0,0,.72) 81%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 74% 77% at 50% 50%,#000 62%,rgba(0,0,0,.72) 81%,transparent 100%);filter:saturate(.98) contrast(1.02)!important;border-radius:0!important}
+#mini-cakes .product-photo{background:#f7ede9!important}
+#mini-cakes .product-photo::after{background:radial-gradient(ellipse at center,transparent 44%,rgba(247,237,233,.35) 75%,#f7ede9 100%)}
+#cookie-bars .product-photo{background:#f4e9e4!important}
+#dirty-sodas .product-photo{background:#f4e9e4!important}
+@media(max-width:600px){.product-photo{padding:7px!important}.product-photo img{mask-image:radial-gradient(ellipse 83% 83% at 50% 50%,#000 63%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 83% 83% at 50% 50%,#000 63%,transparent 100%)}}
