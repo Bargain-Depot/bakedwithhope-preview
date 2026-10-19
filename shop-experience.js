@@ -200,6 +200,8 @@ function addToBag(){
  state.picks={};state.tres={};state.stage=0;
  setTimeout(()=>{render()},850);
 }
+const previousBagRender=renderBag;
+renderBag=function(){previousBagRender();document.body.classList.toggle('bag-has-items',bag.length>0)};
 reset();
 window.bwhOrderExperience={navigate};
 renderTabs=nav;renderSodas=render;
