@@ -4,7 +4,7 @@
  * Sweet Club backend — deploy to the Firebase project owned by Tina.
  *
  * SECURITY: No customer-controlled callable is allowed to credit punches.
- * The confirmOrder callable is STAFF-ONLY for now. When payment/order processing
+ * The confirmCompletedOrder callable is STAFF-ONLY for now. When payment/order processing
  * is connected, it must invoke the same transaction only after trusted payment
  * or pickup verification, never directly from a public checkout button.
  */
@@ -12,12 +12,12 @@ const {initializeApp}=require('firebase-admin/app');
 const {getFirestore, FieldValue}=require('firebase-admin/firestore');
 const {getAuth}=require('firebase-admin/auth');
 const {onCall, HttpsError}=require('firebase-functions/v2/https');
+const {REWARD_THRESHOLD,calculateGrant,completedOrderState,transferState,redemptionState}=require('./loyalty');
 
 initializeApp();
 const db=getFirestore();
-const THRESHOLD=10;
 const REGION='us-east1';
-const options={region:REGION, enforceAppCheck:false};
+const options={region:REGION, enforceAppCheck:false, maxInstances:10};
 
 function authenticated(request){
   if(!request.auth?.uid)throw new HttpsError('unauthenticated','Please sign in.');
@@ -38,45 +38,74 @@ function count(value){
   if(!Number.isSafeInteger(value)||value<1||value>100)throw new HttpsError('invalid-argument','Transfer must be between 1 and 100 punches.');
   return value;
 }
-function profileDefaults(uid){
-  return {uid, punches:0, lifetimePunches:0, rewardsEarned:0, createdAt:FieldValue.serverTimestamp(), updatedAt:FieldValue.serverTimestamp()};
+function profileDefaults(user){
+  return {
+    uid:user.uid,
+    email:user.email||'',
+    displayName:user.displayName||'',
+    punches:0,
+    lifetimePunches:0,
+    rewardsEarned:0,
+    createdAt:FieldValue.serverTimestamp(),
+    updatedAt:FieldValue.serverTimestamp()
+  };
 }
 function grantTransaction(tx,profileRef,profileSnapshot,amount,metadata){
   const p=profileSnapshot.exists?profileSnapshot.data():{punches:0,lifetimePunches:0,rewardsEarned:0};
-  const current=Number(p.punches)||0;
-  const lifetime=Number(p.lifetimePunches)||0;
-  const earned=Number(p.rewardsEarned)||0;
-  const incoming=current+amount;
-  const newRewards=Math.floor(incoming/THRESHOLD);
-  const remaining=incoming%THRESHOLD;
+  let grant;
+  try{grant=calculateGrant(p,amount);}catch{throw new HttpsError('data-loss','Invalid counters in customer profile.');}
+  const earned=p.rewardsEarned;
   const patch={
-    uid:profileRef.id,punches:remaining,lifetimePunches:lifetime+amount,
-    rewardsEarned:earned+newRewards,updatedAt:FieldValue.serverTimestamp()
+    uid:profileRef.id,punches:grant.punches,lifetimePunches:grant.lifetimePunches,
+    rewardsEarned:grant.rewardsEarned,updatedAt:FieldValue.serverTimestamp()
   };
   if(!profileSnapshot.exists)patch.createdAt=FieldValue.serverTimestamp();
   tx.set(profileRef,patch,{merge:true});
-  for(let i=1;i<=newRewards;i++){
+  for(let i=1;i<=grant.rewardsIssued;i++){
     const serial=earned+i;
     // Predictable id makes retries safer; no client can write this collection.
     const rewardRef=db.doc('rewards/'+profileRef.id+'_signature_'+serial);
     tx.create(rewardRef,{
-      customerId:profileRef.id,kind:'signature_pack_4',punchesUsed:THRESHOLD,
+      customerId:profileRef.id,kind:'signature_pack_4',punchesUsed:REWARD_THRESHOLD,
       status:'available',serial,source:metadata,
       createdAt:FieldValue.serverTimestamp(),redeemedAt:null,redeemedBy:null
     });
   }
-  return {punches:remaining,rewardsIssued:newRewards};
+  return {punches:grant.punches,rewardsIssued:grant.rewardsIssued};
 }
 
 /** Any signed-in customer can create their own empty profile, never punch credits. */
 exports.ensureProfile=onCall(options,async(request)=>{
   const uid=authenticated(request);
+  const user=await getAuth().getUser(uid);
   const ref=db.doc('profiles/'+uid);
   await db.runTransaction(async tx=>{
     const snap=await tx.get(ref);
-    if(!snap.exists)tx.create(ref,profileDefaults(uid));
+    if(!snap.exists)tx.create(ref,profileDefaults(user));
   });
   return {success:true};
+});
+
+/** Admin-only exact customer lookup by email address or Firebase Auth UID. */
+exports.searchCustomer=onCall(options,async(request)=>{
+  admin(request);
+  const query=text(request.data?.query,'Search query',254);
+  let user;
+  try{
+    user=query.includes('@')?await getAuth().getUserByEmail(query.toLowerCase()):await getAuth().getUser(query);
+  }catch(error){
+    if(error?.code==='auth/user-not-found')throw new HttpsError('not-found','Customer account not found.');
+    throw error;
+  }
+  if(user.disabled)throw new HttpsError('failed-precondition','Customer account is disabled.');
+  const profile=await db.doc('profiles/'+user.uid).get();
+  return {
+    uid:user.uid,
+    email:user.email||'',
+    displayName:user.displayName||'',
+    createdAt:user.metadata.creationTime||null,
+    profile:profile.exists?profile.data():null
+  };
 });
 
 /** Staff confirms *one actually completed* order; idempotent by orderId. */
@@ -91,10 +120,10 @@ exports.confirmCompletedOrder=onCall(options,async(request)=>{
   const profileRef=db.doc('profiles/'+customerId);
   return db.runTransaction(async tx=>{
     const [existing,entry,profile]=await Promise.all([tx.get(orderRef),tx.get(ledgerRef),tx.get(profileRef)]);
-    if(existing.exists||entry.exists){
-      if(existing.exists && existing.data().customerId!==customerId)throw new HttpsError('already-exists','Order belongs to another customer.');
-      return {success:true,alreadyProcessed:true};
-    }
+    const state=completedOrderState(existing.exists?existing.data():null,entry.exists?entry.data():null,customerId,orderId);
+    if(state==='incomplete')throw new HttpsError('data-loss','Order records are incomplete; no punch was awarded.');
+    if(state==='conflict')throw new HttpsError('already-exists','Order ID is already associated with different details.');
+    if(state==='processed')return {success:true,alreadyProcessed:true};
     const result=grantTransaction(tx,profileRef,profile,1,{type:'completed_order',orderId});
     tx.create(orderRef,{customerId,status:'completed',punchAwarded:true,completedBy:staffId,completedAt:FieldValue.serverTimestamp()});
     tx.create(ledgerRef,{customerId,delta:1,type:'completed_order',orderId,createdBy:staffId,createdAt:FieldValue.serverTimestamp()});
@@ -116,10 +145,9 @@ exports.importPaperCardPunches=onCall(options,async(request)=>{
   const profileRef=db.doc('profiles/'+customerId);
   return db.runTransaction(async tx=>{
     const [existing,profile]=await Promise.all([tx.get(ledgerRef),tx.get(profileRef)]);
-    if(existing.exists){
-      if(existing.data().customerId!==customerId||existing.data().delta!==amount)throw new HttpsError('already-exists','Transfer ID already used with different details.');
-      return {success:true,alreadyProcessed:true};
-    }
+    const state=transferState(existing.exists?existing.data():null,customerId,amount,reason);
+    if(state==='conflict')throw new HttpsError('already-exists','Transfer ID already used with different details.');
+    if(state==='processed')return {success:true,alreadyProcessed:true};
     const result=grantTransaction(tx,profileRef,profile,amount,{type:'legacy_transfer',transferId});
     tx.create(ledgerRef,{customerId,delta:amount,type:'legacy_transfer',transferId,reason,createdBy:staffId,createdAt:FieldValue.serverTimestamp()});
     return {success:true,alreadyProcessed:false,...result};
@@ -133,10 +161,11 @@ exports.redeemSignaturePack=onCall(options,async(request)=>{
   const rewardRef=db.doc('rewards/'+rewardId);
   return db.runTransaction(async tx=>{
     const snapshot=await tx.get(rewardRef);
-    if(!snapshot.exists)throw new HttpsError('not-found','Reward not found.');
-    if(snapshot.data().kind!=='signature_pack_4')throw new HttpsError('invalid-argument','Unsupported reward type.');
-    if(snapshot.data().status==='redeemed')return {success:true,alreadyRedeemed:true};
-    if(snapshot.data().status!=='available')throw new HttpsError('failed-precondition','Reward is not available.');
+    const state=redemptionState(snapshot.exists?snapshot.data():null);
+    if(state==='missing')throw new HttpsError('not-found','Reward not found.');
+    if(state==='unsupported')throw new HttpsError('invalid-argument','Unsupported reward type.');
+    if(state==='redeemed')return {success:true,alreadyRedeemed:true};
+    if(state==='unavailable')throw new HttpsError('failed-precondition','Reward is not available.');
     tx.update(rewardRef,{status:'redeemed',redeemedBy:staffId,redeemedAt:FieldValue.serverTimestamp()});
     return {success:true,alreadyRedeemed:false};
   });

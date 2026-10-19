@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Owner Login | Baked with Hope</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=DM+Serif+Display&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --cream: #fff7f4;
+      --paper: #fffdf8;
+      --pale-pink: #fde4ee;
+      --soft-pink: #f8c8dc;
+      --medium-pink: #e98bae;
+      --hot-pink: #c85d8f;
+      --brown: #3b1d18;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: 'Nanum Myeongjo', serif;
+      color: var(--brown);
+      background:
+        linear-gradient(
+          90deg,
+          rgba(248, 200, 220, 0.45) 25%,
+          transparent 25%
+        ) -20px 0 / 80px 80px,
+        linear-gradient(
+          rgba(248, 200, 220, 0.45) 25%,
+          transparent 25%
+        ) 0 -20px / 80px 80px,
+        var(--cream);
+    }
+
+    .owner-card {
+      width: 100%;
+      max-width: 620px;
+      background: rgba(255, 253, 248, 0.98);
+      border: 4px solid var(--soft-pink);
+      border-radius: 34px;
+      padding: 46px 34px;
+      text-align: center;
+      box-shadow: 10px 10px 0 var(--soft-pink);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .owner-card::before {
+      content: "♡";
+      position: absolute;
+      top: -30px;
+      right: 20px;
+      font-size: 8rem;
+      color: rgba(248, 200, 220, 0.35);
+    }
+
+    .lock-icon {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--pale-pink);
+      border: 4px solid var(--soft-pink);
+      font-size: 2.2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mini-label {
+      font-family: 'Caveat', cursive;
+      color: var(--hot-pink);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      color: var(--hot-pink);
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      line-height: 1;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    p {
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.8;
+      font-size: 1.05rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dashboard-button {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 15px 26px;
+      border-radius: 999px;
+      background: var(--soft-pink);
+      color: var(--brown);
+      border: 3px solid var(--medium-pink);
+      box-shadow: 5px 5px 0 var(--hot-pink);
+      text-decoration: none;
+      text-transform: uppercase;
+      font-family: 'DM Serif Display', serif;
+      font-weight: 900;
+      transition: 0.2s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dashboard-button:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0 var(--hot-pink);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--hot-pink);
+      text-decoration: none;
+      font-weight: 800;
+      position: relative;
+      z-index: 2;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 560px) {
+      .owner-card {
+        padding: 36px 22px;
+      }
+
+      .lock-icon {
+        width: 72px;
+        height: 72px;
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="owner-card">
+    <div class="lock-icon">🔒</div>
+
+    <p class="mini-label">
+      Private Owner Access
+    </p>
+
+    <h1>
+      Baked with Hope
+    </h1>
+
+    <p>
+      This area is reserved for the owner of Baked with Hope.
+      Google will verify the signed-in account before allowing access
+      to the bakery dashboard.
+    </p>
+
+ <a
+  class="dashboard-button"
+  href="https://script.google.com/macros/s/AKfycbyzHnskl5J9bOdANItTy1B819uoa1zAXd6TgkahTNiAfRC7H8SelhZpZePTeIZIwH6uLA/exec?page=admin"
+>
+  Open Owner Dashboard
+</a>
+
+    <br>
+
+    <a
+      class="back-link"
+      href="index.html"
+    >
+      ← Return to the website
+    </a>
+  </main>
+
+</body>
+</html>

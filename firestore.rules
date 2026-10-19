@@ -1,23 +1,55 @@
 rules_version = '2';
+
+// Sweet Club data model:
+// - profiles/{uid}: customer identity and aggregate punch/reward counters.
+// - orders/{orderId}: server-created order verification records.
+// - punchLedger/{entryId}: immutable server-created punch audit entries.
+// - rewards/{rewardId}: server-created reward issuance/redemption records.
+// Customers may read records tied to their UID and create only their initial
+// zero-balance profile. Privileged mutations require trusted backend code.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isAdmin() { return signedIn() && request.auth.token.admin == true; }
     function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function verifiedOwner(uid) {
+      return owner(uid) && request.auth.token.email_verified == true;
+    }
+    function validNewProfile(uid) {
+      return verifiedOwner(uid)
+        && request.resource.data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'punches', 'lifetimePunches',
+          'rewardsEarned', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 80
+        && request.resource.data.punches == 0
+        && request.resource.data.lifetimePunches == 0
+        && request.resource.data.rewardsEarned == 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
     match /profiles/{uid} {
-      allow read: if owner(uid) || isAdmin();
-      allow write: if false; // Created and modified by trusted Cloud Functions only.
+      allow read: if verifiedOwner(uid) || isAdmin();
+      // Customers may bootstrap only their own zero-balance profile. All later
+      // changes, including every punch and reward counter, are server-only.
+      allow create: if validNewProfile(uid);
+      allow update, delete: if false;
     }
     match /orders/{orderId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow read: if isAdmin() || (verifiedOwner(request.auth.uid) && resource.data.customerId == request.auth.uid);
       allow write: if false;
     }
     match /punchLedger/{entryId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow read: if isAdmin() || (verifiedOwner(request.auth.uid) && resource.data.customerId == request.auth.uid);
       allow write: if false;
     }
     match /rewards/{rewardId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow read: if isAdmin() || (verifiedOwner(request.auth.uid) && resource.data.customerId == request.auth.uid);
       allow write: if false;
     }
     match /{document=**} { allow read, write: if false; }

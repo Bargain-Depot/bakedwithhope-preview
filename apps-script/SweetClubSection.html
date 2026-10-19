@@ -1,0 +1,112 @@
+<!-- Preview-only Apps Script partial. Include inside the existing dashboardScreen. -->
+<style>
+  .sweet-club-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.sweet-club-tools{display:grid;gap:16px;margin-top:18px}.sweet-club-tools label{display:grid;gap:7px;font-weight:800}.sweet-club-inline{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}.sweet-club-customer{padding:16px;border:3px solid var(--soft-pink);border-radius:18px;background:var(--cream)}.sweet-club-records{display:grid;gap:8px;margin-top:12px}.sweet-club-record{padding:12px;border-radius:14px;background:var(--pale-pink);display:grid;gap:4px}.sweet-club-record button{justify-self:start}.sweet-club-auth-note{margin-top:12px}.sweet-club-hidden{display:none!important}@media(max-width:760px){.sweet-club-grid,.sweet-club-inline{grid-template-columns:1fr}}
+</style>
+
+<section class="card" id="sweetClubAdminCard" style="margin-top:28px;">
+  <p class="eyebrow">Sweet Club ♡</p>
+  <h2>Customer loyalty</h2>
+  <p>Search accounts, transfer paper-card punches, verify completed orders, and redeem Signature Pack rewards.</p>
+
+  <div id="sweetClubFirebaseLogin" class="sweet-club-tools">
+    <p class="sweet-club-auth-note">Connect Tina's verified Firebase administrator account. The existing owner-dashboard session remains unchanged.</p>
+    <form id="sweetClubFirebaseLoginForm" class="sweet-club-inline">
+      <label>Firebase admin email<input id="sweetClubAdminEmail" type="email" autocomplete="email" required></label>
+      <label>Password<input id="sweetClubAdminPassword" type="password" autocomplete="current-password" required></label>
+      <button class="action-button small" type="submit">Connect Sweet Club</button>
+    </form>
+  </div>
+
+  <div id="sweetClubFirebaseTools" class="sweet-club-tools sweet-club-hidden">
+    <div class="sweet-club-inline">
+      <label>Customer email or Firebase UID<input id="sweetClubCustomerSearch" maxlength="254" placeholder="customer@example.com"></label>
+      <button class="action-button small" id="sweetClubSearchButton" type="button">Find Customer</button>
+    </div>
+    <div id="sweetClubCustomer" class="sweet-club-customer sweet-club-hidden">
+      <h3 id="sweetClubCustomerName">Customer</h3>
+      <p id="sweetClubCustomerDetails"></p>
+      <strong id="sweetClubCustomerBalance">0 of 10 punches</strong>
+    </div>
+    <div class="sweet-club-grid">
+      <form id="sweetClubTransferForm" class="sweet-club-tools">
+        <h3>Transfer a physical card</h3>
+        <label>Punches<input id="sweetClubTransferPunches" type="number" min="1" max="100" required></label>
+        <label>Reason<textarea id="sweetClubTransferReason" maxlength="500" required placeholder="Physical card presented in store"></textarea></label>
+        <button class="action-button small" type="submit">Record Transfer</button>
+      </form>
+      <form id="sweetClubOrderForm" class="sweet-club-tools">
+        <h3>Verify a completed order</h3>
+        <p>Award only after payment or pickup completion is verified.</p>
+        <label>Unique order ID<input id="sweetClubOrderId" maxlength="128" required placeholder="pickup-2026-00123"></label>
+        <button class="action-button small" type="submit">Verify and Award 1 Punch</button>
+      </form>
+    </div>
+    <div class="sweet-club-grid">
+      <div><h3>Punch history</h3><div id="sweetClubPunchHistory" class="sweet-club-records"></div></div>
+      <div><h3>Rewards</h3><div id="sweetClubRewards" class="sweet-club-records"></div></div>
+    </div>
+  </div>
+  <div id="sweetClubMessage" class="message-box" style="margin-top:16px;"></div>
+</section>
+
+<script>
+(async function initializeSweetClubSection(){
+  const [{initializeApp},{getAuth,getIdTokenResult,onAuthStateChanged,signInWithEmailAndPassword,signOut},{collection,getDocs,getFirestore,query,where},{getFunctions,httpsCallable}]=await Promise.all([
+    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js'),
+    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js'),
+    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-functions.js')
+  ]);
+  const firebaseConfig={apiKey:'AIzaSyCwpp_LVXe8WD7ILRYCqaDX5iWIE7wuulk',authDomain:'baked-with-hope-preview.firebaseapp.com',projectId:'baked-with-hope-preview',storageBucket:'baked-with-hope-preview.firebasestorage.app',messagingSenderId:'866851893544',appId:'1:866851893544:web:7a9e2cf7ecad71e1dba01d'};
+  const firebaseApp=initializeApp(firebaseConfig,'sweet-club');
+  const firebaseAuth=getAuth(firebaseApp);
+  const firestore=getFirestore(firebaseApp);
+  const firebaseFunctions=getFunctions(firebaseApp,'us-east1');
+  let selectedCustomer=null;
+  const byId=id=>document.getElementById(id);
+  function message(text,isError){showMessage('sweetClubMessage',text,Boolean(isError));}
+  function date(value){const parsed=value&&value.toDate&&value.toDate();return parsed?parsed.toLocaleDateString():'Pending';}
+  function renderRecords(target,records,renderer,empty){
+    target.replaceChildren();
+    if(!records.length){const node=document.createElement('p');node.textContent=empty;target.append(node);return;}
+    records.forEach(record=>{const node=document.createElement('div');node.className='sweet-club-record';renderer(node,record);target.append(node);});
+  }
+  async function loadCustomer(queryValue){
+    const result=await httpsCallable(firebaseFunctions,'searchCustomer')({query:queryValue});
+    selectedCustomer=result.data;
+    byId('sweetClubCustomer').classList.remove('sweet-club-hidden');
+    byId('sweetClubCustomerName').textContent=selectedCustomer.displayName||'Sweet Club customer';
+    byId('sweetClubCustomerDetails').textContent=(selectedCustomer.email||'')+' · UID '+selectedCustomer.uid;
+    byId('sweetClubCustomerBalance').textContent=(selectedCustomer.profile?.punches||0)+' of 10 punches';
+    const [ledgerSnapshot,rewardsSnapshot]=await Promise.all([
+      getDocs(query(collection(firestore,'punchLedger'),where('customerId','==',selectedCustomer.uid))),
+      getDocs(query(collection(firestore,'rewards'),where('customerId','==',selectedCustomer.uid)))
+    ]);
+    const ledger=ledgerSnapshot.docs.map(item=>item.data()).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    const rewards=rewardsSnapshot.docs.map(item=>({id:item.id,...item.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    renderRecords(byId('sweetClubPunchHistory'),ledger,(node,item)=>{
+      const title=document.createElement('strong');title.textContent=item.type==='legacy_transfer'?`+${item.delta} paper-card punches`:'+1 completed-order punch';
+      const detail=document.createElement('small');detail.textContent=date(item.createdAt)+' · '+(item.reason||item.orderId||'');node.append(title,detail);
+    },'No punch history yet.');
+    renderRecords(byId('sweetClubRewards'),rewards,(node,item)=>{
+      const title=document.createElement('strong');title.textContent='Free Signature Pack · '+item.status;
+      const detail=document.createElement('small');detail.textContent=date(item.createdAt)+' · '+item.id;node.append(title,detail);
+      if(item.status==='available'){
+        const button=document.createElement('button');button.className='action-button small';button.type='button';button.textContent='Redeem Once';
+        button.addEventListener('click',async()=>{button.disabled=true;try{await httpsCallable(firebaseFunctions,'redeemSignaturePack')({rewardId:item.id});message('Reward redeemed and logged.');await loadCustomer(selectedCustomer.uid);}catch(error){message(error.message,true);button.disabled=false;}});node.append(button);
+      }
+    },'No rewards issued yet.');
+  }
+  byId('sweetClubFirebaseLoginForm').addEventListener('submit',async event=>{event.preventDefault();try{await signInWithEmailAndPassword(firebaseAuth,byId('sweetClubAdminEmail').value.trim(),byId('sweetClubAdminPassword').value);}catch(error){message('Firebase administrator sign-in failed.',true);}});
+  byId('sweetClubSearchButton').addEventListener('click',async()=>{try{await loadCustomer(byId('sweetClubCustomerSearch').value.trim());message('Customer loaded.');}catch(error){message(error.message,true);}});
+  byId('sweetClubTransferForm').addEventListener('submit',async event=>{event.preventDefault();if(!selectedCustomer)return message('Find a customer first.',true);try{await httpsCallable(firebaseFunctions,'importPaperCardPunches')({customerId:selectedCustomer.uid,transferId:crypto.randomUUID(),punches:Number(byId('sweetClubTransferPunches').value),reason:byId('sweetClubTransferReason').value.trim()});event.target.reset();message('Paper-card transfer recorded.');await loadCustomer(selectedCustomer.uid);}catch(error){message(error.message,true);}});
+  byId('sweetClubOrderForm').addEventListener('submit',async event=>{event.preventDefault();if(!selectedCustomer)return message('Find a customer first.',true);try{const result=await httpsCallable(firebaseFunctions,'confirmCompletedOrder')({customerId:selectedCustomer.uid,orderId:byId('sweetClubOrderId').value.trim()});event.target.reset();message(result.data.alreadyProcessed?'Order already processed; no duplicate punch was added.':'Completed order verified; one punch was added.');await loadCustomer(selectedCustomer.uid);}catch(error){message(error.message,true);}});
+  onAuthStateChanged(firebaseAuth,async user=>{
+    let admin=false;
+    if(user)admin=(await getIdTokenResult(user,true)).claims.admin===true;
+    byId('sweetClubFirebaseLogin').classList.toggle('sweet-club-hidden',admin);
+    byId('sweetClubFirebaseTools').classList.toggle('sweet-club-hidden',!admin);
+    if(user&&!admin){message('This Firebase account does not have the administrator claim.',true);await signOut(firebaseAuth);}
+  });
+})();
+</script>
