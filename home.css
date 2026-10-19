@@ -317,3 +317,27 @@ html,body{height:100%;overflow:hidden}
  .story .story-copy .actions .secondary{font-size:9px!important}
  .story-photo .lux-frame figcaption{display:none!important}
 }
+
+/* Tina's family portrait: frame follows original photo proportions, never a square crop. */
+@media(max-width:800px){
+ .story .story-photo .lux-frame{height:auto!important}
+ .story .story-photo .lux-image{
+   display:block!important;
+   height:auto!important;
+   min-height:0!important;
+   aspect-ratio:auto!important;
+   overflow:hidden!important;
+   padding:0!important;
+   line-height:0!important;
+ }
+ .story .story-photo .lux-frame .lux-image img{
+   display:block!important;
+   width:100%!important;
+   height:auto!important;
+   max-height:none!important;
+   min-height:0!important;
+   aspect-ratio:auto!important;
+   object-fit:contain!important;
+   vertical-align:top!important;
+ }
+}
