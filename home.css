@@ -174,3 +174,29 @@ html,body{height:100%;overflow:hidden}
  .soda-feature .copy h1{font-size:32px!important}
  .soda-feature .copy .secondary{display:none}
 }
+
+/* Mini Cakes (slide 3): full-slide bakery gift-box photography with legible overlay */
+.feed-slide.mini-feature{position:absolute;isolation:isolate;background:#6c5353;overflow:hidden}
+.mini-feature .slide-inner{position:static!important;display:block!important;min-height:100%!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+.mini-feature .visual.mini-full-visual{position:absolute!important;inset:0!important;z-index:0!important;display:block!important;width:100%!important;max-width:none!important;height:100%!important;min-height:100%!important;margin:0!important;padding:0!important;transform:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important;background:#6c5353!important}
+.mini-feature .mini-full-visual .mini-full-image{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important;height:100%!important;max-height:none!important;min-height:100%!important;display:block!important;object-fit:cover!important;object-position:center 46%!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.mini-feature::after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(34,18,23,.78) 0%,rgba(34,18,23,.54) 32%,rgba(34,18,23,.08) 70%)}
+.mini-feature .copy{position:absolute!important;z-index:2!important;top:50%!important;left:clamp(24px,6vw,95px)!important;bottom:auto!important;transform:translateY(-50%);width:min(46%,540px)!important;max-width:540px!important;color:#fffaf6!important;text-shadow:0 1px 10px #150a0d50}
+.mini-feature .copy h1,.mini-feature .copy h1 em,.mini-feature .copy .eyebrow,.mini-feature .copy p,.mini-feature .copy .secondary{color:#fffaf6!important}
+.mini-feature .copy .primary{background:#fffaf6!important;color:#4a302d!important;text-shadow:none}
+.mini-feature .copy .primary:hover{background:#f5dbdf!important}
+@media(max-width:800px){
+ .mini-feature::after{background:linear-gradient(180deg,rgba(23,12,17,.03) 0%,rgba(23,12,17,.05) 31%,rgba(23,12,17,.62) 61%,rgba(23,12,17,.9) 100%)}
+ .mini-feature .copy{top:auto!important;bottom:clamp(62px,9dvh,90px)!important;left:23px!important;right:49px!important;transform:none!important;width:auto!important;max-width:none!important}
+ .mini-feature .copy h1{font-size:clamp(35px,9vw,50px)!important;line-height:1.05!important;margin:9px 0!important}
+ .mini-feature .copy p{font-size:12px!important;line-height:1.4!important;max-width:340px}
+ .mini-feature .copy .eyebrow{font-size:10px!important}
+ .mini-feature .copy .actions{margin-top:13px!important;gap:12px!important}
+ .mini-feature .copy .primary{padding:12px 14px!important}
+ .mini-feature .mini-full-visual .mini-full-image{object-position:50% 38%!important}
+}
+@media(max-width:380px) and (max-height:750px){
+ .mini-feature .copy{bottom:48px!important}
+ .mini-feature .copy h1{font-size:32px!important}
+ .mini-feature .copy .secondary{display:none}
+}
