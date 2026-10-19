@@ -141,3 +141,6 @@
 .orders-page .ux-flavor-grid .ux-flavor-card h4{min-height:0;margin-bottom:5px}
 .orders-page .ux-flavor-grid .ux-flavor-card .ux-quantity{margin-top:auto}
 @media(max-width:600px){.orders-page .ux-cake-feature{grid-template-columns:110px 1fr;gap:12px;padding:10px}.orders-page .ux-cake-feature img{height:125px;padding:6px}.orders-page .ux-cake-feature strong{font-size:19px;margin:5px 0}.orders-page .ux-cake-feature p{font-size:10px}.orders-page .ux-flavor-grid .ux-flavor-card .ux-product-body{padding:12px}.orders-page .ux-flavor-grid .ux-flavor-card h4{font-size:17px}}
+
+/* The mobile bag tray should only occupy screen space after an item is added. */
+.orders-page:not(.bag-has-items) .mobilebar{display:none!important}
