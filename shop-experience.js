@@ -194,7 +194,7 @@ function addToBag(){
  if(state.notes)details.push('Notes: '+state.notes);
  bag.push({name,detail:details.join(' · '),price:Number(totalCost().toFixed(2)),quantity:1});
  renderBag();
- $('bag').scrollIntoView({behavior:'smooth',block:'nearest'});
+ document.querySelector('.shop-header .bagbtn')?.click();
  const msg=document.createElement('p');msg.className='ux-success';msg.setAttribute('role','status');msg.textContent='Added to your sweet bag! ♡';
  $('builder').querySelector('.ux-buttons')?.before(msg);
  state.picks={};state.tres={};state.stage=0;
