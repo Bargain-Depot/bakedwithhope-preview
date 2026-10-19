@@ -1,0 +1,132 @@
+/* Baked with Hope — coherent sweet shop v2. All categories share these components. */
+.orders-page{background:#fffaf7}
+.orders-page .menu{background:#fffaf7;padding:42px 0 75px}
+.orders-page .menu .shell{max-width:1150px}
+.orders-page .sectionhead{margin:0 0 22px}
+.orders-page .sectionhead h2{font-size:clamp(35px,5vw,55px);margin:8px 0}
+.orders-page .sectionhead p{color:#806765;font-size:14px}
+.orders-page .tabs{display:flex;gap:9px;flex-wrap:wrap;border-bottom:1px solid #eddfd9;padding-bottom:19px;margin-bottom:22px}
+.orders-page .ux-tab{display:inline-flex;align-items:center;justify-content:center;border:1px solid #ead7d4!important;background:#fff!important;color:#78595c!important;border-radius:100px!important;padding:12px 18px!important;font-size:12px!important;font-weight:800!important;box-shadow:none!important;white-space:nowrap}
+.orders-page .ux-tab.active{background:#64454d!important;border-color:#64454d!important;color:#fff!important}
+.orders-page .ux-tab:focus-visible{outline:3px solid #ac7180;outline-offset:2px}
+.orders-page .builder{display:block!important;max-width:1050px!important;margin:0 auto!important}
+.orders-page .ux-builder{border:1px solid #f0e2dc;background:#fff;border-radius:25px;padding:clamp(18px,3.2vw,38px);box-shadow:0 22px 65px #68484b0d}
+.orders-page .ux-builder-heading{margin:0 0 24px}
+.orders-page .ux-micro{display:block;letter-spacing:.15em;font-size:10px;font-weight:800;color:#ad7483}
+.orders-page .ux-builder-heading h2{font:normal clamp(35px,4.5vw,54px)/1.1 'DM Serif Display',serif;margin:7px 0 8px}
+.orders-page .ux-builder-heading p,.orders-page .ux-intro p{color:#806863;line-height:1.55;font-size:13px;margin:0}
+.orders-page .ux-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0 25px}
+.orders-page .ux-step{display:flex;align-items:center;justify-content:center;gap:11px;border:1px solid #e8d7d0;background:#f9f4f1;color:#7d6260;border-radius:14px;min-height:53px;font-size:12px;font-weight:800;padding:8px 5px}
+.orders-page .ux-step:disabled{opacity:.68;cursor:default}
+.orders-page .ux-step.is-current{background:#f3e4e5;border-color:#b57988;color:#734658}
+.orders-page .ux-step.is-complete{background:#fff;border-color:#caa0ac;color:#7d5260}
+.orders-page .ux-step-number{display:grid;place-items:center;min-width:26px;width:26px;height:26px;border-radius:50%;background:#e9d5d5;font-size:11px}
+.orders-page .ux-step.is-current .ux-step-number{background:#80505e;color:#fff}
+.orders-page .ux-intro{margin:8px 0 20px}
+.orders-page .ux-intro h3,.orders-page .ux-custom h3{font:normal clamp(26px,3.2vw,39px)/1.12 'DM Serif Display',serif;margin:0 0 7px}
+.orders-page .ux-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.orders-page .ux-option{position:relative;display:flex;flex-direction:column;text-align:left;align-items:flex-start;min-width:0;min-height:150px;gap:6px;padding:20px;border-radius:17px;background:#fffaf8;border:1.5px solid #eadbd7;color:#503637;box-shadow:0 7px 22px #5a3a3c0a}
+.orders-page .ux-option.selected{background:#fff3f3;border-color:#af7285;box-shadow:0 0 0 2px #efccd5}
+.orders-page .ux-option .ux-check{position:absolute;right:13px;top:12px;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#f2e1e0;color:#9c6375;font-size:13px}
+.orders-page .ux-option.selected .ux-check{background:#7d5361;color:white}
+.orders-page .ux-option-name{font-family:'DM Serif Display',serif;font-size:24px;line-height:1.12;padding-right:23px}
+.orders-page .ux-option-desc{font-size:12px;color:#886f68;line-height:1.4;min-height:24px}
+.orders-page .ux-option strong{font:normal 27px 'DM Serif Display',serif;color:#a05d74;margin-top:auto}
+.orders-page .ux-note{font-size:12px!important;line-height:1.5;color:#8c7471!important;margin:15px 0}
+.orders-page .ux-selection-summary{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:14px 18px;background:#fbf3ef;border-radius:13px;font-size:13px}
+.orders-page .ux-selection-summary strong:last-child{font-size:17px;color:#a26378}
+.orders-page .ux-progress{height:7px;background:#f2e5e2;border-radius:20px;overflow:hidden;margin:11px 0 22px}
+.orders-page .ux-progress span{display:block;height:100%;background:#b87d8e;transition:width .2s}
+.orders-page .ux-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:17px}
+.orders-page .ux-filters button{font-size:12px;border:1px solid #e6d2ce;background:#fff9f6;border-radius:90px;padding:10px 15px;color:#78595c}
+.orders-page .ux-filters button.active{background:#63434c;border-color:#63434c;color:white}
+.orders-page .ux-product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.orders-page .ux-product{display:flex;flex-direction:column;min-width:0;border:1px solid #ecdfd9;background:#fffdfb;border-radius:17px;overflow:hidden}
+.orders-page .ux-product-media{height:205px;display:grid;place-items:center;background:#f7efeb;padding:12px}
+.orders-page .ux-product-media img{width:100%;height:100%;display:block;object-fit:contain}
+.orders-page .ux-product-body{display:flex;flex-direction:column;gap:10px;flex:1;padding:14px}
+.orders-page .ux-product h4{font:normal 22px/1.13 'DM Serif Display',serif;margin:0;min-height:45px}
+.orders-page .ux-quantity{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e9dad5;border-radius:50px;background:#fff9f7;padding:4px;width:140px;margin-top:auto}
+.orders-page .ux-quantity button{border:0;width:33px;height:33px;display:grid;place-items:center;background:#e8d4d8;color:#593d46;border-radius:50%;font-size:18px}
+.orders-page .ux-quantity button:disabled{background:#f4eeeb;color:#c3b5b1;cursor:not-allowed}
+.orders-page .ux-quantity span{font-weight:800;font-size:14px}
+.orders-page .ux-tres{font-size:11px;color:#79605d;display:flex;gap:6px;align-items:center;line-height:1.4}
+.orders-page .ux-tres input{accent-color:#a66a7d}
+.orders-page .ux-included{font-size:11px;color:#89546a}
+.orders-page .ux-ready{color:#8b4d65;font-weight:800;font-size:13px}
+.orders-page .ux-footer{position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:27px;padding:19px 0 0;border-top:1px solid #efe2dd}
+.orders-page .ux-estimate{display:flex;flex-direction:column;gap:4px}
+.orders-page .ux-estimate small{color:#9b7e76;font-weight:800;letter-spacing:.13em;font-size:9px}
+.orders-page .ux-estimate strong{font:normal 31px 'DM Serif Display',serif;color:#754a58}
+.orders-page .ux-buttons{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.orders-page .ux-next,.orders-page .ux-back{min-height:46px;border-radius:99px;padding:12px 22px;font-size:12px;font-weight:800}
+.orders-page .ux-next{border:1px solid #55383f;background:#55383f;color:white}
+.orders-page .ux-next:hover{background:#8c5667}
+.orders-page .ux-next:disabled{cursor:not-allowed;opacity:.35}
+.orders-page .ux-back{background:white;color:#7f5a62;border:1px solid #dec7c6}
+.orders-page .ux-drink-choice{width:100%;display:flex;align-items:center;gap:20px;text-align:left;padding:12px 20px;background:#fffaf8;color:#52393b;border:1px solid #e8d8d1;border-radius:16px;margin-bottom:12px}
+.orders-page .ux-drink-choice.selected{border-color:#a66c7d;box-shadow:0 0 0 2px #eac5d0}
+.orders-page .ux-drink-choice img{width:86px;height:96px;object-fit:contain;background:#f5ede8;border-radius:11px;padding:5px}
+.orders-page .ux-drink-choice span:nth-child(2){display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.orders-page .ux-drink-choice strong{font:normal 24px 'DM Serif Display',serif}
+.orders-page .ux-drink-choice small{font-size:11px;color:#8c7673}
+.orders-page .ux-drink-choice .ux-check{color:#9f6474;font-size:22px}
+.orders-page .ux-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.orders-page .ux-field{display:flex;flex-direction:column;gap:9px;min-width:0;padding:0;color:#6e5050;font-size:12px;font-weight:700}
+.orders-page fieldset.ux-field{border:1px solid #edddd8;border-radius:14px;padding:17px;gap:13px}
+.orders-page fieldset.ux-field legend{font-weight:800;font-size:13px;padding:0 6px}
+.orders-page .ux-field.full{grid-column:1/-1}
+.orders-page .ux-field input,.orders-page .ux-field select,.orders-page .ux-field textarea{width:100%;border:1px solid #e2cfc9;border-radius:11px;padding:12px;background:white;color:#583e3d;font:13px 'DM Sans',sans-serif}
+.orders-page .ux-field textarea{min-height:68px;resize:vertical}
+.orders-page .ux-radio{display:flex;align-items:center;gap:9px;padding:10px;background:#fff9f5;border:1px solid #eadbd4;border-radius:11px;font-size:12px;font-weight:700}
+.orders-page .ux-radio input{accent-color:#ac7081}
+.orders-page .ux-radio strong{margin-left:auto}
+.orders-page .ux-review{background:#fffaf8;border:1px solid #edddd9;border-radius:18px;padding:22px}
+.orders-page .ux-review-header{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #e8d9d3;padding-bottom:14px}
+.orders-page .ux-review-header span{font-size:10px;letter-spacing:.14em;color:#ac7483;font-weight:800}
+.orders-page .ux-review-header strong{font:normal 29px 'DM Serif Display',serif;color:#85536a}
+.orders-page .ux-review h4{font:normal 28px 'DM Serif Display',serif;margin:15px 0 6px}
+.orders-page .ux-review p{font-size:13px;color:#7e6862;line-height:1.5;margin:0 0 17px}
+.orders-page .ux-review dl{margin:0}.orders-page .ux-review dl div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:13px}
+.orders-page .ux-review dd{margin:0;font-weight:800}
+.orders-page .ux-review .ux-total{font-size:16px;border-top:1px solid #e9d8d3;margin-top:7px;padding-top:15px}
+.orders-page .ux-custom{margin-top:22px;background:#fdf4f3;border:1px solid #eddada;padding:20px;border-radius:18px}
+.orders-page .ux-custom .ux-field-grid{margin-top:15px}
+.orders-page .ux-warning{font-size:12px;color:#ac3752;background:#fff1f2;padding:10px;border-radius:9px}
+.orders-page .ux-success{font-size:13px;color:#80546b;font-weight:800}
+.orders-page .ux-builder button:focus-visible{outline:3px solid #af7990;outline-offset:2px}
+.orders-page .ux-builder input:focus-visible,.orders-page .ux-builder select:focus-visible,.orders-page .ux-builder textarea:focus-visible{outline:2px solid #ba8393;outline-offset:2px}
+@media(max-width:760px){.orders-page .ux-options,.orders-page .ux-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-page .ux-product-media{height:180px}}
+@media(max-width:600px){
+.orders-page .menu{padding-top:26px}
+.orders-page .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:7px;padding:0 0 16px}
+.orders-page .tabs::-webkit-scrollbar{display:none}
+.orders-page .ux-tab{padding:10px 14px!important;font-size:11px!important}
+.orders-page .ux-builder{padding:16px 12px;border-radius:16px}
+.orders-page .ux-builder-heading h2{font-size:37px}
+.orders-page .ux-steps{gap:5px;margin:16px 0 20px}
+.orders-page .ux-step{gap:5px;padding:7px 3px;min-height:45px;font-size:10px;border-radius:10px}
+.orders-page .ux-step-number{min-width:20px;width:20px;height:20px;font-size:10px}
+.orders-page .ux-intro h3{font-size:29px}
+.orders-page .ux-options{gap:9px}
+.orders-page .ux-option{padding:15px 11px;min-height:143px;gap:5px;border-radius:13px}
+.orders-page .ux-option-name{font-size:21px}
+.orders-page .ux-option-desc{font-size:10px}
+.orders-page .ux-option strong{font-size:25px}
+.orders-page .ux-option .ux-check{width:21px;height:21px;right:9px;top:9px}
+.orders-page .ux-product-grid{gap:9px}
+.orders-page .ux-product-media{height:135px;padding:7px}
+.orders-page .ux-product-body{padding:10px;gap:7px}
+.orders-page .ux-product h4{font-size:17px;min-height:38px}
+.orders-page .ux-quantity{width:115px}
+.orders-page .ux-quantity button{width:28px;height:28px}
+.orders-page .ux-drink-choice{gap:11px;padding:9px}
+.orders-page .ux-drink-choice img{width:72px;height:80px}
+.orders-page .ux-drink-choice strong{font-size:20px}
+.orders-page .ux-field-grid{grid-template-columns:1fr}
+.orders-page .ux-field.full{grid-column:1}
+.orders-page .ux-review{padding:15px}
+.orders-page .ux-footer{gap:8px}
+.orders-page .ux-estimate strong{font-size:27px}
+.orders-page .ux-next,.orders-page .ux-back{padding:10px 13px;font-size:11px}
+}
