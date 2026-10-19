@@ -20,7 +20,7 @@ const categoryInfo={
 'Dirty Sodas':['🥤','Dirty sodas','Choose your drink, size, and a few sweet extras.']
 };
 const state={category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',glitter:false,glitterColor:''};
-const choiceSet=()=>state.category==='Mini Cakes'?mini:state.category==='Cookie Bars'?bars:state.category==='Build Your Own Treat Box'?mixed:bundles;
+const choiceSet=()=>state.category==='Mini Cakes'?mini:state.category==='Cookie Bars'?bars:state.category==='Build Your Own Treat Box'?mixed:state.category==='8×8 Cakes'?[{count:1,name:'8×8 Celebration Cake',price:35}]:bundles;
 const chosen=()=>state.category==='Sweet Bundles'?bundles[state.bundle]:choiceSet().find(v=>v.count===state.size)||choiceSet()[0];
 const numberSelected=()=>Object.values(state.picks).reduce((a,n)=>a+n,0);
 const selectedType=type=>catalog.filter(p=>p.type===type).reduce((a,p)=>a+(state.picks[p.id]||0),0);
@@ -49,9 +49,9 @@ const fieldsOk=()=>{
  return true;
 };
 const photo=(p)=>p.img||'';
-const none='';
+
 function reset(){
- state.stage=0;state.picks={};state.tres={};state.filter='all';state.size=state.category==='Mini Cakes'?4:state.category==='Cookie Bars'?2:4;
+ state.stage=0;state.picks={};state.tres={};state.filter='all';state.size=state.category==='8×8 Cakes'?1:state.category==='Mini Cakes'?4:state.category==='Cookie Bars'?2:4;
  state.bundle=0;state.drink=0;state.drinkSize='16 oz';state.addons=[];
  state.occasion='';state.packaging='none';state.ribbon='';state.card='';state.message='';state.notes='';state.topper=false;state.topperColor='';state.glitter=false;state.glitterColor='';
 }
