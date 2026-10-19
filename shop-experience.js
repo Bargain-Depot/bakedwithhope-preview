@@ -199,6 +199,7 @@ function addToBag(){
  state.picks={};state.tres={};state.stage=0;
  setTimeout(()=>{render()},850);
 }
+reset();
 window.bwhOrderExperience={navigate};
 renderTabs=nav;renderSodas=render;
 window.render=render;
