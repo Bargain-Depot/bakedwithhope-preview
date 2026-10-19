@@ -2,10 +2,10 @@
 (()=>{
   'use strict';
   const assets={
-    bar1:'cake-bar-white-chocolate-raspberry.webp',
-    bar2:'cake-bar-white-chocolate-biscoff.webp',
-    bar3:'cake-bar-cookies-and-cream.webp',
-    bar4:'cake-bar-funfetti-kitty.webp'
+    bar1:'cake-bar-white-chocolate-raspberry-2.webp',
+    bar2:'cake-bar-white-chocolate-biscoff-2.webp',
+    bar3:'cake-bar-cookies-and-cream-2.webp',
+    bar4:'cake-bar-funfetti-kitty-2.webp'
   };
   const base='';
   for(const x of catalog){
@@ -19,9 +19,9 @@
     catalog.push({id:'bar4',name:'Funfetti',type:'bars',img:base+assets.bar4,fallbackPhoto:'https://raw.githubusercontent.com/Bargain-Depot/bakedwithhope/main/funfetti.png',placeholder:false});
   }
   const drinks={
-    'Strawberry Shortcake':'dirty-soda-strawberry-shortcake.webp',
-    'Cherry Vanilla':'dirty-soda-cherry-vanilla.webp',
-    'Shark Bite':'dirty-soda-shark-bite.webp'
+    'Strawberry Shortcake':'dirty-soda-strawberry-shortcake-2.webp',
+    'Cherry Vanilla':'dirty-soda-cherry-vanilla-2.webp',
+    'Shark Bite':'dirty-soda-shark-bite-2.webp'
   };
   function photo(img,fallback){
     img.addEventListener('error',function(){if(this.dataset.fallbackUsed)return;this.dataset.fallbackUsed='true';this.src=fallback},{once:true});
@@ -39,7 +39,7 @@
       img.src=base+path;
       img.alt=flavor+' dirty soda';
       img.loading='lazy';
-      img.addEventListener('error',()=>{img.remove();btn.classList.remove('photo-soda-card')},{once:true});
+      img.addEventListener('error',()=>{if(!img.dataset.fallback){img.dataset.fallback='1';img.src=path.replace('-2.webp','.webp')}else{img.remove();btn.classList.remove('photo-soda-card')} });
       btn.prepend(img);
     });
     const illustration=document.querySelector('.soda-preview');
@@ -48,7 +48,7 @@
       photoImage.className='selected-soda-photo';
       photoImage.src=base+drinks[soda];
       photoImage.alt=soda+' dirty soda';
-      photoImage.addEventListener('error',()=>photoImage.remove(),{once:true});
+      photoImage.addEventListener('error',()=>{if(!photoImage.dataset.fallback){photoImage.dataset.fallback='1';photoImage.src=drinks[soda].replace('-2.webp','.webp')}else photoImage.remove()});
       const art=illustration.querySelector('.soda-illustration');
       if(art)art.replaceWith(photoImage);
       const placeholderMessage=[...illustration.querySelectorAll('p')].find(x=>x.textContent.includes('Actual drink photos coming soon'));
