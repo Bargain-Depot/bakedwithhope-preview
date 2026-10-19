@@ -2,3 +2,14 @@
 /* Sweet Club now requires ten verified punches. */
 .club-punches{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 @media(max-width:600px){.club-punches{gap:6px}.club-punch{border-radius:9px;font-size:18px}}
+/* Customer account screens remain explicitly gated until backend verification. */
+.club-dialog [hidden]{display:none!important}
+.club-dialog{box-sizing:border-box;max-height:calc(100dvh - 36px);overscroll-behavior:contain}
+.club-field input{box-sizing:border-box;width:100%;min-width:0;font:inherit;font-size:16px}
+.club-auth-switch{display:flex;gap:8px;margin:20px 0}
+.club-auth-switch button{flex:1;min-height:44px;border:1px solid #d9aeb4;border-radius:24px;background:#fff;color:#6a3f48;font:inherit;font-weight:700;cursor:pointer}
+.club-auth-switch button[aria-pressed="true"]{background:#f6dce4;border-color:#bd7a8e}
+.club-dialog .club-text-button{display:block;min-height:44px;margin:8px auto 0;border:0;background:transparent;color:#87475c;font:inherit;text-decoration:underline;cursor:pointer}
+.club-dialog button:focus-visible,.club-dialog input:focus-visible{outline:3px solid #a65c78;outline-offset:3px}
+.club-dialog .primary{min-height:48px}
+@media(max-width:400px){.club-modal{padding:12px}.club-dialog{padding:20px;max-height:calc(100dvh - 24px)}.club-dialog h2{font-size:32px}.club-auth-switch button{font-size:14px}}
