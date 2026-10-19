@@ -8,7 +8,8 @@ const dots=[...root.querySelectorAll('.progress')];
 const counter=document.getElementById('counter');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
-const video=document.getElementById('heroVideo');
+const videos=[...root.querySelectorAll('.video-feature video')];
+function synchronizeVideos(){videos.forEach(video=>{const isActive=slides[index].contains(video)&&document.visibilityState==='visible';if(isActive)video.play().catch(()=>{});else video.pause()})}
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let index=location.hash==='#story'?1:0;
 let touch=null;
@@ -34,10 +35,7 @@ function update(n){
    el.setAttribute('aria-pressed',String(i===index));
  });
  if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
- if(video){
-   if(index===0&&document.visibilityState==='visible')video.play().catch(()=>{});
-   else video.pause();
- }
+ synchronizeVideos();
  cleanup=setTimeout(()=>slides.forEach(slide=>slide.classList.remove('exiting')),760);
 }
 prev?.addEventListener('click',()=>update(index-1));
@@ -80,18 +78,14 @@ document.addEventListener('keydown',e=>{
  if(e.key==='ArrowDown'||e.key==='PageDown'){e.preventDefault();update(index+1)}
  if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();update(index-1)}
 });
-document.addEventListener('visibilitychange',()=>{
- if(!video)return;
- if(document.hidden)video.pause();
- else if(index===0)video.play().catch(()=>{});
-});
-if(video){
+document.addEventListener('visibilitychange',synchronizeVideos);
+videos.forEach(video=>{
  const backdrop=video.closest('.video-feature');
- const ready=()=>{if(video.videoWidth>0){backdrop?.classList.add('video-ready');if(index===0)video.play().catch(()=>{})}};
+ const ready=()=>{if(video.videoWidth>0){backdrop?.classList.add('video-ready');synchronizeVideos()}};
  video.addEventListener('loadeddata',ready);
  video.addEventListener('canplay',ready);
  video.addEventListener('error',()=>backdrop?.classList.remove('video-ready'));
  if(video.readyState>=2)ready();
-}
+});
 update(index);
 })();
