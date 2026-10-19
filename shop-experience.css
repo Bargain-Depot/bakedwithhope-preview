@@ -130,3 +130,14 @@
 .orders-page .ux-estimate strong{font-size:27px}
 .orders-page .ux-next,.orders-page .ux-back{padding:10px 13px;font-size:11px}
 }
+
+/* Celebration cakes: show Tina's one real example photo only once, then use aligned flavor tiles. */
+.orders-page .ux-cake-feature{display:grid;grid-template-columns:minmax(170px,37%) minmax(0,1fr);align-items:center;gap:22px;padding:17px;margin:12px 0 20px;background:linear-gradient(120deg,#fff6f3,#f9ece9);border:1px solid #ecdcd5;border-radius:18px}
+.orders-page .ux-cake-feature img{width:100%;height:205px;object-fit:contain;background:#fffaf6;border-radius:12px;padding:12px}
+.orders-page .ux-cake-feature strong{font:normal 27px 'DM Serif Display',serif;display:block;margin:9px 0}
+.orders-page .ux-cake-feature p{color:#826b64;font-size:12px;line-height:1.55;margin:0}
+.orders-page .ux-flavor-grid .ux-flavor-card{background:#fffaf7}
+.orders-page .ux-flavor-grid .ux-flavor-card .ux-product-body{gap:10px;padding:16px}
+.orders-page .ux-flavor-grid .ux-flavor-card h4{min-height:0;margin-bottom:5px}
+.orders-page .ux-flavor-grid .ux-flavor-card .ux-quantity{margin-top:auto}
+@media(max-width:600px){.orders-page .ux-cake-feature{grid-template-columns:110px 1fr;gap:12px;padding:10px}.orders-page .ux-cake-feature img{height:125px;padding:6px}.orders-page .ux-cake-feature strong{font-size:19px;margin:5px 0}.orders-page .ux-cake-feature p{font-size:10px}.orders-page .ux-flavor-grid .ux-flavor-card .ux-product-body{padding:12px}.orders-page .ux-flavor-grid .ux-flavor-card h4{font-size:17px}}
