@@ -17,7 +17,7 @@ const categoryInfo={
 'Cookie Bars':['♥','Cookie bars','Mix your favorite cookie bars in one box.'],
 'Sweet Bundles':['🎀','Sweet bundles','A little cake, a little cookie bar, a lot of joy.'],
 'Build Your Own Treat Box':['✧','Mix & match','Make one box with mini cakes and cookie bars.'],
-'Dirty Sodas':['🥤','Dirty sodas','Choose your drink, size, and a few sweet extras.']
+'Dirty Sodas':['🥤','Dirty sodas','Three flavors · 16 oz · $4 each.']
 };
 const state={category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',glitter:false,glitterColor:''};
 const choiceSet=()=>state.category==='Mini Cakes'?mini:state.category==='Cookie Bars'?bars:state.category==='Build Your Own Treat Box'?mixed:state.category==='8×8 Cakes'?[{count:1,name:'8×8 Celebration Cake',price:35}]:bundles;
@@ -32,7 +32,7 @@ const miniTres=()=>Object.entries(state.tres).reduce((a,[id,yes])=>a+(yes?(state
 const selectedCaramel=()=>full()&&state.picks.caramel?4:0;
 const packagingCharge=()=>state.packaging==='ribbon'?2:state.packaging==='card'?full()?2:3:0;
 const eventCharge=()=>packagingCharge()+(full()&&state.topper?2:0)+(full()&&state.glitter?2:0);
-const sodaBase=()=>4.5+(state.drinkSize==='24 oz'?1:0)+state.addons.length*.5;
+const sodaBase=()=>4;
 const baseCost=()=>state.category==='Dirty Sodas'?sodaBase():full()?35:chosen().price;
 const totalCost=()=>baseCost()+(isMixed()||state.category==='Cookie Bars'||state.category==='Dirty Sodas'?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
 const complete=()=>{
@@ -55,7 +55,7 @@ function reset(){
  state.bundle=0;state.drink=0;state.drinkSize='16 oz';state.addons=[];
  state.occasion='';state.packaging='none';state.ribbon='';state.card='';state.message='';state.notes='';state.topper=false;state.topperColor='';state.glitter=false;state.glitterColor='';
 }
-const stageLabels=()=>state.category==='Dirty Sodas'?['Pick a flavor','Size & extras','Review']:full()?['Your cake','Choose flavor','Review']:['Choose a box','Pick flavors','Review'];
+const stageLabels=()=>state.category==='Dirty Sodas'?['Pick a flavor','Your drink','Review']:full()?['Your cake','Choose flavor','Review']:['Choose a box','Pick flavors','Review'];
 const heading=()=>categoryInfo[state.category];
 function navigate(cat){
  if(!cats.includes(cat))return;
@@ -79,7 +79,7 @@ function priceCards(options,indexMode=false){
 }
 function sizeStage(){
  const c=state.category;
- if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites, each made your way.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>From $4.50 · size & extras next</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
+ if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $4 each.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $4.00</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
  if(full())return '<div class="ux-intro"><h3>Your celebration cake ♡</h3><p>A lovely 8×8 cake made for your occasion. Pick a flavor next.</p></div>'+priceCards([{count:1,name:'8×8 Celebration Cake',price:35}])+'<p class="ux-note">Starting at $35 · optional flavor and occasion upgrades shown before adding.</p>';
  if(c==='Sweet Bundles')return '<div class="ux-intro"><h3>Pick a sweet bundle ♡</h3><p>Every bundle shows exactly what is included and its total price.</p></div>'+priceCards(bundles,true);
  if(c==='Build Your Own Treat Box')return '<div class="ux-intro"><h3>Choose a mixed box ♡</h3><p>Pick any combination of mini cakes and cookie bars.</p></div>'+priceCards(mixed);
@@ -102,7 +102,7 @@ function productList(){
  }).join('')+'</div>'+(complete()?'<p class="ux-ready">♡ Your box is ready to review!</p>':'<p class="ux-note">Choose '+(max-sel)+' more '+(max-sel===1?'treat':'treats')+' to continue.</p>');
 }
 function flavorStage(){
- if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Make it yours ♡</h3><p>'+drinks[state.drink].icon+' '+drinks[state.drink].name+'</p></div><div class="ux-field-grid"><fieldset class="ux-field"><legend>Choose a size</legend>'+['16 oz','24 oz'].map(sz=>'<label class="ux-radio"><input type="radio" name="uxDrinkSize" value="'+sz+'" '+(state.drinkSize===sz?'checked':'')+'> '+sz+' <strong>'+fmt(sz==='24 oz'?5.5:4.5)+'</strong></label>').join('')+'</fieldset><fieldset class="ux-field"><legend>Sweet extras · +$0.50 each</legend>'+['Sweet Cream','Cold Foam','Extra Syrup'].map(ex=>'<label class="ux-radio"><input type="checkbox" data-ux-addon="'+ex+'" '+(state.addons.includes(ex)?'checked':'')+'> '+ex+'</label>').join('')+'</fieldset></div><p class="ux-note">Drink prices are estimates until Tina confirms the menu.</p>';
+ if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$4.00</strong><p>All dirty sodas are 16 oz and $4 each. No add-ons or extra charges.</p></div>';
  return productList();
 }
 function swatches(values,selected,attr){
@@ -119,7 +119,7 @@ function pickedNames(){
 }
 function reviewStage(){
  const c=state.category;
- const selection=c==='Dirty Sodas'?drinks[state.drink].icon+' '+drinks[state.drink].name+' · '+state.drinkSize+(state.addons.length?' · '+state.addons.join(', '):''):pickedNames();
+ const selection=c==='Dirty Sodas'?drinks[state.drink].icon+' '+drinks[state.drink].name+' · '+'16 oz':pickedNames();
  const name=c==='Sweet Bundles'?chosen().name:c==='8×8 Cakes'?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name:c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' treats':chosen().name;
  return '<div class="ux-intro"><h3>Your sweet little order ♡</h3><p>Everything together in one tidy place.</p></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SELECTION</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(name)+'</h4><p>'+esc(selection)+'</p><dl><div><dt>Base price</dt><dd>'+fmt(baseCost())+'</dd></div>'+(miniTres()+selectedCaramel()>0?'<div><dt>Flavor upgrades</dt><dd>'+fmt(miniTres()+selectedCaramel())+'</dd></div>':'')+(eventCharge()>0&&(full()||c==='Mini Cakes'||c==='Cookie Bars')?'<div><dt>Occasion extras</dt><dd>'+fmt(eventCharge())+'</dd></div>':'')+'<div class="ux-total"><dt>Estimated subtotal</dt><dd>'+fmt(totalCost())+'</dd></div></dl></div>'+eventOptions()+'<p class="ux-note">No checkout or payment is processed in this preview. Availability and final pricing require Tina’s confirmation.</p>';
 }
@@ -184,7 +184,7 @@ function addToBag(){
  }
  const c=state.category;
  const name=c==='Sweet Bundles'?chosen().name:full()?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name+' Dirty Soda':c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' Treat Box':c==='Cookie Bars'?chosen().name+' Cookie Bars':chosen().name;
- const selection=c==='Dirty Sodas'?drinks[state.drink].name+' · '+state.drinkSize+(state.addons.length?' · '+state.addons.join(', '):''):pickedNames();
+ const selection=c==='Dirty Sodas'?drinks[state.drink].name+' · '+'16 oz':pickedNames();
  const details=[selection];
  if(state.occasion)details.push('Occasion: '+state.occasion);
  if(state.packaging!=='none')details.push('Packaging: '+(state.packaging==='card'?'ribbon + card':'ribbon')+' ('+state.ribbon+')');
