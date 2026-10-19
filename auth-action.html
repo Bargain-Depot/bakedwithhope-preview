@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sweet Club Account | Baked with Hope</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:light;--cream:#fffaf6;--pink:#d88e98;--pale:#fbe8e6;--brown:#4a302d;--muted:#816d69}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#fff0ef,#fffaf6);color:var(--brown);font:15px/1.65 'DM Sans',sans-serif}
+    main{width:min(560px,100%);padding:clamp(24px,5vw,42px);background:#fff;border:1px solid #ead6d4;border-radius:26px;box-shadow:0 24px 70px #734f4d1c;text-align:center}
+    .tag{color:#a25b6e;font-size:11px;font-weight:700;letter-spacing:.12em}h1{font:clamp(36px,7vw,52px)/1.05 'DM Serif Display',serif;margin:14px 0}p{color:var(--muted)}form{display:grid;gap:14px;text-align:left;margin-top:24px}label{display:grid;gap:7px;font-weight:700}input{width:100%;padding:14px;border:1px solid #ddc7c4;border-radius:12px;font:inherit;font-size:16px}.button{display:inline-block;border:0;border-radius:999px;background:var(--pink);color:#321e1e;padding:14px 24px;font-weight:700;text-decoration:none;cursor:pointer}.button.secondary{background:var(--brown);color:#fff;margin-top:16px}.message{padding:14px 16px;border-radius:14px;background:#fff2ef}.error{background:#fff0f0;color:#8c2632}[hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <main>
+    <span class="tag">BAKED WITH HOPE · SWEET CLUB ♡</span>
+    <h1 id="title">Checking your link…</h1>
+    <p id="message" class="message" role="status" aria-live="polite">One sweet moment while we securely confirm your request.</p>
+    <form id="resetForm" hidden>
+      <label>New password<input id="newPassword" type="password" minlength="6" autocomplete="new-password" required></label>
+      <button class="button" type="submit">Save new password</button>
+    </form>
+    <a class="button secondary" id="returnLink" href="orders.html#sweetClub" hidden>Return to Sweet Club →</a>
+  </main>
+  <script type="module">
+    import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js';
+    import {applyActionCode,confirmPasswordReset,getAuth,verifyPasswordResetCode} from 'https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js';
+    import {firebaseConfig} from './firebase-config.js';
+
+    const auth=getAuth(initializeApp(firebaseConfig));
+    const params=new URLSearchParams(location.search);
+    const mode=params.get('mode');
+    const code=params.get('oobCode');
+    const title=document.getElementById('title');
+    const message=document.getElementById('message');
+    const resetForm=document.getElementById('resetForm');
+    const returnLink=document.getElementById('returnLink');
+    const finish=(heading,text,error=false)=>{
+      title.textContent=heading;message.textContent=text;message.classList.toggle('error',error);returnLink.hidden=false;
+    };
+
+    try{
+      if(!code)throw new Error('missing-code');
+      if(mode==='verifyEmail'){
+        await applyActionCode(auth,code);
+        finish('Email verified ♡','Your Sweet Club email is confirmed. You can return to the preview and log in.');
+      }else if(mode==='resetPassword'){
+        await verifyPasswordResetCode(auth,code);
+        title.textContent='Choose a new password';
+        message.textContent='Enter a new password with at least six characters.';
+        resetForm.hidden=false;
+        document.getElementById('newPassword').focus();
+        resetForm.addEventListener('submit',async event=>{
+          event.preventDefault();
+          const button=resetForm.querySelector('button');button.disabled=true;
+          try{
+            await confirmPasswordReset(auth,code,document.getElementById('newPassword').value);
+            resetForm.hidden=true;finish('Password updated ♡','Your new password is ready. Return to Sweet Club to log in.');
+          }catch{message.textContent='That password could not be saved. Request a new reset email and try again.';message.classList.add('error');button.disabled=false;}
+        });
+      }else if(mode==='recoverEmail'){
+        await applyActionCode(auth,code);
+        finish('Email restored','Your previous account email has been restored.');
+      }else{
+        finish('This link is incomplete','Request a new email from the Sweet Club sign-in screen, then use the newest link.',true);
+      }
+    }catch{
+      finish('This link has expired','Request a new email from the Sweet Club sign-in screen, then use the newest link.',true);
+    }
+  </script>
+</body>
+</html>

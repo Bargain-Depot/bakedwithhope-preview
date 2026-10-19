@@ -20,6 +20,7 @@
   const app=initializeApp(firebaseConfig);
   const auth=getAuth(app);
   const db=getFirestore(app);
+  const actionSettings={url:'https://bargain-depot.github.io/bakedwithhope-preview/orders.html#sweetClub'};
   const dialog=modal.querySelector('.club-dialog');
   let opener=null;
   dialog.innerHTML=`
@@ -184,7 +185,7 @@
     try{
       const credential=await createUserWithEmailAndPassword(auth,$('clubEmail').value.trim(),$('clubPassword').value);
       await updateProfile(credential.user,{displayName:name});
-      await sendEmailVerification(credential.user);
+      await sendEmailVerification(credential.user,actionSettings);
       await signOut(auth);
       status('Account created! Check your inbox to verify your email. Then return here to log in.');
     }catch(error){status(friendlyError(error),true);}
@@ -192,7 +193,7 @@
   $('clubReset').addEventListener('click',async()=>{
     const email=$('clubEmail').value.trim();
     if(!email){status('Enter your email first, then choose password reset.',true);return;}
-    try{await sendPasswordResetEmail(auth,email);status('Password reset email sent.');}
+    try{await sendPasswordResetEmail(auth,email,actionSettings);status('Password reset email sent.');}
     catch(error){status(friendlyError(error),true);}
   });
   $('clubSignOut').addEventListener('click',()=>signOut(auth));
@@ -202,7 +203,7 @@
     $('clubDashboard').hidden=!user;
     if(!user){$('clubGreeting').textContent='Sign in to see your punches, rewards, and history.';return;}
     if(!user.emailVerified){
-      await sendEmailVerification(user).catch(()=>{});
+      await sendEmailVerification(user,actionSettings).catch(()=>{});
       await signOut(auth);
       status('Please verify your email before signing in. We sent a new verification message.',true);
       return;
