@@ -146,3 +146,38 @@
 .orders-page:not(.bag-has-items) .mobilebar{display:none!important}
 
 .orders-page .ux-drink-fixed{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff6f4;border:1px solid #edd9d4;border-radius:17px;padding:22px;color:#765459}.orders-page .ux-drink-fixed>span{font-size:11px;font-weight:800;letter-spacing:.12em}.orders-page .ux-drink-fixed>strong{font:normal 27px 'DM Serif Display',serif;color:#96576a}.orders-page .ux-drink-fixed>p{grid-column:1/-1;margin:9px 0 0;color:#8a716d;font-size:12px;line-height:1.5}
+
+/* Desktop catalog: consistent, centered image stage and aligned card rows. */
+@media(min-width:761px){
+ .orders-page .ux-product-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important}
+ .orders-page .ux-product{display:flex!important;flex-direction:column!important;width:100%!important;min-width:0!important;height:100%!important;margin:0!important;overflow:hidden!important}
+ .orders-page .ux-product-media{display:flex!important;align-items:center!important;justify-content:center!important;height:225px!important;width:100%!important;min-width:0!important;padding:19px!important;flex-shrink:0!important;overflow:hidden!important;background:#f8f0ec!important}
+ .orders-page .ux-product-media img{display:block!important;position:static!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center center!important;margin:auto!important;padding:0!important;transform:none!important;filter:none!important;mask:none!important;-webkit-mask:none!important;background:transparent!important;border:0!important;box-shadow:none!important}
+ .orders-page .ux-product-body{flex:1!important;padding:18px!important}
+ .orders-page .ux-product h4{min-height:50px}
+}
+@media(min-width:761px) and (max-width:1000px){.orders-page .ux-product-media{height:190px!important}}
+/* Live mini-photo box strip — selected cake flavors appear as soon as they are picked. */
+.orders-page .ux-picked-preview{margin:14px 0 22px;padding:17px 18px;background:#fff7f5;border:1px solid #eedbd7;border-radius:18px}
+.orders-page .ux-picked-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:0 0 13px;color:#73505d;font-size:13px}
+.orders-page .ux-picked-head span{font-size:12px;color:#987982;font-weight:700}
+.orders-page .ux-picked-slots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.orders-page .ux-picked-slot{position:relative;display:grid;place-items:center;aspect-ratio:1/1;min-width:0;max-height:125px;background:#fffdfa;border:1px dashed #e6cfd1;border-radius:12px;color:#d0aaaf;font-size:23px;overflow:hidden}
+.orders-page .ux-picked-slot.filled{border:1px solid #e4cbce;background:#f7efeb}
+.orders-page .ux-picked-slot img{width:100%;height:100%;object-fit:contain;object-position:center;padding:5px;background:transparent}
+.orders-page .ux-picked-tres{position:absolute;right:3px;bottom:3px;display:grid;place-items:center;background:#91566a;color:#fff;font-size:9px;font-weight:800;letter-spacing:.03em;border-radius:7px;padding:4px;box-shadow:0 2px 5px #59404730}
+.orders-page .ux-tres-qty{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px;background:#fbf1f0;border:1px solid #eddbda;border-radius:12px;padding:8px 10px;margin-top:5px}
+.orders-page .ux-tres-qty>span{font-size:11px;font-weight:800;color:#805361}
+.orders-page .ux-tres-qty small{font-size:10px;font-weight:500;color:#8e7171;white-space:nowrap}
+.orders-page .ux-tres-controls{display:flex;align-items:center;gap:7px}
+.orders-page .ux-tres-controls strong{font-size:11px;color:#694951;white-space:nowrap}
+.orders-page .ux-tres-controls button{width:28px;height:28px;border:0;border-radius:50%;background:#e6cbd4;color:#653f4c;font-weight:800;font-size:16px}
+.orders-page .ux-tres-controls button:disabled{opacity:.36;cursor:not-allowed}
+@media(max-width:760px){
+ .orders-page .ux-picked-slots{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+ .orders-page .ux-picked-preview{padding:12px}
+ .orders-page .ux-picked-slot{border-radius:9px}
+ .orders-page .ux-tres-qty{padding:7px;gap:6px}
+ .orders-page .ux-tres-qty>span{width:100%}
+ .orders-page .ux-product-media img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;transform:none!important;filter:none!important;mask:none!important;-webkit-mask:none!important}
+}
