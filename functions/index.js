@@ -30,7 +30,9 @@ function admin(request){
 }
 function text(value,label,max=200){
   if(typeof value!=='string'||!value.trim()||value.length>max)throw new HttpsError('invalid-argument',label+' is required.');
-  return value.trim();
+  const cleaned=value.trim();
+  if(label.includes('ID') && (cleaned.includes('/')||cleaned==='.'||cleaned==='..'))throw new HttpsError('invalid-argument','Invalid document identifier.');
+  return cleaned;
 }
 function count(value){
   if(!Number.isSafeInteger(value)||value<1||value>100)throw new HttpsError('invalid-argument','Transfer must be between 1 and 100 punches.');
@@ -115,7 +117,7 @@ exports.importPaperCardPunches=onCall(options,async(request)=>{
   return db.runTransaction(async tx=>{
     const [existing,profile]=await Promise.all([tx.get(ledgerRef),tx.get(profileRef)]);
     if(existing.exists){
-      if(existing.data().customerId!==customerId)throw new HttpsError('already-exists','Transfer ID already used by another account.');
+      if(existing.data().customerId!==customerId||existing.data().delta!==amount)throw new HttpsError('already-exists','Transfer ID already used with different details.');
       return {success:true,alreadyProcessed:true};
     }
     const result=grantTransaction(tx,profileRef,profile,amount,{type:'legacy_transfer',transferId});
