@@ -13,3 +13,52 @@
 .club-dialog button:focus-visible,.club-dialog input:focus-visible{outline:3px solid #a65c78;outline-offset:3px}
 .club-dialog .primary{min-height:48px}
 @media(max-width:400px){.club-modal{padding:12px}.club-dialog{padding:20px;max-height:calc(100dvh - 24px)}.club-dialog h2{font-size:32px}.club-auth-switch button{font-size:14px}}
+
+/* Sweet Club 2026 account preview — actual registration remains locked until backend launch. */
+.club-dialog{width:min(760px,100%);padding:clamp(19px,4vw,32px);max-height:min(92vh,920px);overscroll-behavior:contain}
+.club-dialog [hidden]{display:none!important}
+.club-intro{margin:9px 0 16px}
+.club-launch-note{background:#fff0dc;border:1px solid #eed2ae;color:#67442c;border-radius:15px;padding:13px 16px;font-size:13px;line-height:1.6;margin:14px 0 20px}
+.club-launch-note strong{display:block}
+.club-auth-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:5px;background:#f9e9e9;border-radius:16px}
+.club-auth-tab{flex:1 1 auto;border:0;background:transparent;color:#875766;border-radius:12px;padding:12px 10px;font-weight:700;font-size:13px}
+.club-auth-tab.active{background:#fffdfb;color:#633c49;box-shadow:0 3px 12px #64403912}
+.club-auth-panel{padding:19px 0 10px}
+.club-auth-panel h3,.club-dashboard-heading h3{font:30px/1.18 'DM Serif Display',serif;margin:0 0 6px;color:#653c46}
+.club-auth-panel .club-small{margin:0;color:#7b6261;font-size:13px}
+.club-auth-form{margin-top:14px}
+.club-auth-form .club-field{margin:12px 0;gap:6px;font-size:13px;color:#6c444c;font-weight:700}
+.club-auth-form .club-field input{width:100%;color:#6b5550}
+.club-auth-form .club-field input:disabled{background:#fff4f2;color:#856e6b;opacity:1;cursor:not-allowed}
+.club-auth-form button.primary{margin-top:14px}
+.club-auth-form button.primary:disabled{opacity:1;background:#e9c8ce;color:#694750;cursor:not-allowed}
+.club-verification-note{display:flex;align-items:flex-start;gap:10px;margin:16px 0 3px;border-radius:14px;background:#fff2f5;padding:13px;color:#6d4654;font-size:13px;line-height:1.65}
+.club-text-action{border:0;background:transparent;color:#954b6a;text-decoration:underline;text-underline-offset:3px;margin:10px 0;padding:8px 0;font-weight:700}
+.club-session-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 20px;border-bottom:1px solid #edd7d8;font-size:12px;color:#75575c}
+.club-session-bar button{border:1px solid #e1c0c7;border-radius:999px;padding:8px 15px;background:#fff;color:#815362;font-weight:700}
+.club-session-bar button:disabled{opacity:.5;cursor:not-allowed}
+.club-dashboard{padding:24px 0 4px}
+.club-dashboard-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}
+.club-dashboard-heading .club-preview-tag{display:block;margin-bottom:6px}
+.club-preview-pill{font-size:11px;border-radius:999px;padding:8px 12px;background:#f7e4e7;color:#905a6a;font-weight:700;white-space:nowrap}
+.club-dashboard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.club-dashboard-tile{background:#fff;border:1px solid #ebd7d6;border-radius:18px;padding:18px;min-width:0}
+.club-dashboard-tile h4{font:22px/1.2 'DM Serif Display',serif;color:#633d49;margin:6px 0}
+.club-dashboard-tile strong{display:block;color:#a85f79;font-size:25px;line-height:1.45}
+.club-dashboard-tile p{font-size:12px;line-height:1.7;margin:6px 0;color:#846d70}
+.club-tile-icon{font-size:22px}
+.club-mini-punches{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;margin-top:12px}
+.club-mini-punches span{display:grid;place-content:center;border-radius:6px;aspect-ratio:1;background:#f8e6e9;color:#bc8495;font-size:12px}
+.club-dashboard>.club-note{margin:18px 0 0}
+@media(max-width:560px){
+ .club-modal{padding:9px}
+ .club-dialog{padding:18px;border-radius:20px;max-height:95dvh}
+ .club-dialog h2{font-size:33px}
+ .club-auth-tabs{gap:3px}
+ .club-auth-tab{font-size:12px;padding:11px 6px}
+ .club-dashboard-grid{grid-template-columns:1fr}
+ .club-dashboard-heading h3{font-size:25px}
+ .club-dashboard-tile{padding:14px}
+ .club-mini-punches span{font-size:10px}
+ .club-session-bar{align-items:flex-start}
+}
