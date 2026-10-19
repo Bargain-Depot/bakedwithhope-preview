@@ -200,3 +200,120 @@ html,body{height:100%;overflow:hidden}
  .mini-feature .copy h1{font-size:32px!important}
  .mini-feature .copy .secondary{display:none}
 }
+
+/* Mobile Tina story: one-screen editorial layout, full original text, no internal scroll */
+@media(max-width:800px){
+ .feed-slide.story{overflow:hidden!important}
+ .story .slide-inner{
+   display:grid!important;
+   grid-template-columns:minmax(0,1fr) clamp(103px,32vw,148px)!important;
+   grid-template-rows:auto auto auto auto auto auto!important;
+   column-gap:clamp(10px,3vw,18px)!important;
+   row-gap:clamp(5px,1dvh,10px)!important;
+   align-content:center!important;
+   align-items:start!important;
+   height:100%!important;
+   min-height:0!important;
+   padding:clamp(14px,3dvh,26px) 52px 35px clamp(16px,4vw,24px)!important;
+   overflow:hidden!important;
+ }
+ .story .story-copy{display:contents!important}
+ .story .story-copy .eyebrow{grid-column:1;grid-row:1;font-size:clamp(8px,2.2vw,10px)!important;align-self:end}
+ .story .story-copy h1{
+   grid-column:1;grid-row:2;
+   margin:0!important;
+   font-size:clamp(32px,9.5vw,46px)!important;
+   line-height:.96!important;
+   align-self:start;
+ }
+ .story .story-copy p{
+   grid-column:1/-1;
+   margin:0!important;
+   font-size:clamp(11px,2.8vw,12.6px)!important;
+   line-height:1.37!important;
+   letter-spacing:0!important;
+   max-width:none;
+   color:#624c49;
+ }
+ .story .story-copy p:nth-of-type(1){grid-row:3}
+ .story .story-copy p:nth-of-type(2){grid-row:4}
+ .story .story-copy p:nth-of-type(3){grid-row:5}
+ .story .story-copy .actions{
+   grid-column:1/-1;grid-row:6;
+   display:flex!important;
+   flex-direction:row!important;
+   flex-wrap:wrap!important;
+   align-items:center!important;
+   gap:8px 13px!important;
+   margin:3px 0 0!important;
+ }
+ .story .story-copy .actions .primary{padding:10px 13px!important;font-size:11px!important}
+ .story .story-copy .actions .secondary{font-size:10.5px!important}
+ .story .visual.story-photo{
+   grid-column:2;grid-row:1 / span 2;
+   align-self:center!important;
+   justify-self:stretch!important;
+   width:100%!important;
+   height:auto!important;
+   min-height:0!important;
+   margin:0!important;
+   flex:none!important;
+   padding:0!important;
+ }
+ .story-photo .lux-frame{
+   display:block!important;
+   width:100%!important;
+   margin:0!important;
+   padding:5px 5px 4px!important;
+   background:#fffdf9!important;
+   border:1px solid #d8c5b8!important;
+   border-radius:8px!important;
+   box-shadow:0 8px 22px #47302c1c!important;
+ }
+ .story-photo .lux-frame::before{inset:3px;border-radius:6px}
+ .story-photo .lux-image{
+   display:flex!important;
+   align-items:center!important;
+   justify-content:center!important;
+   min-height:0!important;
+   padding:0!important;
+   overflow:hidden!important;
+   aspect-ratio:1/1!important;
+   border-radius:5px!important;
+   background:#e9ded7!important;
+ }
+ .story-photo .lux-frame .lux-image img{
+   display:block!important;
+   width:100%!important;
+   height:100%!important;
+   max-width:none!important;
+   min-width:0!important;
+   object-fit:contain!important;
+   object-position:center!important;
+   background:#e9ded7!important;
+   border-radius:0!important;
+   box-shadow:none!important;
+ }
+ .story-photo .lux-frame figcaption{
+   font-size:6.5px!important;
+   letter-spacing:.08em!important;
+   margin:5px 0 1px!important;
+   line-height:1.2!important;
+ }
+}
+@media(max-width:800px) and (max-height:740px){
+ .story .slide-inner{row-gap:4px!important;padding-top:8px!important;padding-bottom:28px!important;grid-template-columns:minmax(0,1fr) clamp(90px,29vw,120px)!important}
+ .story .story-copy h1{font-size:clamp(28px,8.2vw,39px)!important}
+ .story .story-copy p{font-size:clamp(10px,2.55vw,11.5px)!important;line-height:1.27!important}
+ .story .story-copy .actions .primary{padding:8px 11px!important;font-size:10px!important}
+ .story-photo .lux-frame figcaption{font-size:6px!important}
+}
+@media(max-width:380px) and (max-height:630px){
+ .story .slide-inner{grid-template-columns:minmax(0,1fr) 86px!important;padding-bottom:23px!important;row-gap:3px!important}
+ .story .story-copy h1{font-size:28px!important}
+ .story .story-copy p{font-size:9.5px!important;line-height:1.2!important}
+ .story .story-copy .actions{gap:6px!important}
+ .story .story-copy .actions .primary{padding:8px 10px!important}
+ .story .story-copy .actions .secondary{font-size:9px!important}
+ .story-photo .lux-frame figcaption{display:none!important}
+}
