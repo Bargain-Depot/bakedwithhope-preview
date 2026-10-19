@@ -24,3 +24,12 @@
 #cookie-bars .product-photo{background:#f4e9e4!important}
 #dirty-sodas .product-photo{background:#f4e9e4!important}
 @media(max-width:600px){.product-photo{padding:7px!important}.product-photo img{mask-image:radial-gradient(ellipse 83% 83% at 50% 50%,#000 63%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 83% 83% at 50% 50%,#000 63%,transparent 100%)}}
+
+/* Show genuine transparent product cutouts sharply on a clean, consistent backdrop. */
+.product-photo{background:#f7f1ed!important;position:relative!important;overflow:hidden!important;padding:18px!important;display:grid!important;place-items:center!important}
+.product-photo::before,.product-photo::after{display:none!important;content:none!important}
+.product-photo img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;filter:none!important;mask-image:none!important;-webkit-mask-image:none!important;mix-blend-mode:normal!important;border-radius:0!important;box-shadow:none!important}
+#mini-cakes .product-photo,#cookie-bars .product-photo{height:240px!important}
+#dirty-sodas .product-photo{height:300px!important}
+@media(max-width:850px){#mini-cakes .product-photo,#cookie-bars .product-photo{height:210px!important}#dirty-sodas .product-photo{height:260px!important}}
+@media(max-width:600px){.product-photo{padding:12px!important}#mini-cakes .product-photo,#cookie-bars .product-photo{height:180px!important}#dirty-sodas .product-photo{height:220px!important}}
