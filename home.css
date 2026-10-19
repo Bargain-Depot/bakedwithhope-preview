@@ -461,3 +461,22 @@ html,body{height:100%;overflow:hidden}
 .club .reward-art .punch-grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:clamp(5px,1.4vw,10px)!important;margin:12px 0!important}
 .club .reward-art .punch-grid span{width:100%!important;min-width:0!important;aspect-ratio:1!important;font-size:clamp(13px,3.8vw,22px)!important;border-radius:10px!important}
 @media(max-width:800px) and (max-height:690px){.club .reward-art .punch-grid{margin:7px 0!important;gap:5px!important}.club .reward-art .punch-grid span{font-size:13px!important}}
+
+/* Stable hero: start video slides in their final full-bleed layout, without flashing old fallback images. */
+.feed-slide.video-feature .video-backdrop{opacity:1!important;background:linear-gradient(125deg,#422832 0%,#71424c 46%,#a86c7a 100%)!important}
+.feed-slide.video-feature .visual{display:none!important}
+.feed-slide.video-feature .slide-inner{grid-template-columns:minmax(0,820px)!important;justify-content:start!important}
+.feed-slide.video-feature .copy{max-width:780px;text-shadow:0 1px 10px #0003}
+.feed-slide.video-feature .copy h1,.feed-slide.video-feature .copy h1 em{color:#fffaf7}
+.feed-slide.video-feature .copy p,.feed-slide.video-feature .copy .eyebrow{color:#ffe7df}
+.feed-slide.video-feature .secondary{color:#fff7ed}
+.feed-slide.video-feature .primary{color:#47302c;background:#fff9f2;box-shadow:0 15px 40px #0004}
+.feed-slide.video-feature .video-backdrop video{transition:opacity .35s ease;opacity:0}
+.feed-slide.video-feature.video-ready .video-backdrop video{opacity:1}
+.feed-slide.video-feature .video-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(24,14,16,.68),rgba(25,14,17,.35) 64%,rgba(25,14,17,.13))}
+@media(max-width:650px){
+.feed-slide.video-feature .slide-inner{justify-content:center!important;padding-left:24px!important;padding-right:55px!important}
+.feed-slide.video-feature .copy h1{font-size:clamp(44px,11.5vw,60px);line-height:1.04}
+.feed-slide.video-feature .copy p{font-size:15px;max-width:290px}
+.feed-slide.video-feature .video-backdrop::after{background:linear-gradient(180deg,rgba(24,14,16,.30),rgba(24,14,16,.58) 35%,rgba(24,14,16,.76) 76%,rgba(24,14,16,.42))}
+}
