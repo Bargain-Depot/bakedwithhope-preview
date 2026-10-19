@@ -20,7 +20,7 @@
   }
   const drinks={
     'Strawberry Shortcake':'dirty-soda-strawberry-shortcake-2.webp',
-    'Cherry Vanilla':'dirty-soda-cherry-vanilla-2.webp',
+    'Cherry Vanilla Cloud':'dirty-soda-cherry-vanilla-2.webp',
     'Shark Bite':'dirty-soda-shark-bite-2.webp'
   };
   function photo(img,fallback){
