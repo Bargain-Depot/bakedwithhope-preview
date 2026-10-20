@@ -480,3 +480,9 @@ html,body{height:100%;overflow:hidden}
 .feed-slide.video-feature .copy p{font-size:15px;max-width:290px}
 .feed-slide.video-feature .video-backdrop::after{background:linear-gradient(180deg,rgba(24,14,16,.30),rgba(24,14,16,.58) 35%,rgba(24,14,16,.76) 76%,rgba(24,14,16,.42))}
 }
+
+/* Original bakery mark and Sweet Club shortcut */
+.topbar .brand-logo{display:block;height:67px;max-width:178px;width:auto;object-fit:contain;object-position:left center}
+.top-club-login{margin-left:auto;padding:10px 15px;border-radius:999px;color:#75495b;background:#fff0f2;border:1px solid #edcfda;font-size:13px;font-weight:800;white-space:nowrap}
+.top-club-login:hover{background:#f7e1e8}
+@media(max-width:600px){.topbar{gap:8px;padding:0 12px}.topbar .brand-logo{height:52px;max-width:103px}.top-club-login{font-size:11px;padding:8px 9px}.top-order{padding:10px 11px;font-size:11px;gap:5px}}
