@@ -9,15 +9,23 @@ const counter=document.getElementById('counter');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
 const videos=[...root.querySelectorAll('.video-feature video')];
+// Keep the product photograph visible until the active video actually renders frames.
 function synchronizeVideos(){
  videos.forEach(video=>{
-  const active=slides[index].contains(video)&&document.visibilityState==='visible';
-  if(!active){video.pause();return;}
+  const slide=video.closest('.feed-slide');
+  const active=slides[index]===slide&&document.visibilityState==='visible';
+  if(!active){
+   video.pause();
+   slide?.classList.remove('video-playing');
+   return;
+  }
   video.muted=true;
+  video.defaultMuted=true;
+  video.playsInline=true;
   video.setAttribute('muted','');
   video.setAttribute('playsinline','');
-  const attempt=video.play();
-  if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{video.closest('.video-feature')?.classList.add('video-paused')});
+  const playback=video.play();
+  if(playback?.catch)playback.catch(()=>slide?.classList.remove('video-playing'));
  });
 }
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -90,31 +98,33 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',synchronizeVideos);
 videos.forEach(video=>{
- const backdrop=video.closest('.video-feature');
- const ready=()=>{if(video.videoWidth>0){backdrop?.classList.add('video-ready')}};
- video.addEventListener('playing',()=>{backdrop?.classList.add('video-ready');backdrop?.classList.remove('video-paused')});
- video.addEventListener('pause',()=>{if(slides[index].contains(video)&&document.visibilityState==='visible')backdrop?.classList.add('video-paused')});
- video.addEventListener('loadeddata',ready);
- video.addEventListener('canplay',()=>{ready();if(slides[index].contains(video))synchronizeVideos()});
- video.addEventListener('error',()=>{backdrop?.classList.remove('video-ready');backdrop?.classList.add('video-paused')});
- if(video.readyState>=2)ready();
+ const slide=video.closest('.feed-slide');
+ video.muted=true;
+ video.defaultMuted=true;
+ video.playsInline=true;
+ video.setAttribute('playsinline','');
+ video.setAttribute('muted','');
+ video.preload='auto';
+ video.addEventListener('playing',()=>{
+  if(video.videoWidth>0&&video.readyState>=2){
+   slide?.classList.add('video-playing','video-ready');
+   slide?.classList.remove('video-paused');
+  }
+ });
+ video.addEventListener('pause',()=>slide?.classList.remove('video-playing'));
+ video.addEventListener('waiting',()=>slide?.classList.remove('video-playing'));
+ video.addEventListener('stalled',()=>slide?.classList.remove('video-playing'));
+ video.addEventListener('error',()=>slide?.classList.remove('video-playing'));
+ video.addEventListener('canplay',()=>{
+  if(slides[index]===slide&&video.paused&&document.visibilityState==='visible')synchronizeVideos();
+ });
+ // Initiate decoding before the user reaches the slide.
+ video.load();
 });
-// Muted inline autoplay is retried when the page regains visibility. No visible playback controls.
-const hero=document.getElementById('heroVideo');
-if(hero){
- hero.muted=true;
- hero.defaultMuted=true;
- hero.autoplay=true;
- hero.playsInline=true;
- hero.setAttribute('muted','');
- hero.setAttribute('playsinline','');
- hero.setAttribute('autoplay','');
- // After the first user interaction, retry silently if the browser initially deferred autoplay.
- document.addEventListener('pointerdown',()=>{
-  if(!hero.paused||!slides[index].contains(hero))return;
-  hero.play().catch(()=>{});
- },{passive:true});
-}
+document.addEventListener('pointerdown',()=>{
+ const active=slides[index]?.querySelector('video');
+ if(active?.paused&&document.visibilityState==='visible')active.play().catch(()=>{});
+},{passive:true});
 window.addEventListener('pageshow',synchronizeVideos);
 window.addEventListener('focus',synchronizeVideos);
 update(index);
