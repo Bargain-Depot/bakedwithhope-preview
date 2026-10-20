@@ -1,5 +1,4 @@
-/* Baked with Hope — unified ordering experience (PREVIEW ONLY).
-   One builder, one pricing map, zero network order/payment/account submission. */
+/* Baked with Hope order builder. The separate checkout module sends orders to the existing bakery backend. */
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
