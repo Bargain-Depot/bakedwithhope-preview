@@ -27,6 +27,21 @@ section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id
 document.getElementById('order').querySelector('.shell').append(section);
 const form=section.querySelector('form'),date=form.elements.pickupDate,time=form.elements.pickupTimeframe,loc=form.elements.location;
 const result=document.getElementById('bwhTestResult'),submit=document.getElementById('bwhTestSubmit');
+const drawerTrigger=document.getElementById('previewCheckout');
+function syncCheckoutButtons(){
+ const a=window.bwhOrderAvailability||{};
+ const enabled=a.ready===true&&a.open===true;
+ [trigger,drawerTrigger].filter(Boolean).forEach(button=>{
+  button.disabled=!enabled;
+  button.textContent=enabled?'Test checkout →':a.ready?'Sold Out ♡':'Checking test availability…';
+ });
+}
+drawerTrigger?.addEventListener('click',()=>{
+ if(drawerTrigger.disabled)return;
+ document.getElementById('closeDrawer')?.click();
+ trigger.click();
+});
+
 let sending=false;
 function current(){return window.bwhOrderAvailability||{};}
 function options(select,values,placeholder){
@@ -55,8 +70,7 @@ trigger.addEventListener('click',()=>{
 document.getElementById('bwhTestClose').addEventListener('click',()=>{if(!sending)section.hidden=true;});
 window.addEventListener('bwh:availability',()=>{
  const a=current(),ready=a.ready===true&&a.open===true;
- trigger.disabled=!ready;
- trigger.textContent=ready?'Test checkout →':'Sold Out ♡';
+ syncCheckoutButtons();
  if(!section.hidden)refreshDates();
 });
 async function send(data){
@@ -69,6 +83,7 @@ async function send(data){
   return answer;
  }finally{clearTimeout(timeout)}
 }
+syncCheckoutButtons();
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(sending||!form.reportValidity())return;
  const a=current(),items=window.bwhReadCart();
