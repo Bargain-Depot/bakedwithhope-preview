@@ -10,7 +10,7 @@ const mini=[{count:1,name:'Single Mini',price:5.5},{count:2,name:'Duo Pack',pric
 const bars=[{count:1,name:'Single Bar',price:5},{count:2,name:'Two Bars',price:9},{count:4,name:'Four Bars',price:17},{count:6,name:'Six Bars',price:24}];
 const mixed=[{count:4,name:'4 Treats',price:18},{count:6,name:'6 Treats',price:26},{count:8,name:'8 Treats',price:34},{count:12,name:'12 Treats',price:49}];
 const bundles=[{name:'Sweet Duo',cakes:1,bars:1,price:9},{name:'Sweet 4',cakes:2,bars:2,price:17},{name:'Treat Box',cakes:3,bars:2,price:22}];
-const drinks=[{name:'Cherry Vanilla Cloud',icon:'☁️',img:'dirty-soda-cherry-vanilla-2.webp'},{name:'Shark Bite',icon:'🦈',img:'dirty-soda-shark-bite-2.webp'},{name:'Strawberry Shortcake',icon:'🍓',img:'dirty-soda-strawberry-shortcake-2.webp'}];
+const drinks=[{name:'Cherry Vanilla Cloud',icon:'☁️',img:'dirty-soda-cherry-vanilla-2.webp',description:'Dr Pepper, cherry, vanilla, topped with homemade sweet cream cold foam'},{name:'Shark Bite',icon:'🦈',img:'dirty-soda-shark-bite-2.webp',description:'Sprite, blue raspberry, coconut, topped with homemade sweet cream cold foam'},{name:'Strawberry Shortcake',icon:'🍓',img:'dirty-soda-strawberry-shortcake-2.webp',description:'Sprite, strawberry, vanilla, topped with homemade sweet cream cold foam'}];
 const categoryInfo={
 'Mini Cakes':['♡','Mini cakes','Build a box of mini cakes with your favorite flavors.'],
 '8×8 Cakes':['✿','Celebration cakes','One beautiful 8×8 cake, made for your moments.'],
@@ -79,7 +79,7 @@ function priceCards(options,indexMode=false){
 }
 function sizeStage(){
  const c=state.category;
- if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $4 each.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $4.00</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
+ if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $4 each.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $4.00</small><small class="ux-drink-description">'+esc(d.description)+'</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
  if(full())return '<div class="ux-intro"><h3>Your celebration cake ♡</h3><p>A lovely 8×8 cake made for your occasion. Pick a flavor next.</p></div>'+priceCards([{count:1,name:'8×8 Celebration Cake',price:35}])+'<p class="ux-note">Starting at $35 · optional flavor and occasion upgrades shown before adding.</p>';
  if(c==='Sweet Bundles')return '<div class="ux-intro"><h3>Pick a sweet bundle ♡</h3><p>Every bundle shows exactly what is included and its total price.</p></div>'+priceCards(bundles,true);
  if(c==='Build Your Own Treat Box')return '<div class="ux-intro"><h3>Choose a mixed box ♡</h3><p>Pick any combination of mini cakes and cookie bars.</p></div>'+priceCards(mixed);
@@ -104,7 +104,7 @@ function productList(){
  }).join('')+'</div>'+(complete()?'<p class="ux-ready">♡ Your box is ready to review!</p>':'<p class="ux-note">Choose '+(max-sel)+' more '+(max-sel===1?'treat':'treats')+' to continue.</p>');
 }
 function flavorStage(){
- if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$4.00</strong><p>All dirty sodas are 16 oz and $4 each. No add-ons or extra charges.</p></div>';
+ if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p><p>'+esc(drinks[state.drink].description)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$4.00</strong><p>All dirty sodas are 16 oz and $4 each. No add-ons or extra charges.</p></div>';
  return productList();
 }
 function swatches(values,selected,attr){
