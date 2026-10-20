@@ -9,24 +9,30 @@ const counter=document.getElementById('counter');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
 const videos=[...root.querySelectorAll('.video-feature video')];
-// Keep the product photograph visible until the active video actually renders frames.
+// Warm all three muted videos immediately. Browsers may throttle offscreen media,
+// so resume the selected video on every slide change without restarting it.
+const pending=new WeakSet();
+function startVideo(video){
+ if(document.visibilityState!=='visible'||pending.has(video))return;
+ video.muted=true;video.defaultMuted=true;video.playsInline=true;
+ video.setAttribute('muted','');video.setAttribute('playsinline','');
+ if(!video.paused&&!video.ended)return;
+ pending.add(video);
+ try{
+  const result=video.play();
+  if(result?.then)result.then(()=>pending.delete(video),()=>pending.delete(video));
+  else pending.delete(video);
+ }catch(_){pending.delete(video)}
+}
 function synchronizeVideos(){
- videos.forEach(video=>{
-  const slide=video.closest('.feed-slide');
-  const active=slides[index]===slide&&document.visibilityState==='visible';
-  if(!active){
-   video.pause();
-   slide?.classList.remove('video-playing');
-   return;
-  }
-  video.muted=true;
-  video.defaultMuted=true;
-  video.playsInline=true;
-  video.setAttribute('muted','');
-  video.setAttribute('playsinline','');
-  const playback=video.play();
-  if(playback?.catch)playback.catch(()=>slide?.classList.remove('video-playing'));
- });
+ if(document.visibilityState!=='visible'){
+  videos.forEach(video=>video.pause());
+  return;
+ }
+ // Play the current slide first; warm every other video in the background.
+ const active=slides[index]?.querySelector('video');
+ if(active)startVideo(active);
+ videos.forEach(video=>{if(video!==active)startVideo(video)});
 }
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let index=location.hash==='#story'?1:0;
@@ -99,32 +105,29 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',synchronizeVideos);
 videos.forEach(video=>{
  const slide=video.closest('.feed-slide');
- video.muted=true;
- video.defaultMuted=true;
- video.playsInline=true;
- video.setAttribute('playsinline','');
- video.setAttribute('muted','');
- video.preload='auto';
- video.addEventListener('playing',()=>{
-  if(video.videoWidth>0&&video.readyState>=2){
+ video.muted=true;video.defaultMuted=true;video.playsInline=true;
+ video.autoplay=true;video.loop=true;video.preload='auto';
+ video.setAttribute('playsinline','');video.setAttribute('muted','');video.setAttribute('autoplay','');
+ const show=()=>{
+  if(video.videoWidth>0&&video.readyState>=2&&!video.paused)
    slide?.classList.add('video-playing','video-ready');
-   slide?.classList.remove('video-paused');
-  }
- });
- video.addEventListener('pause',()=>slide?.classList.remove('video-playing'));
- video.addEventListener('waiting',()=>slide?.classList.remove('video-playing'));
- video.addEventListener('stalled',()=>slide?.classList.remove('video-playing'));
- video.addEventListener('error',()=>slide?.classList.remove('video-playing'));
- video.addEventListener('canplay',()=>{
-  if(slides[index]===slide&&video.paused&&document.visibilityState==='visible')synchronizeVideos();
- });
- // Initiate decoding before the user reaches the slide.
+ };
+ const hide=()=>slide?.classList.remove('video-playing');
+ video.addEventListener('playing',show);
+ video.addEventListener('timeupdate',show);
+ video.addEventListener('loadeddata',()=>{if(video.paused)startVideo(video)});
+ video.addEventListener('canplay',()=>{if(video.paused)startVideo(video)});
+ video.addEventListener('waiting',hide);
+ video.addEventListener('stalled',hide);
+ video.addEventListener('error',hide);
+ video.addEventListener('pause',hide);
+ video.addEventListener('emptied',hide);
  video.load();
 });
-document.addEventListener('pointerdown',()=>{
- const active=slides[index]?.querySelector('video');
- if(active?.paused&&document.visibilityState==='visible')active.play().catch(()=>{});
-},{passive:true});
+// Instagram's browser sometimes delays background media until the first gesture.
+// Retry all videos silently on the earliest permitted user interaction.
+document.addEventListener('pointerdown',synchronizeVideos,{passive:true});
+document.addEventListener('touchstart',synchronizeVideos,{passive:true});
 window.addEventListener('pageshow',synchronizeVideos);
 window.addEventListener('focus',synchronizeVideos);
 update(index);
