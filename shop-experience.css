@@ -199,3 +199,22 @@
 .orders-page .ux-picked-slot img{width:100%!important;height:100%!important}
 @media(max-width:760px){.orders-page .bwh-order-status{padding:15px;margin:16px 0 20px}.orders-page .ux-product-media{height:170px!important;padding:8px!important}}
 @media(max-width:430px){.orders-page .ux-product-media{height:140px!important;padding:6px!important}.orders-page.bwh-sold-out .bwh-stock-item::after{top:7px;left:7px;font-size:9px;padding:5px 8px}}
+
+/* Isolated Google Sheets test checkout */
+.orders-page .bwh-test-checkout{max-width:930px;margin:28px auto 0;padding:0 12px;scroll-margin-top:110px}
+.orders-page .bwh-test-checkout[hidden]{display:none!important}
+.orders-page .bwh-test-checkout-inner{position:relative;border:1px solid #e9c6d0;background:#fff9f7;border-radius:22px;box-shadow:0 20px 50px #6b414919;padding:clamp(17px,4vw,32px)}
+.orders-page .bwh-test-flag{display:block;font-weight:800;color:#b34d68;font-size:11px;letter-spacing:.14em;margin-right:35px}
+.orders-page .bwh-test-checkout h2{font:normal clamp(30px,5vw,42px)/1.2 'DM Serif Display',serif;margin:8px 0 12px}
+.orders-page #bwhTestClose{position:absolute;right:15px;top:15px;border:0;border-radius:50%;background:#f2dfe3;color:#633d4a;font-size:24px;width:38px;height:38px}
+.orders-page .bwh-test-warning{color:#79535d;background:#ffedf2;border-radius:13px;padding:13px;font-size:13px;line-height:1.6}
+.orders-page .bwh-test-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:20px}
+.orders-page .bwh-test-fields label{display:flex;flex-direction:column;gap:7px;color:#67464c;font-weight:700;font-size:13px}
+.orders-page .bwh-test-fields input,.orders-page .bwh-test-fields select,.orders-page .bwh-test-fields textarea{min-width:0;width:100%;background:white;border:1px solid #dfc6c9;padding:12px;border-radius:11px;color:#51383b;font:inherit}
+.orders-page .bwh-test-fields .bwh-test-notes{grid-column:1/-1}
+.orders-page #bwhTestSummary{font-size:13px;line-height:1.65;color:#71565b;background:#fff0ed;padding:14px;border-radius:12px}
+.orders-page .bwh-test-policy{display:flex;align-items:center;gap:9px;font-size:13px;margin:15px 0}
+.orders-page .bwh-test-policy a{text-decoration:underline;color:#8d5161}
+.orders-page #bwhTestSubmit{margin-top:8px;max-width:400px}
+.orders-page #bwhTestResult{font-size:13px;color:#784d5d;line-height:1.6}
+@media(max-width:600px){.orders-page .bwh-test-checkout{padding:0}.orders-page .bwh-test-fields{grid-template-columns:1fr}.orders-page .bwh-test-fields .bwh-test-notes{grid-column:auto}}
