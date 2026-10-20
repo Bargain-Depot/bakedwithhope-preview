@@ -99,22 +99,21 @@ videos.forEach(video=>{
  video.addEventListener('error',()=>{backdrop?.classList.remove('video-ready');backdrop?.classList.add('video-paused')});
  if(video.readyState>=2)ready();
 });
-const hero= document.getElementById('heroVideo');
-const heroSlide=hero?.closest('.feed-slide');
-if(hero&&heroSlide){
- const replay=document.createElement('button');
- replay.type='button';replay.className='hero-video-replay';replay.textContent='▶ Play background video';
- replay.setAttribute('aria-label','Play welcome background video');
- heroSlide.appendChild(replay);
- replay.addEventListener('click',()=>{
-  hero.muted=true;
-  hero.play().then(()=>{heroSlide.classList.remove('video-paused')}).catch(()=>{heroSlide.classList.add('video-paused')});
- });
- hero.addEventListener('playing',()=>heroSlide.classList.remove('video-paused'));
- hero.addEventListener('stalled',()=>heroSlide.classList.add('video-paused'));
- hero.addEventListener('waiting',()=>heroSlide.classList.add('video-paused'));
- // A direct gesture can resume playback when autoplay is blocked.
- heroSlide.addEventListener('pointerdown',()=>{if(hero.paused&&document.visibilityState==='visible')hero.play().catch(()=>{})},{passive:true});
+// Muted inline autoplay is retried when the page regains visibility. No visible playback controls.
+const hero=document.getElementById('heroVideo');
+if(hero){
+ hero.muted=true;
+ hero.defaultMuted=true;
+ hero.autoplay=true;
+ hero.playsInline=true;
+ hero.setAttribute('muted','');
+ hero.setAttribute('playsinline','');
+ hero.setAttribute('autoplay','');
+ // After the first user interaction, retry silently if the browser initially deferred autoplay.
+ document.addEventListener('pointerdown',()=>{
+  if(!hero.paused||!slides[index].contains(hero))return;
+  hero.play().catch(()=>{});
+ },{passive:true});
 }
 window.addEventListener('pageshow',synchronizeVideos);
 window.addEventListener('focus',synchronizeVideos);
