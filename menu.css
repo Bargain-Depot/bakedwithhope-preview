@@ -41,3 +41,6 @@
 
 .menu-club-login{margin-left:auto;margin-right:10px;padding:9px 13px;background:#ffecf0;border:1px solid #eacbd5;border-radius:999px;color:#805364;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}
 @media(max-width:650px){.menu-club-login{padding:7px 8px;font-size:11px;margin:0 4px 0 auto}}
+
+.footer-inner .owner-footer-link{font-size:12px;color:#805764;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;opacity:.85}
+.footer-inner .owner-footer-link:hover{opacity:1}
