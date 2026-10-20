@@ -1,11 +1,11 @@
-/* TEST ONLY: customer checkout against copied Apps Script + copied spreadsheet. */
+/* Customer checkout connected to the existing Baked with Hope Apps Script. */
 (()=>{'use strict';
 const ENDPOINT='https://script.google.com/macros/s/AKfycbyzHnskl5J9bOdANItTy1B819uoa1zAXd6TgkahTNiAfRC7H8SelhZpZePTeIZIwH6uLA/exec';
 const trigger=document.getElementById('checkout');
 if(!trigger||typeof window.bwhReadCart!=='function')return;
 const section=document.createElement('section');
 section.id='bwhTestCheckout';section.className='bwh-test-checkout';section.hidden=true;
-section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id="bwhTestClose" aria-label="Close test checkout">×</button>
+section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id="bwhTestClose" aria-label="Close checkout">×</button>
 <span class="bwh-test-flag">LIVE ORDER REQUEST</span><h2>Finish your order ♡</h2>
 <p class="bwh-test-warning">This submits an order to the existing bakery dashboard and uses weekly capacity. Please review before sending. Payment is not collected online.</p>
 <form id="bwhTestForm">
@@ -105,7 +105,7 @@ form.addEventListener('submit',async event=>{
   total:total.toFixed(2),
   payment:form.elements.payment.value,
   pickupDate:date.value,pickupTimeframe:time.value,
-  notes:'PREVIEW WEB ORDER: '+form.elements.notes.value.trim(),
+  notes:'WEB ORDER: '+form.elements.notes.value.trim(),
   customPackaging:{enabled:false},
   policyAccepted:form.elements.policy.checked
  };
