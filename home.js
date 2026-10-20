@@ -9,7 +9,17 @@ const counter=document.getElementById('counter');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
 const videos=[...root.querySelectorAll('.video-feature video')];
-function synchronizeVideos(){videos.forEach(video=>{const isActive=slides[index].contains(video)&&document.visibilityState==='visible';if(isActive)video.play().catch(()=>{});else video.pause()})}
+function synchronizeVideos(){
+ videos.forEach(video=>{
+  const active=slides[index].contains(video)&&document.visibilityState==='visible';
+  if(!active){video.pause();return;}
+  video.muted=true;
+  video.setAttribute('muted','');
+  video.setAttribute('playsinline','');
+  const attempt=video.play();
+  if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{video.closest('.video-feature')?.classList.add('video-paused')});
+ });
+}
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let index=location.hash==='#story'?1:0;
 let touch=null;
@@ -81,11 +91,32 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('visibilitychange',synchronizeVideos);
 videos.forEach(video=>{
  const backdrop=video.closest('.video-feature');
- const ready=()=>{if(video.videoWidth>0){backdrop?.classList.add('video-ready');synchronizeVideos()}};
+ const ready=()=>{if(video.videoWidth>0){backdrop?.classList.add('video-ready')}};
+ video.addEventListener('playing',()=>{backdrop?.classList.add('video-ready');backdrop?.classList.remove('video-paused')});
+ video.addEventListener('pause',()=>{if(slides[index].contains(video)&&document.visibilityState==='visible')backdrop?.classList.add('video-paused')});
  video.addEventListener('loadeddata',ready);
- video.addEventListener('canplay',ready);
- video.addEventListener('error',()=>backdrop?.classList.remove('video-ready'));
+ video.addEventListener('canplay',()=>{ready();if(slides[index].contains(video))synchronizeVideos()});
+ video.addEventListener('error',()=>{backdrop?.classList.remove('video-ready');backdrop?.classList.add('video-paused')});
  if(video.readyState>=2)ready();
 });
+const hero= document.getElementById('heroVideo');
+const heroSlide=hero?.closest('.feed-slide');
+if(hero&&heroSlide){
+ const replay=document.createElement('button');
+ replay.type='button';replay.className='hero-video-replay';replay.textContent='▶ Play background video';
+ replay.setAttribute('aria-label','Play welcome background video');
+ heroSlide.appendChild(replay);
+ replay.addEventListener('click',()=>{
+  hero.muted=true;
+  hero.play().then(()=>{heroSlide.classList.remove('video-paused')}).catch(()=>{heroSlide.classList.add('video-paused')});
+ });
+ hero.addEventListener('playing',()=>heroSlide.classList.remove('video-paused'));
+ hero.addEventListener('stalled',()=>heroSlide.classList.add('video-paused'));
+ hero.addEventListener('waiting',()=>heroSlide.classList.add('video-paused'));
+ // A direct gesture can resume playback when autoplay is blocked.
+ heroSlide.addEventListener('pointerdown',()=>{if(hero.paused&&document.visibilityState==='visible')hero.play().catch(()=>{})},{passive:true});
+}
+window.addEventListener('pageshow',synchronizeVideos);
+window.addEventListener('focus',synchronizeVideos);
 update(index);
 })();
