@@ -218,3 +218,21 @@
 .orders-page #bwhTestSubmit{margin-top:8px;max-width:400px}
 .orders-page #bwhTestResult{font-size:13px;color:#784d5d;line-height:1.6}
 @media(max-width:600px){.orders-page .bwh-test-checkout{padding:0}.orders-page .bwh-test-fields{grid-template-columns:1fr}.orders-page .bwh-test-fields .bwh-test-notes{grid-column:auto}}
+
+/* Launch branding and mini pickup calendar */
+.shop-brand .brand-logo{display:block;max-width:170px;width:auto;height:58px;object-fit:contain;object-position:left center}
+.shop-nav-actions .club-login-nav{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;white-space:nowrap}
+.ux-drink-description{display:block;font-size:12px;line-height:1.45;font-weight:500;color:#805965;white-space:normal;max-width:330px;margin-top:5px}
+.bwh-mini-calendar{margin-top:10px;width:100%;max-width:330px;border:1px solid #e9cbd2;background:#fff;border-radius:16px;padding:12px;color:#543b44}
+.bwh-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.bwh-calendar-heading strong{font-size:14px}
+.bwh-calendar-heading button{border:1px solid #e8cdd2;background:#fff4f5;color:#60404c;width:34px;height:34px;border-radius:10px;font-size:21px;cursor:pointer}
+.bwh-calendar-heading button:disabled{opacity:.25;cursor:not-allowed}
+.bwh-calendar-weekdays,.bwh-calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.bwh-calendar-weekdays span{font-size:11px;font-weight:800;color:#997682;padding:4px 0}
+.bwh-calendar-day{height:35px;border:0;border-radius:9px;background:#fceaf0;color:#633e50;cursor:pointer;font-weight:700;font-size:13px}
+.bwh-calendar-day:hover:not(:disabled),.bwh-calendar-day.selected{background:#99536f;color:white}
+.bwh-calendar-day:disabled{color:#c2b4b6;background:transparent;cursor:default}
+.bwh-calendar-day.today:not(.selected){outline:1px solid #bb7e93}
+.bwh-calendar-help{font-size:11px;line-height:1.45;color:#826773;margin:10px 0 0}
+@media(max-width:700px){.shop-brand .brand-logo{height:43px;max-width:118px}.shop-nav-actions .club-login-nav{font-size:12px;padding:8px 10px}.bwh-mini-calendar{max-width:none}}
