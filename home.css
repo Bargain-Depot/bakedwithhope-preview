@@ -497,3 +497,12 @@ html,body{height:100%;overflow:hidden}
 .feed-slide.rose.video-feature .video-backdrop video{opacity:0}
 .feed-slide.rose.video-feature.video-ready:not(.video-paused) .video-backdrop video{opacity:1}
 .hero-video-replay{display:none!important}
+
+/* Video slides: always display their product photography while footage loads.
+   Video is revealed ONLY after the browser confirms frames are actually playing. */
+.feed-slide.video-feature .video-backdrop{background-color:#65404b!important;background-size:cover!important;background-repeat:no-repeat!important;background-position:center center!important}
+.feed-slide.rose.video-feature .video-backdrop{background-image:linear-gradient(90deg,rgba(37,20,27,.54),rgba(37,20,27,.18)),url('bwh-mini-cakes-hero.webp')!important}
+.feed-slide.celebration-feature.video-feature .video-backdrop{background-image:linear-gradient(90deg,rgba(37,20,27,.55),rgba(37,20,27,.24)),url('bwh-mini-cakes-hero.webp')!important}
+.feed-slide.cookie-feature.video-feature .video-backdrop{background-image:linear-gradient(90deg,rgba(37,20,27,.55),rgba(37,20,27,.22)),url('cake-bar-white-chocolate-raspberry-2.webp')!important}
+.feed-slide.video-feature .video-backdrop video{opacity:0!important;transition:opacity .3s ease!important}
+.feed-slide.video-feature.video-playing .video-backdrop video{opacity:1!important}
