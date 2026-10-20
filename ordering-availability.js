@@ -1,6 +1,6 @@
 /* Read-only order availability bridge. Never submits orders or changes Google Sheets. */
 (()=>{'use strict';
-const URL='https://script.google.com/macros/s/AKfycbw5fTI9T1MkTGpbxU5RHjWjvHoPtg2le7L80h3AwNxTcq3yfWlLFuPmy4HYwZ95bt7eyA/exec';
+const URL='https://script.google.com/macros/s/AKfycbyzHnskl5J9bOdANItTy1B819uoa1zAXd6TgkahTNiAfRC7H8SelhZpZePTeIZIwH6uLA/exec';
 const host=document.getElementById('order');
 if(!host)return;
 const status=document.createElement('section');
