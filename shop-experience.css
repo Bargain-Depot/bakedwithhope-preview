@@ -236,3 +236,6 @@
 .bwh-calendar-day.today:not(.selected){outline:1px solid #bb7e93}
 .bwh-calendar-help{font-size:11px;line-height:1.45;color:#826773;margin:10px 0 0}
 @media(max-width:700px){.shop-brand .brand-logo{height:43px;max-width:118px}.shop-nav-actions .club-login-nav{font-size:12px;padding:8px 10px}.bwh-mini-calendar{max-width:none}}
+
+.shop-footer .owner-footer-link{font-size:12px;font-weight:600;color:#815463;text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;gap:4px;margin-left:12px;opacity:.85}
+.shop-footer .owner-footer-link:hover{opacity:1}
