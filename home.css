@@ -506,3 +506,24 @@ html,body{height:100%;overflow:hidden}
 .feed-slide.cookie-feature.video-feature .video-backdrop{background-image:linear-gradient(90deg,rgba(37,20,27,.55),rgba(37,20,27,.22)),url('cake-bar-white-chocolate-raspberry-2.webp')!important}
 .feed-slide.video-feature .video-backdrop video{opacity:0!important;transition:opacity .3s ease!important}
 .feed-slide.video-feature.video-playing .video-backdrop video{opacity:1!important}
+
+/* Mini cakes scroll stability: paint the hero image on the slide itself, not a
+   separate full-viewport image layer. Avoid large filter/opacity animations on
+   iOS WebKit while keeping the vertical slide movement intact. */
+.feed-slide.mini-feature{
+  background-color:#6c5353!important;
+  background-image:url('bwh-mini-cakes-hero.webp')!important;
+  background-position:center 46%!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+  filter:none!important;
+  opacity:1!important;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform-style:flat;
+  transition:transform .65s cubic-bezier(.22,.75,.18,1),visibility .65s ease!important;
+}
+.mini-feature .visual.mini-full-visual{display:none!important}
+@media(max-width:800px){
+  .feed-slide.mini-feature{background-position:50% 38%!important}
+}
