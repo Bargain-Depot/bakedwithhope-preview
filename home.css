@@ -486,3 +486,8 @@ html,body{height:100%;overflow:hidden}
 .top-club-login{margin-left:auto;padding:10px 15px;border-radius:999px;color:#75495b;background:#fff0f2;border:1px solid #edcfda;font-size:13px;font-weight:800;white-space:nowrap}
 .top-club-login:hover{background:#f7e1e8}
 @media(max-width:600px){.topbar{gap:8px;padding:0 12px}.topbar .brand-logo{height:52px;max-width:103px}.top-club-login{font-size:11px;padding:8px 9px}.top-order{padding:10px 11px;font-size:11px;gap:5px}}
+
+/* Discreet owner entrance; visually subordinate to customer ordering */
+.home-owner-link{position:fixed;right:12px;bottom:10px;z-index:15;text-decoration:none;color:#674e55;background:rgba(255,249,248,.94);border:1px solid #ebd9db;border-radius:999px;padding:6px 11px;font:700 10px/1.2 'DM Sans',sans-serif;box-shadow:0 3px 12px #402b3214;opacity:.78}
+.home-owner-link:hover,.home-owner-link:focus-visible{opacity:1}
+@media(max-width:650px){.home-owner-link{right:6px;bottom:6px;padding:5px 8px;font-size:9px}}
