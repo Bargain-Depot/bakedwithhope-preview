@@ -14,7 +14,7 @@ section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id
 <label>Email<input type="email" name="email" autocomplete="email" required></label>
 <label>Phone<input type="tel" name="phone" autocomplete="tel" maxlength="40" required></label>
 <label>Payment preference<select name="payment" required><option value="">Select method</option><option>Venmo</option><option>Cash App</option><option>Zelle</option><option>Cash</option></select></label>
-<label>Pickup location<select name="location"><option value="regular">Regular pickup</option><option value="umass">UMass Boston pickup</option></select></label>
+<label>Pickup location<select name="location"><option value="regular">Regular pickup</option><option value="umass">UMass Boston pickup</option></select><small id="bwhSodaPickupNote" class="bwh-soda-pickup-note" role="status" hidden>Dirty sodas are available for regular pickup only so they stay cold and fresh. Remove all dirty sodas from your bag to select UMass Boston pickup.</small></label>
 <label>Approved pickup date<select name="pickupDate" required><option value="">Choose a date</option></select></label>
 <label>Approved pickup timeframe<select name="pickupTimeframe" required><option value="">Choose a timeframe</option></select></label>
 <label class="bwh-test-notes">Additional instructions<textarea name="notes" rows="2" maxlength="500"></textarea></label>
@@ -27,6 +27,26 @@ section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id
 document.getElementById('order').querySelector('.shell').append(section);
 const form=section.querySelector('form'),date=form.elements.pickupDate,time=form.elements.pickupTimeframe,loc=form.elements.location;
 const result=document.getElementById('bwhTestResult'),submit=document.getElementById('bwhTestSubmit');
+const sodaPickupNote=document.getElementById('bwhSodaPickupNote');
+const umassOption=loc.querySelector('option[value="umass"]');
+function isDirtySoda(item){
+ return item?.category==='Dirty Sodas'||/dirty soda/i.test(String(item?.name||''));
+}
+function syncSodaPickup(){
+ const sodaInBag=(window.bwhReadCart?.()||[]).some(isDirtySoda);
+ if(umassOption)umassOption.disabled=sodaInBag;
+ if(sodaPickupNote)sodaPickupNote.hidden=!sodaInBag;
+ if(sodaInBag&&loc.value==='umass'){
+  loc.value='regular';
+  refreshDates();
+ }
+ return sodaInBag;
+}
+window.addEventListener('bwh:cart-changed',()=>{
+ const oldLocation=loc.value;
+ syncSodaPickup();
+ if(!section.hidden&&oldLocation!==loc.value)refreshDates();
+});
 const drawerTrigger=document.getElementById('previewCheckout');
 function syncCheckoutButtons(){
  const a=window.bwhOrderAvailability||{};
@@ -58,11 +78,12 @@ function refreshTimes(){
  const a=current(),times=loc.value==='umass'?a.umassDateTimeframes:a.dateTimeframes;
  options(time,Array.isArray(times?.[date.value])?times[date.value]:[],'Choose a timeframe');
 }
-loc.addEventListener('change',refreshDates);date.addEventListener('change',refreshTimes);
+loc.addEventListener('change',()=>{if(syncSodaPickup()&&loc.value==='umass'){loc.value='regular'}refreshDates()});date.addEventListener('change',refreshTimes);
 trigger.addEventListener('click',()=>{
  const a=current();if(a.ready!==true||a.open!==true)return;
  const items=window.bwhReadCart();
  if(!items.length){result.textContent='Add a treat to your bag first.';section.hidden=false;section.scrollIntoView({behavior:'smooth'});return;}
+ syncSodaPickup();
  refreshDates();
  document.getElementById('bwhTestSummary').textContent=items.map(i=>i.name+' — $'+Number(i.price).toFixed(2)).join(' · ');
  section.hidden=false;section.scrollIntoView({behavior:'smooth',block:'start'});
@@ -83,12 +104,14 @@ async function send(data){
   return answer;
  }finally{clearTimeout(timeout)}
 }
-syncCheckoutButtons();
+syncCheckoutButtons();syncSodaPickup();
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(sending||!form.reportValidity())return;
  const a=current(),items=window.bwhReadCart();
  if(!a.ready||!a.open){result.textContent='Ordering is unavailable. Please refresh the status.';return;}
  if(!items.length){result.textContent='Your bag is empty.';return;}
+ const requestedUmass=loc.value==='umass';
+ if(requestedUmass&&items.some(isDirtySoda)){result.textContent='UMass Boston pickup is unavailable for dirty sodas. Please choose regular pickup or remove the drinks.';return;}
  const allowedDates=loc.value==='umass'?a.umassApprovedDates:a.approvedDates;
  const allowedTimes=loc.value==='umass'?a.umassDateTimeframes:a.dateTimeframes;
  if(!Array.isArray(allowedDates)||!allowedDates.includes(date.value)||!Array.isArray(allowedTimes?.[date.value])||!allowedTimes[date.value].includes(time.value)){result.textContent='Select an approved pickup date and timeframe.';return;}
