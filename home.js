@@ -9,10 +9,27 @@ const counter=document.getElementById('counter');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
 const videos=[...root.querySelectorAll('.video-feature video')];
+// TikTok in-app WebView can hijack inline videos into its fullscreen player.
+// Do not load video media at all there; use each slide's static bakery image.
+const tiktokBrowser=/TikTok|musical_ly|trill(?:_?version)?|BytedanceWebview/i.test(navigator.userAgent||'');
+if(tiktokBrowser){
+ document.documentElement.classList.add('bwh-tiktok-static');
+ videos.forEach(video=>{
+  video.removeAttribute('autoplay');
+  video.preload='none';
+  video.pause();
+ });
+}else{
+ videos.forEach(video=>{
+  const source=video.querySelector('source[data-src]');
+  if(source){source.src=source.dataset.src;source.removeAttribute('data-src')}
+ });
+}
 // Warm all three muted videos immediately. Browsers may throttle offscreen media,
 // so resume the selected video on every slide change without restarting it.
 const pending=new WeakSet();
 function startVideo(video){
+ if(tiktokBrowser)return;
  if(document.visibilityState!=='visible'||pending.has(video))return;
  video.muted=true;video.defaultMuted=true;video.playsInline=true;
  video.setAttribute('muted','');video.setAttribute('playsinline','');
@@ -25,6 +42,7 @@ function startVideo(video){
  }catch(_){pending.delete(video)}
 }
 function synchronizeVideos(){
+ if(tiktokBrowser)return;
  if(document.visibilityState!=='visible'){
   videos.forEach(video=>video.pause());
   return;
@@ -104,6 +122,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',synchronizeVideos);
 videos.forEach(video=>{
+ if(tiktokBrowser)return;
  const slide=video.closest('.feed-slide');
  video.muted=true;video.defaultMuted=true;video.playsInline=true;
  video.autoplay=true;video.loop=true;video.preload='auto';
