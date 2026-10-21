@@ -239,3 +239,35 @@
 
 .shop-footer .owner-footer-link{font-size:12px;font-weight:600;color:#815463;text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;gap:4px;margin-left:12px;opacity:.85}
 .shop-footer .owner-footer-link:hover{opacity:1}
+
+/* Uniform product photography across iPhone widths and in-app browsers.
+   A square media stage and centered contain fit prevent breakpoint-dependent scaling. */
+.orders-page .ux-product-grid .ux-product-media{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1 / 1!important;
+  padding:clamp(7px,2vw,14px)!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  background:#fff8f4!important;
+  overflow:hidden!important;
+  flex:none!important;
+}
+.orders-page .ux-product-grid .ux-product-media img{
+  display:block!important;
+  position:static!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0 auto!important;
+  padding:0!important;
+  transform:none!important;
+  flex:none!important;
+}
+.orders-page .ux-product-grid .ux-product{min-width:0!important}
+.orders-page .ux-product-grid .ux-product-body{flex:1!important;display:flex!important;flex-direction:column!important}
+.orders-page .ux-product-grid .ux-quantity{margin-top:auto!important}
