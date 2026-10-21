@@ -271,3 +271,8 @@
 .orders-page .ux-product-grid .ux-product{min-width:0!important}
 .orders-page .ux-product-grid .ux-product-body{flex:1!important;display:flex!important;flex-direction:column!important}
 .orders-page .ux-product-grid .ux-quantity{margin-top:auto!important}
+
+/* Fresh-drink pickup policy on the soda builder and checkout. */
+.orders-page .ux-soda-pickup-notice{padding:11px 13px;margin:12px 0 4px;background:#fff0f3;border:1px solid #e8cbd3;border-radius:12px;color:#744858;font-size:13px;line-height:1.5;font-weight:650}
+.orders-page .bwh-soda-pickup-note{display:block;margin:7px 0 0;color:#855367;font-size:12px;line-height:1.45;font-weight:600}
+.orders-page .bwh-soda-pickup-note[hidden]{display:none!important}
