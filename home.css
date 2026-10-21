@@ -532,3 +532,15 @@ html,body{height:100%;overflow:hidden}
 html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop{opacity:1!important}
 html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop video{display:none!important}
 html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop{background-size:cover!important;background-position:center!important}
+
+/* TikTok: loop real footage frames as animated WebP images. Unlike <video>,
+   background images cannot trigger TikTok's native fullscreen video player. */
+html.bwh-tiktok-static .feed-slide.rose.video-feature .video-backdrop{
+ background-image:linear-gradient(90deg,rgba(37,20,27,.43),rgba(37,20,27,.13)),url('bwh-all-treats-hero-tiktok.webp'),url('bwh-mini-cakes-hero.webp')!important;
+}
+html.bwh-tiktok-static .feed-slide.celebration-feature.video-feature .video-backdrop{
+ background-image:linear-gradient(90deg,rgba(37,20,27,.46),rgba(37,20,27,.2)),url('bwh-celebration-hero-tiktok.webp'),url('bwh-mini-cakes-hero.webp')!important;
+}
+html.bwh-tiktok-static .feed-slide.cookie-feature.video-feature .video-backdrop{
+ background-image:linear-gradient(90deg,rgba(37,20,27,.46),rgba(37,20,27,.2)),url('bwh-hero-video-tiktok.webp'),url('cake-bar-white-chocolate-raspberry-2.webp')!important;
+}
