@@ -1,0 +1,34 @@
+name: Build TikTok inline animated hero backgrounds
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tiktok-animated-heroes.yml'
+      - 'bwh-all-treats-hero.mp4'
+      - 'bwh-celebration-hero.mp4'
+      - 'bwh-hero-video.mp4'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-animated-heroes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Generate in-page animated WebP versions for TikTok
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel error -y -i bwh-all-treats-hero.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-all-treats-hero-tiktok.webp
+          ffmpeg -hide_banner -loglevel error -y -i bwh-celebration-hero.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-celebration-hero-tiktok.webp
+          ffmpeg -hide_banner -loglevel error -y -i bwh-hero-video.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-hero-video-tiktok.webp
+      - name: Commit generated animations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bwh-all-treats-hero-tiktok.webp bwh-celebration-hero-tiktok.webp bwh-hero-video-tiktok.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate TikTok inline animated hero images"
+            git push
+          fi
