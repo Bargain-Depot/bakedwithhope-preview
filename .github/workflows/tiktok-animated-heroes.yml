@@ -24,9 +24,9 @@ jobs:
       - name: Generate in-page animated WebP versions for TikTok
         run: |
           set -euo pipefail
-          ffmpeg -hide_banner -loglevel error -y -i bwh-all-treats-hero.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-all-treats-hero-tiktok.webp
-          ffmpeg -hide_banner -loglevel error -y -i bwh-celebration-hero.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-celebration-hero-tiktok.webp
-          ffmpeg -hide_banner -loglevel error -y -i bwh-hero-video.mp4 -vf 'fps=10,scale=720:-2:flags=lanczos' -an -loop 0 -quality 65 -compression_level 5 bwh-hero-video-tiktok.webp
+          ffmpeg -hide_banner -loglevel error -y -i bwh-all-treats-hero.mp4 -vf 'fps=20,scale=600:-2:flags=lanczos' -an -loop 0 -quality 52 -compression_level 6 bwh-all-treats-hero-tiktok.webp
+          ffmpeg -hide_banner -loglevel error -y -i bwh-celebration-hero.mp4 -vf 'fps=20,scale=600:-2:flags=lanczos' -an -loop 0 -quality 52 -compression_level 6 bwh-celebration-hero-tiktok.webp
+          ffmpeg -hide_banner -loglevel error -y -i bwh-hero-video.mp4 -vf 'fps=20,scale=600:-2:flags=lanczos' -an -loop 0 -quality 52 -compression_level 6 bwh-hero-video-tiktok.webp
       - name: Commit generated animations
         run: |
           git config user.name "github-actions[bot]"
