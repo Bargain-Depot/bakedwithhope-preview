@@ -78,7 +78,7 @@ function priceCards(options,indexMode=false){
 }
 function sizeStage(){
  const c=state.category;
- if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $4 each.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $4.00</small><small class="ux-drink-description">'+esc(d.description)+'</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
+ if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $4 each.</p><p class="ux-soda-pickup-notice">♡ Dirty sodas are available for regular pickup only. UMass Boston (UMB) pickup is unavailable because the drinks need to stay cold and fresh.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $4.00</small><small class="ux-drink-description">'+esc(d.description)+'</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
  if(full())return '<div class="ux-intro"><h3>Your celebration cake ♡</h3><p>A lovely 8×8 cake made for your occasion. Pick a flavor next.</p></div>'+priceCards([{count:1,name:'8×8 Celebration Cake',price:35}])+'<p class="ux-note">Starting at $35 · optional flavor and occasion upgrades shown before adding.</p>';
  if(c==='Sweet Bundles')return '<div class="ux-intro"><h3>Pick a sweet bundle ♡</h3><p>Every bundle shows exactly what is included and its total price.</p></div>'+priceCards(bundles,true);
  if(c==='Build Your Own Treat Box')return '<div class="ux-intro"><h3>Choose a mixed box ♡</h3><p>Pick any combination of mini cakes and cookie bars.</p></div>'+priceCards(mixed);
@@ -194,7 +194,7 @@ function addToBag(){
  if(full()&&state.topper)details.push('Topper: '+state.topperColor);
  if(full()&&state.glitter)details.push('Glitter: '+state.glitterColor);
  if(state.notes)details.push('Notes: '+state.notes);
- bag.push({name,detail:details.join(' · '),price:Number(totalCost().toFixed(2)),quantity:1});
+ bag.push({name,detail:details.join(' · '),price:Number(totalCost().toFixed(2)),quantity:1,category:c});
  renderBag();
  document.querySelector('.shop-header .bagbtn')?.click();
  const msg=document.createElement('p');msg.className='ux-success';msg.setAttribute('role','status');msg.textContent='Added to your sweet bag! ♡';
@@ -203,7 +203,7 @@ function addToBag(){
  setTimeout(()=>{render()},850);
 }
 const previousBagRender=renderBag;
-renderBag=function(){previousBagRender();document.body.classList.toggle('bag-has-items',bag.length>0)};
+renderBag=function(){previousBagRender();document.body.classList.toggle('bag-has-items',bag.length>0);window.dispatchEvent(new Event('bwh:cart-changed'))};
 reset();
 window.bwhOrderExperience={navigate};
 renderTabs=nav;renderSodas=render;
