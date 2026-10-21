@@ -527,3 +527,8 @@ html,body{height:100%;overflow:hidden}
 @media(max-width:800px){
   .feed-slide.mini-feature{background-position:50% 38%!important}
 }
+
+/* TikTok WebView: suppress fullscreen video hijacking. Keep curated photo backgrounds. */
+html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop{opacity:1!important}
+html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop video{display:none!important}
+html.bwh-tiktok-static .feed-slide.video-feature .video-backdrop{background-size:cover!important;background-position:center!important}
