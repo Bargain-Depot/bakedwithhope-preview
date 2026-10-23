@@ -115,20 +115,52 @@ form.addEventListener('submit',async event=>{
  const allowedDates=loc.value==='umass'?a.umassApprovedDates:a.approvedDates;
  const allowedTimes=loc.value==='umass'?a.umassDateTimeframes:a.dateTimeframes;
  if(!Array.isArray(allowedDates)||!allowedDates.includes(date.value)||!Array.isArray(allowedTimes?.[date.value])||!allowedTimes[date.value].includes(time.value)){result.textContent='Select an approved pickup date and timeframe.';return;}
+ // A mixed cart is one dashboard order, but preserve its distinct product
+ // categories and complete flavor selections for Tina's prep sheet.
+ const categoryOf=item=>{
+  const name=String(item.name||'');
+  if(item.category==='Dirty Sodas'||/dirty soda/i.test(name))return 'DIRTY SODAS';
+  if(item.category==='Cookie Bars'||/cookie bar/i.test(name))return 'COOKIE BARS';
+  if(item.category==='8×8 Cakes'||/8[×x]8|celebration cake/i.test(name))return 'CELEBRATION CAKES';
+  if(item.category==='Sweet Bundles'||/bundle/i.test(name))return 'SWEET BUNDLES';
+  if(item.category==='Build Your Own Treat Box'||/mix.*match|treat box/i.test(name))return 'MIXED TREAT BOXES';
+  return 'MINI CAKES';
+ };
+ const grouped=new Map();
+ items.forEach(item=>{
+  const category=categoryOf(item);
+  if(!grouped.has(category))grouped.set(category,[]);
+  grouped.get(category).push(item);
+ });
  const total=items.reduce((sum,x)=>sum+Number(x.price||0)*Number(x.quantity||1),0);
- const names=items.map((x,i)=>(i+1)+'. '+x.name+' ($'+Number(x.price).toFixed(2)+')');
- const details=items.map((x,i)=>(i+1)+'. '+x.name+': '+x.detail);
+ const summary=[...grouped.entries()].map(([category,entries])=>
+  category+': '+entries.map(item=>{
+   const qty=Number(item.quantity||1);
+   return (qty>1?qty+'× ':'')+String(item.name||'Treat');
+  }).join('; ')
+ ).join(' | ');
+ const detailLines=[...grouped.entries()].flatMap(([category,entries])=>[
+  '['+category+']',
+  ...entries.map(item=>
+   (Number(item.quantity||1)>1?Number(item.quantity)+'× ':'')+
+   String(item.name||'Treat')+' — '+String(item.detail||'No flavor details')+
+   ' ($'+(Number(item.price||0)*Number(item.quantity||1)).toFixed(2)+')'
+  )
+ ]);
+ const prepBreakdown=[...grouped.entries()].map(([category,entries])=>
+  category+': '+entries.reduce((sum,item)=>sum+Number(item.quantity||1),0)+' selection(s)'
+ ).join(' | ');
  const data={
   action:'submitOrder',
   orderType:(loc.value==='umass'?'UMass Boston — ':'')+'Mixed Treat Order',
   name:form.elements.name.value.trim(),email:form.elements.email.value.trim(),phone:form.elements.phone.value.trim(),
-  box:names.join(' | '),
-  flavor:details.join('\\n'),
+  box:summary,
+  flavor:detailLines.join('\\n'),
   quantity:items.reduce((n,x)=>n+Number(x.quantity||1),0),
   total:total.toFixed(2),
   payment:form.elements.payment.value,
   pickupDate:date.value,pickupTimeframe:time.value,
-  notes:'WEB ORDER: '+form.elements.notes.value.trim(),
+  notes:'WEB ORDER — MIXED CART. Prep breakdown: '+prepBreakdown+'; '+items.length+' cart line(s). Customer notes: '+form.elements.notes.value.trim(),
   customPackaging:{enabled:false},
   policyAccepted:form.elements.policy.checked
  };
