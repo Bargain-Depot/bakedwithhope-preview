@@ -1,0 +1,41 @@
+name: Refresh Banana Pudding product photo
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/banana-pudding-photo.yml'
+      - 'banana-pudding-cake.svg'
+permissions:
+  contents: write
+jobs:
+  enhance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enhance existing cutout for phone displays
+        run: |
+          python -m pip install --quiet Pillow
+          python - <<'PY'
+          from PIL import Image,ImageFilter
+          import re,base64,io
+          content=open('banana-pudding-cake.svg',encoding='utf-8').read()
+          source=re.search(r'data:image/webp;base64,([^"\s]+)',content)
+          if not source: raise RuntimeError('Photo embedded in SVG missing')
+          original=Image.open(io.BytesIO(base64.b64decode(source.group(1)))).convert('RGBA')
+          # Upscaling cannot restore lost detail; gently sharpen product edges.
+          image=original.resize((720,960),Image.Resampling.LANCZOS)
+          rgb=image.convert('RGB').filter(ImageFilter.UnsharpMask(radius=1.25,percent=105,threshold=3))
+          rgb.putalpha(image.getchannel('A'))
+          rgb.save('banana-pudding-cake-enhanced.webp','WEBP',quality=90,method=6)
+          PY
+      - name: Publish product photo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add banana-pudding-cake-enhanced.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "Add sharper Banana Pudding product image"
+            git pull --rebase origin main
+            git push
+          fi
