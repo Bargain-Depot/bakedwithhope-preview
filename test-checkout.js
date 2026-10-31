@@ -13,7 +13,7 @@ section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id
 <label>Full name<input name="name" autocomplete="name" maxlength="100" required></label>
 <label>Email<input type="email" name="email" autocomplete="email" required></label>
 <label>Phone<input type="tel" name="phone" autocomplete="tel" maxlength="40" required></label>
-<label>Payment preference<select name="payment" required><option value="">Select method</option><option>Venmo</option><option>Cash App</option><option>Zelle</option><option>Cash</option></select></label>
+<label>Payment preference<select name="payment" required><option value="">Select method</option><option>Venmo</option><option>Cash App</option><option>Zelle</option><option>Cash</option></select></label><p id="bwhPaymentInstructions" role="status" aria-live="polite" style="grid-column:1/-1;margin:0;padding:12px 14px;border:1px solid #dcc7b7;border-radius:12px;background:#fff8f2;color:#593d34;font-size:14px;line-height:1.5" hidden></p>
 <label>Pickup location<select name="location"><option value="regular">Regular pickup</option><option value="umass">UMass Boston pickup</option></select><small id="bwhSodaPickupNote" class="bwh-soda-pickup-note" role="status" hidden>Dirty sodas are available for regular pickup only so they stay cold and fresh. Remove all dirty sodas from your bag to select UMass Boston pickup.</small></label>
 <label>Approved pickup date<select name="pickupDate" required><option value="">Choose a date</option></select></label>
 <label>Approved pickup timeframe<select name="pickupTimeframe" required><option value="">Choose a timeframe</option></select></label>
@@ -28,6 +28,23 @@ document.getElementById('order').querySelector('.shell').append(section);
 const form=section.querySelector('form'),date=form.elements.pickupDate,time=form.elements.pickupTimeframe,loc=form.elements.location;
 const result=document.getElementById('bwhTestResult'),submit=document.getElementById('bwhTestSubmit');
 const sodaPickupNote=document.getElementById('bwhSodaPickupNote');
+// Restore the exact payment destinations from the original Baked with Hope checkout.
+const paymentMessages={
+ 'Venmo':'Send payment to Venmo: @ttina003',
+ 'Cash App':'Send payment to Cash App: $ttina003',
+ 'Zelle':'Send payment through Zelle: 617-888-3636',
+ 'Cash':'Cash accepted at pickup/delivery.'
+};
+const paymentSelect=form.elements.payment;
+const paymentInstructions=document.getElementById('bwhPaymentInstructions');
+function syncPaymentInstructions(){
+ const message=paymentMessages[paymentSelect.value]||'';
+ paymentInstructions.hidden=!message;
+ paymentInstructions.textContent=message;
+}
+paymentSelect.addEventListener('change',syncPaymentInstructions);
+syncPaymentInstructions();
+
 const umassOption=loc.querySelector('option[value="umass"]');
 function isDirtySoda(item){
  return item?.category==='Dirty Sodas'||/dirty soda/i.test(String(item?.name||''));
@@ -167,8 +184,9 @@ form.addEventListener('submit',async event=>{
  sending=true;submit.disabled=true;result.textContent='Submitting your order… Please do not click twice.';
  try{
   const answer=await send(data);
-  result.textContent='Order '+answer.orderNumber+' received by the bakery. Watch for an email confirmation.';
-  window.bwhClearCart?.();form.reset();refreshDates();section.hidden=false;
+  const selectedPaymentInstruction=paymentMessages[paymentSelect.value]||'';
+  result.textContent='Order '+answer.orderNumber+' received by the bakery. Watch for an email confirmation.'+(selectedPaymentInstruction?' '+selectedPaymentInstruction:'');
+  window.bwhClearCart?.();form.reset();syncPaymentInstructions();refreshDates();section.hidden=false;
  }catch(error){
   result.textContent='Could not confirm the order: '+(error.name==='AbortError'?'request timed out':error.message)+'. Contact the bakery before retrying to avoid duplicates.';
  }finally{sending=false;submit.disabled=false;}
