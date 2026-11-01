@@ -18,7 +18,7 @@ const categoryInfo={
 'Build Your Own Treat Box':['✧','Mix & match','Make one box with mini cakes and cookie bars.'],
 'Dirty Sodas':['🥤','Dirty sodas','Three flavors · 16 oz · $3 each.']
 };
-const state={category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',glitter:false,glitterColor:''};
+const state={category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',cakeMessageEnabled:false,cakeMessage:'',cakeMessageChocolate:'',glitter:false,glitterColor:''};
 const choiceSet=()=>state.category==='Mini Cakes'?mini:state.category==='Cookie Bars'?bars:state.category==='Build Your Own Treat Box'?mixed:state.category==='8×8 Cakes'?[{count:1,name:'8×8 Celebration Cake',price:35}]:bundles;
 const chosen=()=>state.category==='Sweet Bundles'?bundles[state.bundle]:choiceSet().find(v=>v.count===state.size)||choiceSet()[0];
 const numberSelected=()=>Object.values(state.picks).reduce((a,n)=>a+n,0);
@@ -30,7 +30,7 @@ const hasFlavors=()=>state.category!=='Dirty Sodas';
 const miniTres=()=>Object.entries(state.tres).reduce((sum,[id,count])=>sum+Math.min(Number(count)||0,state.picks[id]||0)*(full()?4:1),0);
 const selectedCaramel=()=>full()&&state.picks.caramel?4:0;
 const packagingCharge=()=>state.packaging==='ribbon'?2:state.packaging==='card'?full()?2:3:0;
-const eventCharge=()=>packagingCharge()+(full()&&state.topper?2:0)+(full()&&state.glitter?2:0);
+const eventCharge=()=>packagingCharge()+(full()&&state.topper?2:0)+(full()&&state.cakeMessageEnabled?2:0)+(full()&&state.glitter?2:0);
 const sodaBase=()=>3;
 const baseCost=()=>state.category==='Dirty Sodas'?sodaBase():full()?35:chosen().price;
 const totalCost=()=>baseCost()+((state.category==='Build Your Own Treat Box'||state.category==='Cookie Bars'||state.category==='Dirty Sodas')?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
@@ -44,6 +44,7 @@ const fieldsOk=()=>{
  if(state.packaging!=='none'&&!state.ribbon.trim())return false;
  if(state.packaging==='card'&&(!state.card.trim()||!state.message.trim()))return false;
  if(full()&&state.topper&&!state.topperColor)return false;
+ if(full()&&state.cakeMessageEnabled&&(!state.cakeMessage.trim()||!state.cakeMessageChocolate))return false;
  if(full()&&state.glitter&&!state.glitterColor)return false;
  return true;
 };
@@ -52,7 +53,7 @@ const photo=(p)=>p.img||'';
 function reset(){
  state.stage=0;state.picks={};state.tres={};state.filter='all';state.size=state.category==='8×8 Cakes'?1:state.category==='Mini Cakes'?4:state.category==='Cookie Bars'?2:4;
  state.bundle=0;state.drink=0;state.drinkSize='16 oz';state.addons=[];
- state.occasion='';state.packaging='none';state.ribbon='';state.card='';state.message='';state.notes='';state.topper=false;state.topperColor='';state.glitter=false;state.glitterColor='';
+ state.occasion='';state.packaging='none';state.ribbon='';state.card='';state.message='';state.notes='';state.topper=false;state.topperColor='';state.cakeMessageEnabled=false;state.cakeMessage='';state.cakeMessageChocolate='';state.glitter=false;state.glitterColor='';
 }
 const stageLabels=()=>state.category==='Dirty Sodas'?['Pick a flavor','Your drink','Review']:full()?['Your cake','Choose flavor','Review']:['Choose a box','Pick flavors','Review'];
 const heading=()=>categoryInfo[state.category];
@@ -113,7 +114,7 @@ const ribbonColors=['Gold Glitter','Silver Glitter','White','Light Pink','Hot Pi
 const cardColors=['Dusty Rose','Taupe Gray','Blush Pink','Powder Blue','Soft Peach','Sage Green'];
 function eventOptions(){
  if(isMixed()||state.category==='Dirty Sodas')return '';
- return '<div class="ux-custom"><h3>Make it an occasion ♡</h3><p class="ux-note">Add a personal touch to your box or cake, if you like.</p><div class="ux-field-grid"><label class="ux-field">Occasion <input data-ux-event="occasion" maxlength="100" placeholder="Birthday, graduation…" value="'+esc(state.occasion)+'"></label><label class="ux-field">Gift packaging<select data-ux-event="packaging"><option value="none">No packaging · Free</option>'+(full()?'<option value="card" '+(state.packaging==='card'?'selected':'')+'>Ribbon + custom card · +$2</option>':'<option value="ribbon" '+(state.packaging==='ribbon'?'selected':'')+'>Ribbon only · +$2</option><option value="card" '+(state.packaging==='card'?'selected':'')+'>Ribbon + card · +$3</option>')+'</select></label>'+(state.packaging!=='none'?'<label class="ux-field">Ribbon color<select data-ux-event="ribbon">'+swatches(ribbonColors,state.ribbon)+'</select></label>':'')+(state.packaging==='card'?'<label class="ux-field">Card color<select data-ux-event="card">'+swatches(cardColors,state.card)+'</select></label><label class="ux-field full">Card message<textarea data-ux-event="message" maxlength="500" placeholder="Your message…">'+esc(state.message)+'</textarea></label>':'')+(full()?'<label class="ux-radio"><input type="checkbox" data-ux-event="topper" '+(state.topper?'checked':'')+'> Cake topper · +$2</label><label class="ux-radio"><input type="checkbox" data-ux-event="glitter" '+(state.glitter?'checked':'')+'> Edible glitter · +$2</label>'+(state.topper?'<label class="ux-field">Topper style<select data-ux-event="topperColor">'+swatches(['Birthday topper','Thanksgiving topper'],state.topperColor,'topper')+'</select></label>':'')+(state.glitter?'<label class="ux-field">Glitter color<select data-ux-event="glitterColor">'+swatches(['White','Gold'],state.glitterColor)+'</select></label>':''):'')+'<label class="ux-field full">Special instructions <textarea data-ux-event="notes" maxlength="500" placeholder="Anything Tina should know?">'+esc(state.notes)+'</textarea></label></div></div>';
+ return '<div class="ux-custom"><h3>Make it an occasion ♡</h3><p class="ux-note">Add a personal touch to your box or cake, if you like.</p><div class="ux-field-grid"><label class="ux-field">Occasion <input data-ux-event="occasion" maxlength="100" placeholder="Birthday, graduation…" value="'+esc(state.occasion)+'"></label><label class="ux-field">Gift packaging<select data-ux-event="packaging"><option value="none">No packaging · Free</option>'+(full()?'<option value="card" '+(state.packaging==='card'?'selected':'')+'>Ribbon + custom card · +$2</option>':'<option value="ribbon" '+(state.packaging==='ribbon'?'selected':'')+'>Ribbon only · +$2</option><option value="card" '+(state.packaging==='card'?'selected':'')+'>Ribbon + card · +$3</option>')+'</select></label>'+(state.packaging!=='none'?'<label class="ux-field">Ribbon color<select data-ux-event="ribbon">'+swatches(ribbonColors,state.ribbon)+'</select></label>':'')+(state.packaging==='card'?'<label class="ux-field">Card color<select data-ux-event="card">'+swatches(cardColors,state.card)+'</select></label><label class="ux-field full">Card message<textarea data-ux-event="message" maxlength="500" placeholder="Your message…">'+esc(state.message)+'</textarea></label>':'')+(full()?'<label class="ux-radio"><input type="checkbox" data-ux-event="topper" '+(state.topper?'checked':'')+'> Cake topper · +$2</label><label class="ux-radio"><input type="checkbox" data-ux-event="cakeMessageEnabled" '+(state.cakeMessageEnabled?'checked':'')+'> Custom message on cake · +$2</label><label class="ux-radio"><input type="checkbox" data-ux-event="glitter" '+(state.glitter?'checked':'')+'> Edible glitter · +$2</label>'+(state.cakeMessageEnabled?'<label class="ux-field full">Message on cake<input data-ux-event="cakeMessage" maxlength="100" placeholder="What would you like written on the cake?" value="'+esc(state.cakeMessage)+'"></label><label class="ux-field">Chocolate for writing<select data-ux-event="cakeMessageChocolate"><option value="">Choose chocolate</option>'+swatches(['White Chocolate','Milk Chocolate'],state.cakeMessageChocolate).replace('<option value="">Choose a color</option>','')+'</select></label>':'')+(state.topper?'<label class="ux-field">Topper style<select data-ux-event="topperColor">'+swatches(['Birthday topper','Thanksgiving topper'],state.topperColor,'topper')+'</select></label>':'')+(state.glitter?'<label class="ux-field">Glitter color<select data-ux-event="glitterColor">'+swatches(['White','Gold'],state.glitterColor)+'</select></label>':''):'')+'<label class="ux-field full">Special instructions <textarea data-ux-event="notes" maxlength="500" placeholder="Anything Tina should know?">'+esc(state.notes)+'</textarea></label></div></div>';
 }
 function pickedNames(){
  return catalog.filter(x=>state.picks[x.id]).map(x=>state.picks[x.id]+'× '+x.name+(state.tres[x.id]?' ('+state.tres[x.id]+' Tres Leches, '+((state.picks[x.id]||0)-state.tres[x.id])+' regular)':'')).join(', ');
@@ -162,7 +163,7 @@ function bind(){
  root.querySelectorAll('[data-ux-event]').forEach(el=>{
   const change=()=>{
    const key=el.dataset.uxEvent;state[key]=el.type==='checkbox'?el.checked:el.value;
-   if(['packaging','topper','glitter'].includes(key)){render();return}
+   if(['packaging','topper','cakeMessageEnabled','glitter'].includes(key)){render();return}
    const price=root.querySelector('.ux-estimate strong');if(price)price.textContent=fmt(totalCost());
    const reviewTotal=root.querySelector('.ux-review-header strong');if(reviewTotal)reviewTotal.textContent=fmt(totalCost());
    const line=root.querySelector('.ux-review .ux-total dd');if(line)line.textContent=fmt(totalCost());
@@ -192,6 +193,7 @@ function addToBag(){
  if(state.packaging!=='none')details.push('Packaging: '+(state.packaging==='card'?'ribbon + card':'ribbon')+' ('+state.ribbon+')');
  if(state.packaging==='card')details.push('Card: '+state.card+' · '+state.message);
  if(full()&&state.topper)details.push('Topper: '+state.topperColor);
+ if(full()&&state.cakeMessageEnabled)details.push('Custom message on cake: '+state.cakeMessage.trim()+' ('+state.cakeMessageChocolate+', +$2)');
  if(full()&&state.glitter)details.push('Glitter: '+state.glitterColor);
  if(state.notes)details.push('Notes: '+state.notes);
  bag.push({name,detail:details.join(' · '),price:Number(totalCost().toFixed(2)),quantity:1,category:c});
