@@ -11,16 +11,17 @@ status.innerHTML='<div class="bwh-status-inner"><span class="bwh-status-eyebrow"
 const heading=host.querySelector('.sectionhead');
 (heading||host).insertAdjacentElement('afterend',status);
 let state={ready:false,open:false,limitReached:false,approvedDates:[],umassApprovedDates:[],dateTimeframes:{},umassDateTimeframes:{}};
+let requestNumber=0;let retryTimer=null;
 function updateDisplay(){
  const open=state.ready&&state.open;
- document.body.classList.toggle('bwh-sold-out',!open);
+ document.body.classList.toggle('bwh-sold-out',state.ready&&!open);
  document.body.classList.toggle('bwh-orders-open',open);
  document.body.classList.toggle('bwh-status-ready',state.ready);
  status.classList.toggle('bwh-status-loading',!state.ready);
  status.classList.toggle('bwh-status-open',open);
  status.classList.toggle('bwh-status-sold-out',!open&&state.ready);
- document.getElementById('bwhStatusHeading').textContent=!state.ready?'Ordering availability is unavailable':open?'Treats are available to order ♡':'Sold Out ♡';
- document.getElementById('bwhStatusMessage').textContent=!state.ready?'We can’t confirm pickup availability right now. Ordering remains unavailable until we can check with Tina.':open?'Tina is accepting orders. Choose from her approved pickup dates and timeframes when checkout is enabled.':state.statusMessage||'All treats are currently sold out. Please check back when orders reopen.';
+ document.getElementById('bwhStatusHeading').textContent=!state.ready?'Checking ordering availability…':open?'Treats are available to order ♡':'Sold Out ♡';
+ document.getElementById('bwhStatusMessage').textContent=!state.ready?'We couldn’t confirm availability yet. Please try again shortly; this does not mean the treats are sold out. Checkout stays paused until verification.':open?'Tina is accepting orders. Choose from her approved pickup dates and timeframes when checkout is enabled.':state.statusMessage||'All treats are currently sold out. Please check back when orders reopen.';
  const nodes=document.querySelectorAll('.ux-option,.ux-product,.ux-drink-card,.ux-drink-option,.ux-featured-image,.sodacard');
  nodes.forEach(el=>{if(!el.classList.contains('bwh-stock-item'))el.classList.add('bwh-stock-item');});
  const available=window.bwhOrderAvailability;
@@ -29,15 +30,18 @@ function updateDisplay(){
 window.bwhOrderAvailability={...state,refresh:load};
 function render(){updateDisplay();window.dispatchEvent(new CustomEvent('bwh:availability',{detail:{...state}}));}
 async function load(){
+ const request=++requestNumber;
+ clearTimeout(retryTimer);
  status.classList.add('bwh-status-loading');
  try{
-  const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),11000);
+  const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),15000);
   let response;
   try{response=await fetch(URL+'?action=orderingState&t='+Date.now(),{method:'GET',cache:'no-store',signal:abort.signal});}
   finally{clearTimeout(timeout)}
   if(!response.ok)throw Error('Availability service unavailable');
   const data=await response.json();
   if(!data||data.ok!==true)throw Error(data?.message||'Availability request unsuccessful');
+  if(request!==requestNumber)return;
   state={
    ready:true,
    open:data.acceptingOrders===true&&data.limitReached!==true,
@@ -49,11 +53,17 @@ async function load(){
    umassDateTimeframes:data.umassDateTimeframes||{},
    weeklyLimit:data.weeklyLimit,currentOrderCount:data.currentOrderCount
   };
- }catch(error){state={ready:false,open:false,limitReached:false,approvedDates:[],umassApprovedDates:[],dateTimeframes:{},umassDateTimeframes:{}};}
- render();
+ }catch(error){
+  if(request!==requestNumber)return;
+  // Unknown availability is not the same as a confirmed sold-out state.
+  // Keep any previously verified status, but disable checkout on failures.
+  state={...state,ready:false,open:false};
+  retryTimer=setTimeout(()=>{if(!document.hidden)load()},5000);
+ }
+ if(request===requestNumber)render();
 }
 document.addEventListener('click',event=>{
- if(!state.open&&(event.target.closest('[data-ux-plus],[data-ux-action="add"],[data-ux-action="next"],[data-ux-size],[data-ux-drink],#previewCheckout,#checkout'))){
+ if((state.ready&&!state.open)&&event.target.closest('[data-ux-plus],[data-ux-action="add"],[data-ux-action="next"],[data-ux-size],[data-ux-drink],#previewCheckout,#checkout')){
   event.preventDefault();event.stopImmediatePropagation();status.scrollIntoView({behavior:'smooth',block:'center'});
  }
 },true);
