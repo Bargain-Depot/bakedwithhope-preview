@@ -48,9 +48,11 @@ function syncPaymentInstructions(){
  if(!isCash)depositSelect.value='';
  const method=isCash?depositSelect.value:paymentSelect.value;
  const destination=paymentMessages[method]||'';
- const deposit=orderTotal()/2;
+ const totalCents=Math.round(orderTotal()*100);
+ const deposit=Math.ceil(totalCents/2)/100;
+ const remaining=(totalCents-Math.ceil(totalCents/2))/100;
  const message=isCash
-  ? 'Cash payment requires a 50% deposit of $'+deposit.toFixed(2)+' within 24 hours. '+(destination||'Choose Venmo, Cash App, or Zelle above to see where to send it.')+' The remaining $'+deposit.toFixed(2)+' is due in cash at pickup.'
+  ? 'Cash payment requires a 50% deposit of $'+deposit.toFixed(2)+' within 24 hours. '+(destination||'Choose Venmo, Cash App, or Zelle above to see where to send it.')+' The remaining $'+remaining.toFixed(2)+' is due in cash at pickup.'
   : destination ? destination+' — Payment is required within 24 hours of placing your order or the order will be cancelled.' : '';
  paymentInstructions.hidden=!message;
  paymentInstructions.textContent=message;
