@@ -13,13 +13,13 @@ section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id
 <label>Full name<input name="name" autocomplete="name" maxlength="100" required></label>
 <label>Email<input type="email" name="email" autocomplete="email" required></label>
 <label>Phone<input type="tel" name="phone" autocomplete="tel" maxlength="40" required></label>
-<label>Payment preference<select name="payment" required><option value="">Select method</option><option>Venmo</option><option>Cash App</option><option>Zelle</option><option>Cash</option></select></label><p id="bwhPaymentInstructions" role="status" aria-live="polite" style="grid-column:1/-1;margin:0;padding:12px 14px;border:1px solid #dcc7b7;border-radius:12px;background:#fff8f2;color:#593d34;font-size:14px;line-height:1.5" hidden></p>
+<label>Payment preference<select name="payment" required><option value="">Select method</option><option>Venmo</option><option>Cash App</option><option>Zelle</option><option>Cash</option></select></label><label id="bwhCashDepositField" style="grid-column:1/-1" hidden>How would you like to pay your 50% cash deposit?<select name="depositMethod"><option value="">Choose deposit payment method</option><option value="Venmo">Venmo</option><option value="Cash App">Cash App</option><option value="Zelle">Zelle</option></select></label><p id="bwhPaymentInstructions" role="status" aria-live="polite" style="grid-column:1/-1;margin:0;padding:12px 14px;border:1px solid #dcc7b7;border-radius:12px;background:#fff8f2;color:#593d34;font-size:14px;line-height:1.5" hidden></p>
 <label>Pickup location<select name="location"><option value="regular">Regular pickup</option><option value="umass">UMass Boston pickup</option></select><small id="bwhSodaPickupNote" class="bwh-soda-pickup-note" role="status" hidden>Dirty sodas are available for regular pickup only so they stay cold and fresh. Remove all dirty sodas from your bag to select UMass Boston pickup.</small></label>
 <label>Approved pickup date<select name="pickupDate" required><option value="">Choose a date</option></select></label>
 <label>Approved pickup timeframe<select name="pickupTimeframe" required><option value="">Choose a timeframe</option></select></label>
 <label class="bwh-test-notes">Additional instructions<textarea name="notes" rows="2" maxlength="500"></textarea></label>
 </div>
-<p id="bwhTestSummary"></p>
+<p id="bwhTestSummary"></p><p class="bwh-payment-deadline" style="font-size:14px;line-height:1.55;background:#fff8f2;border-left:3px solid #d89ab0;padding:12px 14px;border-radius:8px"><strong>Payment policy:</strong> Payment (or the required deposit for cash orders) must be received within 24 hours of placing your order, otherwise the order will be cancelled. Cash orders require a 50% deposit through Venmo, Cash App, or Zelle; the remaining 50% is paid in cash at pickup.</p>
 <label class="bwh-test-policy"><input type="checkbox" name="policy" required> I agree to the <a href="https://bakedwithhope.com/order-policy.html" target="_blank" rel="noopener noreferrer">Baked with Hope order policy</a>.</label>
 <button type="submit" id="bwhTestSubmit" class="primary">Submit order ♡</button>
 <p id="bwhTestResult" role="status" aria-live="polite"></p>
@@ -32,16 +32,30 @@ const sodaPickupNote=document.getElementById('bwhSodaPickupNote');
 const paymentMessages={
  'Venmo':'Send payment to Venmo: @ttina003',
  'Cash App':'Send payment to Cash App: $ttina003',
- 'Zelle':'Send payment through Zelle: 617-888-3636',
- 'Cash':'Cash accepted at pickup/delivery.'
+ 'Zelle':'Send payment through Zelle: 617-888-3636'
 };
 const paymentSelect=form.elements.payment;
+const depositSelect=form.elements.depositMethod;
+const cashDepositField=document.getElementById('bwhCashDepositField');
 const paymentInstructions=document.getElementById('bwhPaymentInstructions');
+function orderTotal(){
+ return (window.bwhReadCart?.()||[]).reduce((sum,item)=>sum+Number(item.price||0)*Number(item.quantity||1),0);
+}
 function syncPaymentInstructions(){
- const message=paymentMessages[paymentSelect.value]||'';
+ const isCash=paymentSelect.value==='Cash';
+ cashDepositField.hidden=!isCash;
+ depositSelect.required=isCash;
+ if(!isCash)depositSelect.value='';
+ const method=isCash?depositSelect.value:paymentSelect.value;
+ const destination=paymentMessages[method]||'';
+ const deposit=orderTotal()/2;
+ const message=isCash
+  ? 'Cash payment requires a 50% deposit of $'+deposit.toFixed(2)+' within 24 hours. '+(destination||'Choose Venmo, Cash App, or Zelle above to see where to send it.')+' The remaining $'+deposit.toFixed(2)+' is due in cash at pickup.'
+  : destination ? destination+' — Payment is required within 24 hours of placing your order or the order will be cancelled.' : '';
  paymentInstructions.hidden=!message;
  paymentInstructions.textContent=message;
 }
+depositSelect.addEventListener('change',syncPaymentInstructions);
 paymentSelect.addEventListener('change',syncPaymentInstructions);
 syncPaymentInstructions();
 
@@ -101,6 +115,7 @@ trigger.addEventListener('click',()=>{
  const items=window.bwhReadCart();
  if(!items.length){result.textContent='Add a treat to your bag first.';section.hidden=false;section.scrollIntoView({behavior:'smooth'});return;}
  syncSodaPickup();
+ syncPaymentInstructions();
  refreshDates();
  document.getElementById('bwhTestSummary').textContent=items.map(i=>i.name+' — $'+Number(i.price).toFixed(2)).join(' · ');
  section.hidden=false;section.scrollIntoView({behavior:'smooth',block:'start'});
@@ -128,6 +143,7 @@ form.addEventListener('submit',async event=>{
  if(!a.ready||!a.open){result.textContent='Ordering is unavailable. Please refresh the status.';return;}
  if(!items.length){result.textContent='Your bag is empty.';return;}
  const requestedUmass=loc.value==='umass';
+ if(paymentSelect.value==='Cash'&&!depositSelect.value){result.textContent='Please choose Venmo, Cash App, or Zelle for your 50% deposit.';return;}
  if(requestedUmass&&items.some(isDirtySoda)){result.textContent='UMass Boston pickup is unavailable for dirty sodas. Please choose regular pickup or remove the drinks.';return;}
  const allowedDates=loc.value==='umass'?a.umassApprovedDates:a.approvedDates;
  const allowedTimes=loc.value==='umass'?a.umassDateTimeframes:a.dateTimeframes;
@@ -175,7 +191,7 @@ form.addEventListener('submit',async event=>{
   flavor:detailLines.join('\\n'),
   quantity:items.reduce((n,x)=>n+Number(x.quantity||1),0),
   total:total.toFixed(2),
-  payment:form.elements.payment.value,
+  payment:paymentSelect.value==='Cash'?'Cash (50% deposit via '+depositSelect.value+')':paymentSelect.value,
   pickupDate:date.value,pickupTimeframe:time.value,
   notes:'WEB ORDER — MIXED CART. Prep breakdown: '+prepBreakdown+'; '+items.length+' cart line(s). Customer notes: '+form.elements.notes.value.trim(),
   customPackaging:{enabled:false},
@@ -184,8 +200,8 @@ form.addEventListener('submit',async event=>{
  sending=true;submit.disabled=true;result.textContent='Submitting your order… Please do not click twice.';
  try{
   const answer=await send(data);
-  const selectedPaymentInstruction=paymentMessages[paymentSelect.value]||'';
-  result.textContent='Order '+answer.orderNumber+' received by the bakery. Watch for an email confirmation.'+(selectedPaymentInstruction?' '+selectedPaymentInstruction:'');
+  const selectedPaymentInstruction=paymentInstructions.textContent||'';
+  result.textContent='Order '+answer.orderNumber+' received by the bakery. Watch for an email confirmation. Payment is due within 24 hours or the order will be cancelled.'+(selectedPaymentInstruction?' '+selectedPaymentInstruction:'');
   window.bwhClearCart?.();form.reset();syncPaymentInstructions();refreshDates();section.hidden=false;
  }catch(error){
   result.textContent='Could not confirm the order: '+(error.name==='AbortError'?'request timed out':error.message)+'. Contact the bakery before retrying to avoid duplicates.';
