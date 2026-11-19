@@ -188,7 +188,8 @@ function addToBag(){
  const c=state.category;
  const name=c==='Sweet Bundles'?chosen().name:full()?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name+' Dirty Soda':c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' Treat Box':c==='Cookie Bars'?chosen().name+' Cookie Bars':chosen().name;
  const selection=c==='Dirty Sodas'?drinks[state.drink].name+' · '+'16 oz':pickedNames();
- const details=[selection];
+ const typedSelection=isMixed()?catalog.filter(x=>state.picks[x.id]).map(x=>state.picks[x.id]+'× '+x.name+(state.tres[x.id]?' ('+state.tres[x.id]+' Tres Leches, '+((state.picks[x.id]||0)-state.tres[x.id])+' regular)':'')+' ['+(x.type==='bars'?'cookie bar':'mini cake')+']').join(', '):selection;
+ const details=[typedSelection];
  if(state.occasion)details.push('Occasion: '+state.occasion);
  if(state.packaging!=='none')details.push('Packaging: '+(state.packaging==='card'?'ribbon + card':'ribbon')+' ('+state.ribbon+')');
  if(state.packaging==='card')details.push('Card: '+state.card+' · '+state.message);
