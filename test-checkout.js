@@ -182,20 +182,17 @@ form.addEventListener('submit',async event=>{
    ' ($'+(Number(item.price||0)*Number(item.quantity||1)).toFixed(2)+')'
   )
  ]);
- const prepBreakdown=[...grouped.entries()].map(([category,entries])=>
-  category+': '+entries.reduce((sum,item)=>sum+Number(item.quantity||1),0)+' selection(s)'
- ).join(' | ');
  const data={
   action:'submitOrder',
   orderType:(loc.value==='umass'?'UMass Boston — ':'')+'Mixed Treat Order',
   name:form.elements.name.value.trim(),email:form.elements.email.value.trim(),phone:form.elements.phone.value.trim(),
   box:summary,
-  flavor:detailLines.join('\\n'),
+  flavor:detailLines.join('\n'),
   quantity:items.reduce((n,x)=>n+Number(x.quantity||1),0),
   total:total.toFixed(2),
   payment:paymentSelect.value==='Cash'?'Cash (50% deposit via '+depositSelect.value+')':paymentSelect.value,
   pickupDate:date.value,pickupTimeframe:time.value,
-  notes:'WEB ORDER — MIXED CART. Prep breakdown: '+prepBreakdown+'; '+items.length+' cart line(s). Customer notes: '+form.elements.notes.value.trim(),
+  notes:form.elements.notes.value.trim(),
   customPackaging:{enabled:false},
   policyAccepted:form.elements.policy.checked
  };
