@@ -301,3 +301,52 @@
 .bwh-shirt-summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .bwh-shirt-total{display:flex;justify-content:space-between;gap:12px;font-size:18px}
 @media(max-width:800px){.bwh-shirt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Real T-shirt color selector: four uploaded front/back photos in one lightweight 2 × 2 sprite. */
+.bwh-shirt-photo{
+ width:100%;
+ aspect-ratio:260 / 246;
+ background-image:url("bwh-shirt-variants.webp?v=1");
+ background-repeat:no-repeat;
+ background-size:200% 200%;
+ background-position:var(--shirt-x,0%) var(--shirt-y,0%);
+ background-color:#fff;
+ border-radius:13px;
+}
+.bwh-shirt-showcase{
+ display:grid;
+ grid-template-columns:minmax(0,1.1fr) minmax(190px,.9fr);
+ align-items:center;
+ gap:22px;
+ border:2px solid #edcfdc;
+ background:linear-gradient(135deg,#fff,#fff3f8);
+ border-radius:24px;
+ padding:18px;
+ margin:20px 0 22px;
+}
+.bwh-shirt-hero-photo{max-width:580px;box-shadow:0 6px 24px rgba(100,44,70,.08)}
+.bwh-shirt-showcase-copy{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.bwh-shirt-showcase-copy h3{font-size:clamp(23px,2.8vw,32px);margin:0;color:#663e4f;line-height:1.2}
+.bwh-shirt-showcase-copy p{font-size:14px;line-height:1.7;margin:0;color:#735765}
+.bwh-shirt-showcase-copy strong{font-size:22px;color:#a44e77}
+.bwh-shirt-showcase-copy small{color:#886877;font-weight:700}
+.bwh-shirt-choice{overflow:hidden;transition:transform .17s ease,border-color .17s ease,background-color .17s ease}
+.bwh-shirt-choice:hover{transform:translateY(-3px)}
+.bwh-shirt-choice:focus-visible{outline:3px solid #bf6992;outline-offset:3px}
+.bwh-shirt-choice-photo{display:block;width:100%;border:1px solid #f0e5e9}
+.bwh-shirt-choice.selected .bwh-shirt-choice-photo{border-color:#ca8dac}
+.bwh-shirt-fit-photo{max-width:420px;margin:auto}
+.bwh-shirt-review-photo{max-width:440px;margin:0 auto 18px}
+@media(max-width:720px){
+ .bwh-shirt-showcase{grid-template-columns:1fr;gap:14px}
+ .bwh-shirt-hero-photo{max-width:500px;margin:auto}
+ .bwh-shirt-showcase-copy{padding:4px 6px 10px}
+ .bwh-shirt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:410px){
+ .bwh-shirt-grid{gap:9px}
+ .bwh-shirt-choice{padding:8px;gap:5px}
+ .bwh-shirt-choice strong{font-size:12px}
+ .bwh-shirt-showcase{padding:11px}
+}
