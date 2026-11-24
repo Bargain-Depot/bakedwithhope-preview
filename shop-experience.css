@@ -284,3 +284,20 @@
 .shop-drawer .preview-add-more{display:block;width:100%;margin:0 0 10px;padding:13px 18px;border:1.5px solid #76504a;border-radius:999px;background:#fff;color:#6c4540;font:inherit;font-weight:700;cursor:pointer;transition:background .18s ease,transform .18s ease}
 .shop-drawer .preview-add-more:hover{background:#fff5f1;transform:translateY(-1px)}
 .shop-drawer .preview-add-more:focus-visible{outline:3px solid #d99584;outline-offset:2px}
+
+
+/* Baked with Hope merchandise */
+.bwh-shirt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
+.bwh-shirt-choice{border:2px solid #ead4dd;background:#fffdfc;border-radius:20px;padding:13px;display:flex;flex-direction:column;align-items:center;gap:7px;color:#503840;text-align:center;box-shadow:none}
+.bwh-shirt-choice.selected,.bwh-shirt-choice[aria-pressed="true"]{border-color:#bd678a;background:#fff0f6;box-shadow:0 0 0 3px #f5d8e4}
+.bwh-shirt-choice strong{font-size:14px}.bwh-shirt-choice small{color:#795a65}.bwh-shirt-choice b{font-size:17px;color:#aa4f74}
+.bwh-shirt-visual{width:min(100%,170px);height:155px;display:flex;align-items:center;justify-content:center;clip-path:polygon(23% 9%,37% 2%,63% 2%,77% 9%,99% 28%,86% 46%,78% 41%,78% 100%,22% 100%,22% 41%,14% 46%,1% 28%);border:1px solid #ddd}
+.bwh-shirt-visual.is-black{background:#222125}.bwh-shirt-visual.is-white{background:#fdfcfb}
+.bwh-shirt-ink{text-align:center;font-family:Georgia,serif;font-weight:800;font-size:14px;line-height:1.2;transform:translateY(10px)}
+.bwh-shirt-ink.is-pink{color:#f3a1c5}.bwh-shirt-ink.is-white{color:white}.bwh-shirt-ink.is-black{color:#292428}
+.bwh-shirt-selection{max-width:600px;margin:20px auto;display:grid;gap:16px;padding:24px;background:#fff8f9;border:2px solid #f0d3df;border-radius:24px}
+.bwh-shirt-selection .ux-field{display:grid;gap:8px}
+.bwh-shirt-selection select,.bwh-shirt-selection input{width:100%;padding:13px;border:1px solid #d9b5c3;border-radius:12px;background:white;color:#4b3039}
+.bwh-shirt-summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.bwh-shirt-total{display:flex;justify-content:space-between;gap:12px;font-size:18px}
+@media(max-width:800px){.bwh-shirt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
