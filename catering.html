@@ -175,7 +175,39 @@ form.addEventListener('submit',async e=>{
  };
  const button=$('submitRequest');state.sending=true;button.disabled=true;result.className='result';result.textContent='Sending your catering request…';
  try{const response=await send(payload);result.className='result success';result.textContent='Your request '+response.requestNumber+' has been received! Tina will confirm the date and details. Your catering order is secured only after approval and the 50% deposit. Watch for an email confirmation.';form.reset();state.cakes={};state.bars={};field('eventDate').min=dateMin();renderAll();}
- catch(err){result.className='result error';result.textContent='Your catering request could not be confirmed: '+(err.name==='AbortError'?'the request timed out':err.message)+'. Please contact the bakery before trying again to avoid duplicates.';}
+ catch(err){
+  result.className='result error';
+  result.textContent='Your request was not confirmed online: '+(err.name==='AbortError'?'the request timed out':err.message)+'. You can email Tina directly instead. Please check with her before submitting twice.';
+  const fallback=document.createElement('a');
+  const emailDetails=[
+   'CATERING REQUEST (not yet confirmed)','Name: '+payload.name,'Email: '+payload.email,
+   'Phone: '+payload.phone,'Package: '+p.name,
+   'Mini cakes: '+payload.miniCakeFlavors.map(x=>x.quantity+' x '+x.name).join(', '),
+   'Cookie bars: '+payload.cookieBarFlavors.map(x=>x.quantity+' x '+x.name).join(', '),
+   'Tres Leches: '+(payload.tresLeches?'Yes':'No'),
+   '8x8 add-on: '+(payload.celebrationCake?payload.celebrationFlavor:'No'),
+   'Packaging: '+payload.packaging.mode+' / '+payload.packaging.ribbonColor+
+    ' / boxes: '+payload.packaging.boxCount,
+   'Occasion: '+payload.occasion,'Date/time: '+payload.eventDate+' '+payload.eventTime,
+   'Fulfillment: '+payload.fulfillment+' '+payload.deliveryAddress,
+   'Notes: '+payload.notes,'Estimated total: 
+ finally{state.sending=false;button.disabled=false;}
+});
+renderAll();
+})();
+</script></body></html>+v.total.toFixed(2),
+   '50% deposit after approval: 
+ finally{state.sending=false;button.disabled=false;}
+});
+renderAll();
+})();
+</script></body></html>+v.deposit.toFixed(2)
+  ].join('\\n');
+  fallback.href='mailto:bakedwithhope.ma@gmail.com?subject='+encodeURIComponent('Catering request — '+payload.name)+'&body='+encodeURIComponent(emailDetails);
+  fallback.textContent='Open an email with my catering details →';
+  fallback.style.display='block';fallback.style.marginTop='10px';fallback.style.fontWeight='800';
+  result.appendChild(fallback);
+ }
  finally{state.sending=false;button.disabled=false;}
 });
 renderAll();
