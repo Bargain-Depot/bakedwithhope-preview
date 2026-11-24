@@ -68,7 +68,7 @@ function shirtOnly(){const items=cartItems();return items.length>0&&items.every(
 function syncShirtPickup(){
  const items=cartItems(),only=shirtOnly(),hasShirts=items.some(isShirtItem);
  ['bwhPickupLocationField','bwhPickupDateField','bwhPickupTimeField'].forEach(id=>{
-  const el=document.getElementById(id);if(el)el.hidden=only;
+  const el=document.getElementById(id);if(el){el.hidden=only;el.style.display=only?'none':'';}
  });
  date.disabled=only;time.disabled=only;date.required=!only;time.required=!only;
  const notice=document.getElementById('bwhShirtPickupNotice');
@@ -140,7 +140,7 @@ trigger.addEventListener('click',()=>{
  section.hidden=false;section.scrollIntoView({behavior:'smooth',block:'start'});
 });
 document.getElementById('bwhTestClose').addEventListener('click',()=>{if(!sending)section.hidden=true;});
-document.getElementById('bwhCheckoutAddMore').addEventListener('click',()=>{if(sending)return;section.hidden=true;document.getElementById('order')?.scrollIntoView({behavior:'smooth',block:'start'});});
+document.getElementById('bwhCheckoutAddMore').addEventListener('click',()=>{if(sending)return;section.hidden=true;(document.getElementById('tabs')||document.getElementById('builder'))?.scrollIntoView({behavior:'smooth',block:'start'});});
 window.addEventListener('bwh:availability',()=>{
  const a=current(),ready=shirtOnly()||(a.ready===true&&a.open===true);
  syncCheckoutButtons();
