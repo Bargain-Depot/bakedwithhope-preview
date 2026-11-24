@@ -20,8 +20,8 @@ function updateDisplay(){
  status.classList.toggle('bwh-status-loading',!state.ready);
  status.classList.toggle('bwh-status-open',open);
  status.classList.toggle('bwh-status-sold-out',!open&&state.ready);
- document.getElementById('bwhStatusHeading').textContent=!state.ready?'Checking ordering availability…':open?'Treats are available to order ♡':'Sold Out ♡';
- document.getElementById('bwhStatusMessage').textContent=!state.ready?'We couldn’t confirm availability yet. Please try again shortly; this does not mean the treats are sold out. Checkout stays paused until verification.':open?'Tina is accepting orders. Choose from her approved pickup dates and timeframes when checkout is enabled.':state.statusMessage||'All treats are currently sold out. Please check back when orders reopen.';
+ document.getElementById('bwhStatusHeading').textContent=!state.ready?'Checking ordering availability…':open?'Treats are available to order ♡':'Treat ordering is closed ♡';
+ document.getElementById('bwhStatusMessage').textContent=!state.ready?'We couldn’t confirm availability yet. Please try again shortly; this does not mean the treats are sold out. Checkout stays paused until verification.':open?'Tina is accepting orders. Choose from her approved pickup dates and timeframes when checkout is enabled.':(state.statusMessage||'Treat ordering is paused.')+' T-shirts are still available to order; Tina will arrange pickup once they arrive.';
  const nodes=document.querySelectorAll('.ux-option,.ux-product,.ux-drink-card,.ux-drink-option,.ux-featured-image,.sodacard');
  nodes.forEach(el=>{if(!el.classList.contains('bwh-stock-item'))el.classList.add('bwh-stock-item');});
  const available=window.bwhOrderAvailability;
@@ -63,7 +63,14 @@ async function load(){
  if(request===requestNumber)render();
 }
 document.addEventListener('click',event=>{
- if((state.ready&&!state.open)&&event.target.closest('[data-ux-plus],[data-ux-action="add"],[data-ux-action="next"],[data-ux-size],[data-ux-drink],#previewCheckout,#checkout')){
+ if(!state.ready||state.open)return;
+ const target=event.target;
+ const builderAction=target.closest('[data-ux-plus],[data-ux-action="add"],[data-ux-action="next"],[data-ux-size],[data-ux-drink]');
+ const checkoutAction=target.closest('#previewCheckout,#checkout');
+ const isShirtBuilder=(typeof category!=='undefined'&&category==='T-Shirts');
+ const cart=window.bwhReadCart?.()||[];
+ const shirtsOnly=cart.length>0&&cart.every(i=>i.category==='T-Shirts'||/baked with hope t-shirt/i.test(String(i.name||'')));
+ if((builderAction&&!isShirtBuilder)||(checkoutAction&&!shirtsOnly)){
   event.preventDefault();event.stopImmediatePropagation();status.scrollIntoView({behavior:'smooth',block:'center'});
  }
 },true);
