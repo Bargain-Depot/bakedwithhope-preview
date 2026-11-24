@@ -13,7 +13,7 @@ function closeDialog(el,overlay){el.classList.remove('open');overlay.classList.r
 function openBag(){updateDrawer();openDialog(drawer,shade)}
 function closeBag(){closeDialog(drawer,shade)}
 byId('closeDrawer').onclick=closeBag;shade.onclick=closeBag;
-byId('previewAddMore').onclick=()=>{closeBag();const shopping=document.getElementById('order')||document.getElementById('tabs')||document.getElementById('builder');shopping?.scrollIntoView({behavior:'smooth',block:'start'});};
+byId('previewAddMore').onclick=()=>{closeBag();const shopping=document.getElementById('tabs')||document.getElementById('builder')||document.getElementById('order');shopping?.scrollIntoView({behavior:'smooth',block:'start'});};
 byId('closeProduct').onclick=()=>closeDialog(modal,modalShade);modalShade.onclick=()=>closeDialog(modal,modalShade);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(modal.classList.contains('open'))closeDialog(modal,modalShade);else if(drawer.classList.contains('open'))closeBag()}});
 document.querySelectorAll('.bagbtn').forEach(b=>{b.removeAttribute('onclick');b.addEventListener('click',openBag)});
