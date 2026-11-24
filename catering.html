@@ -42,7 +42,7 @@ footer{text-align:center;padding:28px;color:#8b6072;font-size:13px;border-top:1p
 <label class="choice"><input type="radio" name="packaging" value="standard" checked> Standard packaging · included</label>
 <label class="choice"><input type="radio" name="packaging" value="box"> Signature Box Bow · $2 per dessert box<small>Each cake or cookie bar box is tied with your chosen ribbon color.</small></label>
 <label class="choice" id="individualBowChoice"><input type="radio" name="packaging" value="individual"> Individual Cake Bows · <strong id="individualBowPrice"></strong><small>Each mini cake is individually finished with a ribbon bow. Perfect for party favors, weddings and baby showers. Available for mixed and mini-cake-only packages.</small></label>
-<div id="boxCountField" class="field hidden"><label for="boxCount">Number of dessert boxes receiving a ribbon</label><input id="boxCount" name="boxCount" type="number" min="1" max="60" step="1" value="1"></div>
+<div id="boxCountField" class="field hidden"><label for="boxCount">Number of dessert boxes receiving a ribbon</label><input id="boxCount" name="boxCount" type="number" min="1" max="100" step="1" value="1"></div>
 <div id="ribbonField" class="field hidden"><label for="ribbonColor">Choose ribbon color</label><select name="ribbonColor" id="ribbonColor"><option value="">Select a color</option><option>Gold Glitter</option><option>Silver Glitter</option><option>White</option><option>Light Pink</option><option>Hot Pink</option><option>Peach</option><option>Orange</option><option>Red</option><option>Burgundy</option><option>Sage Green</option><option>Royal Blue</option><option>Navy Blue</option><option>Purple</option><option>Black</option></select></div>
 </section>
 <section class="panel"><div class="section-heading"><span class="step">4</span><h2>Tell us about your celebration</h2></div>
@@ -158,7 +158,7 @@ form.addEventListener('submit',async e=>{
  if(!form.reportValidity())return;
  if(field('eventDate').value<dateMin()){result.className='result error';result.textContent='Catering must be requested at least 10 days in advance.';return;}
  const v=calc(),mode=packaging();
- if(mode==='box'&&(!Number.isInteger(Number(field('boxCount').value))||Number(field('boxCount').value)<1||Number(field('boxCount').value)>60)){result.className='result error';result.textContent='Choose between 1 and 60 boxes for signature bows.';return;}
+ if(mode==='box'&&(!Number.isInteger(Number(field('boxCount').value))||Number(field('boxCount').value)<1||Number(field('boxCount').value)>100)){result.className='result error';result.textContent='Choose between 1 and 100 boxes for signature bows.';return;}
  const payload={
  action:'submitCateringRequest',packageId:p.id,
  miniCakeFlavors:flavors.cakes.filter(n=>state.cakes[n]>0).map(name=>({name:name,quantity:Number(state.cakes[name])})),
