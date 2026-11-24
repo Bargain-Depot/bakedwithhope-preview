@@ -17,11 +17,11 @@ const CATER_PACKAGES = {
   "sweet-affair":{name:"The Sweet Affair",cakes:18,bars:18,price:140,tres:9,bows:7,addon:true},
   "party-edit":{name:"The Party Edit",cakes:24,bars:24,price:180,tres:12,bows:10,addon:true},
   "grand-celebration":{name:"The Grand Celebration",cakes:36,bars:36,price:270,tres:18,bows:15,addon:true},
-  "mini-24":{name:"24 Mini Cakes",cakes:24,bars:0,price:100,tres:12},
-  "mini-36":{name:"36 Mini Cakes",cakes:36,bars:0,price:150,tres:18},
-  "mini-48":{name:"48 Mini Cakes",cakes:48,bars:0,price:195,tres:24},
-  "mini-60":{name:"60 Mini Cakes",cakes:60,bars:0,price:240,tres:30},
-  "mini-72":{name:"72 Mini Cakes",cakes:72,bars:0,price:285,tres:36},
+  "mini-24":{name:"24 Mini Cakes",cakes:24,bars:0,price:100,tres:12,bows:10},
+  "mini-36":{name:"36 Mini Cakes",cakes:36,bars:0,price:150,tres:18,bows:15},
+  "mini-48":{name:"48 Mini Cakes",cakes:48,bars:0,price:195,tres:24,bows:20},
+  "mini-60":{name:"60 Mini Cakes",cakes:60,bars:0,price:240,tres:30,bows:25},
+  "mini-72":{name:"72 Mini Cakes",cakes:72,bars:0,price:285,tres:36,bows:30},
   "bar-24":{name:"24 Cookie Bars",cakes:0,bars:24,price:85},
   "bar-36":{name:"36 Cookie Bars",cakes:0,bars:36,price:120},
   "bar-48":{name:"48 Cookie Bars",cakes:0,bars:48,price:155},
@@ -93,7 +93,7 @@ function submitCateringRequest_(data) {
     mode=String(packaging.mode||"standard"),boxes=mode==="box"?Number(packaging.boxCount):0,
     ribbon=mode==="standard"?"":String(packaging.ribbonColor||"");
   if(!["standard","box","individual"].includes(mode))throw new Error("Invalid packaging option.");
-  if(mode==="individual"&&!p.addon)throw new Error("Individual cake bow pricing applies to mixed packages only.");
+  if(mode==="individual"&&!p.cakes)throw new Error("Individual cake bows require a package with mini cakes.");
   if(mode==="box"&&(!Number.isInteger(boxes)||boxes<1||boxes>60))throw new Error("Choose 1–60 signature box bows.");
   if(mode!=="standard"&&!CATER_RIBBON_COLORS.includes(ribbon))throw new Error("Choose a ribbon color.");
   const total=p.price+(tres?p.tres||0:0)+(cakeAddon?30:0)+
