@@ -187,7 +187,7 @@ form.addEventListener('submit',async e=>{
   'Fulfillment: '+payload.fulfillment+' '+payload.deliveryAddress,'Notes: '+payload.notes,
   'Estimated total: '+money(v.total),'50 percent deposit after approval: '+money(v.deposit)];
  const link=document.createElement('a');
- link.href='mailto:bakedwithhope.ma@gmail.com?subject='+encodeURIComponent('Catering inquiry from '+payload.name)+'&body='+encodeURIComponent(lines.join('\\n'));
+ link.href='mailto:bakedwithhope.ma@gmail.com?subject='+encodeURIComponent('Catering inquiry from '+payload.name)+'&body='+encodeURIComponent(lines.join(String.fromCharCode(10)));
  link.textContent='Email Tina these catering details instead →';
  link.style.display='block';link.style.marginTop='12px';link.style.fontWeight='800';
  result.appendChild(link);
