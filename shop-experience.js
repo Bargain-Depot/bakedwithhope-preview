@@ -4,7 +4,7 @@
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const fmt=n=>'$'+Number(n).toFixed(2);
-const cats=['Mini Cakes','8×8 Cakes','Cookie Bars','Sweet Bundles','Build Your Own Treat Box','Dirty Sodas'];
+const cats=['Mini Cakes','8×8 Cakes','Cookie Bars','Sweet Bundles','Build Your Own Treat Box','Dirty Sodas','T-Shirts'];
 const mini=[{count:1,name:'Single Mini',price:5.5},{count:2,name:'Duo Pack',price:11},{count:4,name:'Signature Pack',price:20},{count:6,name:'Family Pack',price:29},{count:8,name:'Sampler Box',price:38},{count:12,name:'Celebration Box',price:54}];
 const bars=[{count:1,name:'Single Bar',price:4},{count:2,name:'Two Bars',price:8},{count:4,name:'Four Bars',price:16},{count:6,name:'Six Bars',price:24}];
 const mixed=[{count:4,name:'4 Treats',price:18},{count:6,name:'6 Treats',price:26},{count:8,name:'8 Treats',price:34},{count:12,name:'12 Treats',price:49}];
@@ -16,9 +16,12 @@ const categoryInfo={
 'Cookie Bars':['♥','Cookie bars','Mix your favorite cookie bars in one box.'],
 'Sweet Bundles':['🎀','Sweet bundles','A little cake, a little cookie bar, a lot of joy.'],
 'Build Your Own Treat Box':['✧','Mix & match','Make one box with mini cakes and cookie bars.'],
-'Dirty Sodas':['🥤','Dirty sodas','Three flavors · 16 oz · $3 each.']
+'Dirty Sodas':['🥤','Dirty sodas','Three flavors · 16 oz · $3 each.'],
+'T-Shirts':['♡','Baked with Hope tees','Wear the hope. Pick your shirt color, lettering and size.']
 };
-const state={category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',cakeMessageEnabled:false,cakeMessage:'',cakeMessageChocolate:'',glitter:false,glitterColor:''};
+const shirtCombos=[{shirt:'Black',print:'Pink'},{shirt:'Black',print:'White'},{shirt:'White',print:'Pink'},{shirt:'White',print:'Black'}];
+const shirtSizes=['XS','Small','Medium','Large','XL'];
+const state={shirtCombo:0,shirtSize:'Small',shirtQty:1,category:cats.includes(category)?category:'Mini Cakes',stage:0,size:4,bundle:0,picks:{},tres:{},filter:'all',drink:0,drinkSize:'16 oz',addons:[],occasion:'',packaging:'none',ribbon:'',card:'',message:'',notes:'',topper:false,topperColor:'',cakeMessageEnabled:false,cakeMessage:'',cakeMessageChocolate:'',glitter:false,glitterColor:''};
 const choiceSet=()=>state.category==='Mini Cakes'?mini:state.category==='Cookie Bars'?bars:state.category==='Build Your Own Treat Box'?mixed:state.category==='8×8 Cakes'?[{count:1,name:'8×8 Celebration Cake',price:35}]:bundles;
 const chosen=()=>state.category==='Sweet Bundles'?bundles[state.bundle]:choiceSet().find(v=>v.count===state.size)||choiceSet()[0];
 const numberSelected=()=>Object.values(state.picks).reduce((a,n)=>a+n,0);
@@ -32,9 +35,10 @@ const selectedCaramel=()=>full()&&state.picks.caramel?4:0;
 const packagingCharge=()=>state.packaging==='ribbon'?2:state.packaging==='card'?full()?2:3:0;
 const eventCharge=()=>packagingCharge()+(full()&&state.topper?2:0)+(full()&&state.cakeMessageEnabled?2:0)+(full()&&state.glitter?2:0);
 const sodaBase=()=>3;
-const baseCost=()=>state.category==='Dirty Sodas'?sodaBase():full()?35:chosen().price;
-const totalCost=()=>baseCost()+((state.category==='Build Your Own Treat Box'||state.category==='Cookie Bars'||state.category==='Dirty Sodas')?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
+const baseCost=()=>state.category==='T-Shirts'?25*state.shirtQty:state.category==='Dirty Sodas'?sodaBase():full()?35:chosen().price;
+const totalCost=()=>state.category==='T-Shirts'?baseCost():baseCost()+((state.category==='Build Your Own Treat Box'||state.category==='Cookie Bars'||state.category==='Dirty Sodas')?0:miniTres()+selectedCaramel())+(full()||state.category==='Mini Cakes'||state.category==='Cookie Bars'?eventCharge():0);
 const complete=()=>{
+ if(state.category==='T-Shirts')return shirtSizes.includes(state.shirtSize)&&state.shirtQty>=1&&state.shirtQty<=20;
  if(!hasFlavors())return true;
  if(numberSelected()!==limit())return false;
  if(state.category==='Sweet Bundles')return selectedType('cakes')===chosen().cakes&&selectedType('bars')===chosen().bars;
@@ -51,11 +55,12 @@ const fieldsOk=()=>{
 const photo=(p)=>p.img||'';
 
 function reset(){
+ state.shirtCombo=0;state.shirtSize='Small';state.shirtQty=1;
  state.stage=0;state.picks={};state.tres={};state.filter='all';state.size=state.category==='8×8 Cakes'?1:state.category==='Mini Cakes'?4:state.category==='Cookie Bars'?2:4;
  state.bundle=0;state.drink=0;state.drinkSize='16 oz';state.addons=[];
  state.occasion='';state.packaging='none';state.ribbon='';state.card='';state.message='';state.notes='';state.topper=false;state.topperColor='';state.cakeMessageEnabled=false;state.cakeMessage='';state.cakeMessageChocolate='';state.glitter=false;state.glitterColor='';
 }
-const stageLabels=()=>state.category==='Dirty Sodas'?['Pick a flavor','Your drink','Review']:full()?['Your cake','Choose flavor','Review']:['Choose a box','Pick flavors','Review'];
+const stageLabels=()=>state.category==='T-Shirts'?['Choose your design','Size & quantity','Review']:state.category==='Dirty Sodas'?['Pick a flavor','Your drink','Review']:full()?['Your cake','Choose flavor','Review']:['Choose a box','Pick flavors','Review'];
 const heading=()=>categoryInfo[state.category];
 function navigate(cat){
  if(!cats.includes(cat))return;
@@ -79,6 +84,7 @@ function priceCards(options,indexMode=false){
 }
 function sizeStage(){
  const c=state.category;
+ if(c==='T-Shirts')return '<div class="ux-intro"><h3>Wear the hope ♡</h3><p>Four classic color combinations. Every shirt is $25.</p></div><div class="bwh-shirt-grid">'+shirtCombos.map((v,i)=>'<button class="bwh-shirt-choice '+(state.shirtCombo===i?'selected':'')+'" type="button" data-ux-shirt-combo="'+i+'" aria-pressed="'+(state.shirtCombo===i)+'"><span class="bwh-shirt-visual '+(v.shirt==='Black'?'is-black':'is-white')+'"><span class="bwh-shirt-ink '+(v.print==='Pink'?'is-pink':v.print==='White'?'is-white':'is-black')+'">baked<br>with hope ♡</span></span><strong>'+v.shirt+' shirt</strong><small>'+v.print+' lettering</small><b>$25</b></button>').join('')+'</div><p class="ux-note">Visuals are color previews, not final product photos.</p>';
  if(c==='Dirty Sodas')return '<div class="ux-intro"><h3>Choose your sip ♡</h3><p>Three dreamy favorites · 16 oz · just $3 each.</p><p class="ux-soda-pickup-notice">♡ Dirty sodas are available for regular pickup only. UMass Boston (UMB) pickup is unavailable because the drinks need to stay cold and fresh.</p></div>'+drinks.map((d,i)=>'<button type="button" class="ux-drink-choice '+(state.drink===i?'selected':'')+'" data-ux-drink="'+i+'"><img src="'+d.img+'" alt="" loading="lazy"><span><strong>'+d.icon+' '+esc(d.name)+'</strong><small>16 oz · $3.00</small><small class="ux-drink-description">'+esc(d.description)+'</small></span><span class="ux-check">'+(state.drink===i?'✓':'♡')+'</span></button>').join('');
  if(full())return '<div class="ux-intro"><h3>Your celebration cake ♡</h3><p>A lovely 8×8 cake made for your occasion. Pick a flavor next.</p></div>'+priceCards([{count:1,name:'8×8 Celebration Cake',price:35}])+'<p class="ux-note">Starting at $35 · optional flavor and occasion upgrades shown before adding.</p>';
  if(c==='Sweet Bundles')return '<div class="ux-intro"><h3>Pick a sweet bundle ♡</h3><p>Every bundle shows exactly what is included and its total price.</p></div>'+priceCards(bundles,true);
@@ -104,6 +110,7 @@ function productList(){
  }).join('')+'</div>'+(complete()?'<p class="ux-ready">♡ Your box is ready to review!</p>':'<p class="ux-note">Choose '+(max-sel)+' more '+(max-sel===1?'treat':'treats')+' to continue.</p>');
 }
 function flavorStage(){
+ if(state.category==='T-Shirts')return '<div class="ux-intro"><h3>Find your fit ♡</h3><p>Sizes XS–XL · $25 per shirt</p></div><div class="bwh-shirt-selection"><div class="bwh-shirt-summary"><strong>'+shirtCombos[state.shirtCombo].shirt+' shirt · '+shirtCombos[state.shirtCombo].print+' writing</strong><span>$25 each</span></div><label class="ux-field">Select size <select data-ux-shirt-size>'+shirtSizes.map(v=>'<option value="'+v+'" '+(state.shirtSize===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><label class="ux-field">Quantity (up to 20 per order) <input type="number" min="1" max="20" step="1" value="'+state.shirtQty+'" data-ux-shirt-qty></label><p class="bwh-shirt-total">Subtotal: <strong>'+fmt(totalCost())+'</strong></p></div>';
  if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p><p>'+esc(drinks[state.drink].description)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$4.00</strong><p>All dirty sodas are 16 oz and $4 each. No add-ons or extra charges.</p></div>';
  return productList();
 }
@@ -121,6 +128,7 @@ function pickedNames(){
 }
 function reviewStage(){
  const c=state.category;
+ if(c==='T-Shirts'){const v=shirtCombos[state.shirtCombo];return '<div class="ux-intro"><h3>Ready to wear your hope? ♡</h3></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SHIRTS</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+v.shirt+' shirt + '+v.print+' writing</h4><p>Size: '+esc(state.shirtSize)+' · Quantity: '+state.shirtQty+'</p><p>$25 per shirt · Regular or UMass Boston pickup at approved dates</p></div>';}
  const selection=c==='Dirty Sodas'?drinks[state.drink].icon+' '+drinks[state.drink].name+' · '+'16 oz':pickedNames();
  const name=c==='Sweet Bundles'?chosen().name:c==='8×8 Cakes'?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name:c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' treats':chosen().name;
  return '<div class="ux-intro"><h3>Your sweet little order ♡</h3><p>Everything together in one tidy place.</p></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SELECTION</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(name)+'</h4><p>'+esc(selection)+'</p><dl><div><dt>Base price</dt><dd>'+fmt(baseCost())+'</dd></div>'+(miniTres()+selectedCaramel()>0?'<div><dt>Flavor upgrades</dt><dd>'+fmt(miniTres()+selectedCaramel())+'</dd></div>':'')+(eventCharge()>0&&(full()||c==='Mini Cakes'||c==='Cookie Bars')?'<div><dt>Occasion extras</dt><dd>'+fmt(eventCharge())+'</dd></div>':'')+'<div class="ux-total"><dt>Estimated subtotal</dt><dd>'+fmt(totalCost())+'</dd></div></dl></div>'+eventOptions()+'<p class="ux-note">No checkout or payment is processed in this preview. Availability and final pricing require Tina’s confirmation.</p>';
@@ -144,6 +152,9 @@ function bind(){
   else if(item)state.size=item.count;
   state.picks={};state.tres={};render();
  });
+ root.querySelectorAll('[data-ux-shirt-combo]').forEach(b=>b.onclick=()=>{state.shirtCombo=Number(b.dataset.uxShirtCombo);render()});
+ root.querySelectorAll('[data-ux-shirt-size]').forEach(el=>el.onchange=()=>{state.shirtSize=el.value;render()});
+ root.querySelectorAll('[data-ux-shirt-qty]').forEach(el=>el.onchange=()=>{const q=Number(el.value);state.shirtQty=Number.isInteger(q)?Math.min(20,Math.max(1,q)):1;render()});
  root.querySelectorAll('[data-ux-drink]').forEach(b=>b.onclick=()=>{state.drink=Number(b.dataset.uxDrink);render()});
  root.querySelectorAll('[data-ux-filter]').forEach(b=>b.onclick=()=>{state.filter=b.dataset.uxFilter;render()});
  root.querySelectorAll('[data-ux-plus]').forEach(b=>b.onclick=()=>{
@@ -179,6 +190,13 @@ function bind(){
  });
 }
 function addToBag(){
+ if(state.category==='T-Shirts'){
+  if(!complete())return;
+  const color=shirtCombos[state.shirtCombo];
+  bag.push({name:'Baked with Hope T-Shirt',detail:color.shirt+' shirt + '+color.print+' writing · '+state.shirtSize,price:25,quantity:state.shirtQty,category:'T-Shirts'});
+  renderBag();document.querySelector('.shop-header .bagbtn')?.click();
+  state.stage=0;state.shirtQty=1;state.shirtSize='Small';render();return;
+ }
  if(!complete()||!fieldsOk()){
   const warning=$('builder').querySelector('.ux-warning')||document.createElement('p');
   warning.className='ux-warning';warning.setAttribute('role','alert');
