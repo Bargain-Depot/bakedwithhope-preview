@@ -6,7 +6,7 @@ if(!trigger||typeof window.bwhReadCart!=='function')return;
 const section=document.createElement('section');
 section.id='bwhTestCheckout';section.className='bwh-test-checkout';section.hidden=true;
 section.innerHTML=`<div class="bwh-test-checkout-inner"><button type="button" id="bwhTestClose" aria-label="Close checkout">×</button>
-<span class="bwh-test-flag">LIVE ORDER REQUEST</span><h2>Finish your order ♡</h2>
+<span class="bwh-test-flag">LIVE ORDER REQUEST</span><h2>Finish your order ♡</h2><button type="button" id="bwhCheckoutAddMore" style="border:2px solid #d49ab1;background:#fff0f6;color:#753e58;border-radius:999px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer;margin:4px 0 16px">＋ Add More Items</button>
 <p class="bwh-test-warning">This submits an order to the existing bakery dashboard and uses weekly capacity. Please review before sending. Payment is not collected online.</p>
 <form id="bwhTestForm">
 <div class="bwh-test-fields">
@@ -123,6 +123,7 @@ trigger.addEventListener('click',()=>{
  section.hidden=false;section.scrollIntoView({behavior:'smooth',block:'start'});
 });
 document.getElementById('bwhTestClose').addEventListener('click',()=>{if(!sending)section.hidden=true;});
+document.getElementById('bwhCheckoutAddMore').addEventListener('click',()=>{if(sending)return;section.hidden=true;document.getElementById('order')?.scrollIntoView({behavior:'smooth',block:'start'});});
 window.addEventListener('bwh:availability',()=>{
  const a=current(),ready=a.ready===true&&a.open===true;
  syncCheckoutButtons();
@@ -155,6 +156,7 @@ form.addEventListener('submit',async event=>{
  const categoryOf=item=>{
   const name=String(item.name||'');
   if(item.category==='Dirty Sodas'||/dirty soda/i.test(name))return 'DIRTY SODAS';
+  if(item.category==='T-Shirts'||/baked with hope t-shirt/i.test(name))return 'T-SHIRTS';
   if(item.category==='Cookie Bars'||/cookie bar/i.test(name))return 'COOKIE BARS';
   if(item.category==='8×8 Cakes'||/8[×x]8|celebration cake/i.test(name))return 'CELEBRATION CAKES';
   if(item.category==='Sweet Bundles'||/bundle/i.test(name))return 'SWEET BUNDLES';
