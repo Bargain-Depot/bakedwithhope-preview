@@ -94,7 +94,7 @@ function submitCateringRequest_(data) {
     ribbon=mode==="standard"?"":String(packaging.ribbonColor||"");
   if(!["standard","box","individual"].includes(mode))throw new Error("Invalid packaging option.");
   if(mode==="individual"&&!p.cakes)throw new Error("Individual cake bows require a package with mini cakes.");
-  if(mode==="box"&&(!Number.isInteger(boxes)||boxes<1||boxes>60))throw new Error("Choose 1–60 signature box bows.");
+  if(mode==="box"&&(!Number.isInteger(boxes)||boxes<1||boxes>100))throw new Error("Choose 1–100 signature box bows.");
   if(mode!=="standard"&&!CATER_RIBBON_COLORS.includes(ribbon))throw new Error("Choose a ribbon color.");
   const total=p.price+(tres?p.tres||0:0)+(cakeAddon?30:0)+
     (mode==="box"?boxes*2:mode==="individual"?p.bows:0);
