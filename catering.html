@@ -41,7 +41,7 @@ footer{text-align:center;padding:28px;color:#8b6072;font-size:13px;border-top:1p
 <p class="muted"><strong>Custom packaging</strong> · Standard packaging is included at no additional charge.</p>
 <label class="choice"><input type="radio" name="packaging" value="standard" checked> Standard packaging · included</label>
 <label class="choice"><input type="radio" name="packaging" value="box"> Signature Box Bow · $2 per dessert box<small>Each cake or cookie bar box is tied with your chosen ribbon color.</small></label>
-<label class="choice" id="individualBowChoice"><input type="radio" name="packaging" value="individual"> Individual Cake Bows · <strong id="individualBowPrice"></strong><small>Each mini cake has its own ribbon bow. Great for favors, weddings and baby showers. Package pricing for mixed packages.</small></label>
+<label class="choice" id="individualBowChoice"><input type="radio" name="packaging" value="individual"> Individual Cake Bows · <strong id="individualBowPrice"></strong><small>Each mini cake is individually finished with a ribbon bow. Perfect for party favors, weddings and baby showers. Available for mixed and mini-cake-only packages.</small></label>
 <div id="boxCountField" class="field hidden"><label for="boxCount">Number of dessert boxes receiving a ribbon</label><input id="boxCount" name="boxCount" type="number" min="1" max="60" step="1" value="1"></div>
 <div id="ribbonField" class="field hidden"><label for="ribbonColor">Choose ribbon color</label><select name="ribbonColor" id="ribbonColor"><option value="">Select a color</option><option>Gold Glitter</option><option>Silver Glitter</option><option>White</option><option>Light Pink</option><option>Hot Pink</option><option>Peach</option><option>Orange</option><option>Red</option><option>Burgundy</option><option>Sage Green</option><option>Royal Blue</option><option>Navy Blue</option><option>Purple</option><option>Black</option></select></div>
 </section>
@@ -70,7 +70,7 @@ mixed:{label:'Cakes + cookie bars',packs:[
 {id:'sweet-affair',name:'The Sweet Affair',cakes:18,bars:18,price:140,saving:31,tres:9,bows:7},
 {id:'party-edit',name:'The Party Edit',cakes:24,bars:24,price:180,saving:48,tres:12,bows:10},
 {id:'grand-celebration',name:'The Grand Celebration',cakes:36,bars:36,price:270,saving:72,tres:18,bows:15}]},
-cakes:{label:'Mini cakes only',packs:[{id:'mini-24',name:'24 Mini Cakes',cakes:24,bars:0,price:100,tres:12},{id:'mini-36',name:'36 Mini Cakes',cakes:36,bars:0,price:150,tres:18},{id:'mini-48',name:'48 Mini Cakes',cakes:48,bars:0,price:195,tres:24},{id:'mini-60',name:'60 Mini Cakes',cakes:60,bars:0,price:240,tres:30},{id:'mini-72',name:'72 Mini Cakes',cakes:72,bars:0,price:285,tres:36}]},
+cakes:{label:'Mini cakes only',packs:[{id:'mini-24',name:'24 Mini Cakes',cakes:24,bars:0,price:100,tres:12,bows:10},{id:'mini-36',name:'36 Mini Cakes',cakes:36,bars:0,price:150,tres:18,bows:15},{id:'mini-48',name:'48 Mini Cakes',cakes:48,bars:0,price:195,tres:24,bows:20},{id:'mini-60',name:'60 Mini Cakes',cakes:60,bars:0,price:240,tres:30,bows:25},{id:'mini-72',name:'72 Mini Cakes',cakes:72,bars:0,price:285,tres:36,bows:30}]},
 bars:{label:'Cookie bars only',packs:[{id:'bar-24',name:'24 Cookie Bars',cakes:0,bars:24,price:85},{id:'bar-36',name:'36 Cookie Bars',cakes:0,bars:36,price:120},{id:'bar-48',name:'48 Cookie Bars',cakes:0,bars:48,price:155},{id:'bar-60',name:'60 Cookie Bars',cakes:0,bars:60,price:185},{id:'bar-72',name:'72 Cookie Bars',cakes:0,bars:72,price:215},{id:'bar-96',name:'96 Cookie Bars',cakes:0,bars:96,price:280}]}
 };
 const flavors={
@@ -123,8 +123,8 @@ function renderOptions(){
  const celebrationFlavor=field('celebrationFlavor'),prior=celebrationFlavor.value;
  celebrationFlavor.innerHTML='<option value="">Select 8×8 cake flavor</option>'+flavors.cakes.map(f=>'<option>'+f+'</option>').join('');if(flavors.cakes.includes(prior))celebrationFlavor.value=prior;
  celebrationFlavor.required=mixed&&field('celebration').checked;
- $('individualBowChoice').classList.toggle('hidden',!mixed);$('individualBowPrice').textContent='+'+money(p.bows||0);
- if(!mixed&&packaging()==='individual')form.querySelector('input[value="standard"][name="packaging"]').checked=true;
+ $('individualBowChoice').classList.toggle('hidden',!p.cakes);$('individualBowPrice').textContent='+'+money(p.bows||0);
+ if(!p.cakes&&packaging()==='individual')form.querySelector('input[value="standard"][name="packaging"]').checked=true;
  $('boxCountField').classList.toggle('hidden',packaging()!=='box');$('ribbonField').classList.toggle('hidden',packaging()==='standard');
  field('boxCount').required=packaging()==='box';field('ribbonColor').required=packaging()!=='standard';
 }
