@@ -1,74 +1,110 @@
-# Baked with Hope — shirts, catering and pickup-time improvements
+# Baked with Hope — Shirts, Catering & Pickup Times
 
-## What was added to the website
+## Storefront implementation
 
-- T-shirts at **$25**: black/pink, black/white, white/pink, white/black, in XS, Small, Medium, Large and XL. Add one or more shirts to the existing shopping bag, alongside desserts.
-- Dedicated **catering.html** form with the 4 mixed packages, 5 mini-cake packages, and 6 cookie bar packages. It collects flavor counts, occasion/theme, contact info, date/time needed, notes and optional delivery requests.
-- Catering extras: mixed-package 8x8 cake **+$30**, Tres Leches upgrades at the specified tier prices, Signature Box Bows **+$2 per box**, and individual cake bows at the four specified mixed-package prices.
-- Live estimated catering total and **50% deposit** display. Minimum **24 desserts** and **10-day advance notice**.
-- **Add More Items** inside normal checkout, without abandoning the shopping bag.
-- Bulk multi-click pickup times for regular and UMass Boston calendars once the Apps Script addon is installed.
+The GitHub Pages website now contains the requested products, prices and interactions.
 
-## Important: activate the backend
+### T-shirts — $25 each
 
-The static website code is in GitHub, but the Google Apps Script backend is **not** automatically modified or deployed by a GitHub commit. Until you finish these steps, catering form submission returns an error.
+- Black shirt + pink writing; black shirt + white writing; white shirt + pink writing; white shirt + black writing
+- XS, Small, Medium, Large and XL
+- Click a shirt color combination to preview its matching front-and-back design
+- **No pickup date for shirt-only orders.** Tina contacts the customer after the shirts arrive, then arranges pickup
+- For a mixed shirt-and-dessert bag, the selected date/time applies to the desserts **only**. Shirt pickup is arranged separately
+- Shirt-only orders have a separate spreadsheet tab and do **not** use the regular dessert order limit
 
-### 1. Add the two Apps Script files
+### Catering
 
-In the existing spreadsheet's **Extensions → Apps Script** editor, choose **+ → Script** twice and paste the complete contents of:
+The dedicated [catering page](catering.html) offers the exact mixed, mini-cake-only, and cookie-bar-only packages requested, with their stated tier prices. It allows customers to choose quantities by flavor and enter their occasion/theme, date/time needed, delivery inquiry, notes and contact details.
 
-- [CateringAddon.gs](apps-script/CateringAddon.gs) — validates catering requests, recalculates pricing, records them in a new **Catering Requests** sheet, sends owner and customer emails, and supports status updates.
-- [AdminEnhancements.gs](apps-script/AdminEnhancements.gs) — keeps your existing owner dashboard, adds catering requests, and lets you tap multiple pickup times then **Add Selected Times** for both pickup calendars.
+- **Four mixed packages:** Sweet Gathering $95; The Sweet Affair $140; The Party Edit $180; The Grand Celebration $270, with their respective Tres Leches upgrades ($6, $9, $12, $18), individual bows ($5, $7, $10, $15), and optional 8×8 cake (+$30)
+- **Five mini-cake packages:** 24/$100, 36/$150, 48/$195, 60/$240, 72/$285, with Tres Leches upgrades ($12, $18, $24, $30, $36)
+- **Individual cake bows for mini-cake-only packages:** 24/+ $10, 36/+ $15, 48/+ $20, 60/+ $25, 72/+ $30
+- **Six cookie bar packages:** 24/$85, 36/$120, 48/$155, 60/$185, 72/$215, 96/$280
+- **Signature Box Bow:** +$2 per dessert box, with a customer-selected ribbon color
+- Standard packaging included, minimum 24 desserts, at least 10 days' notice, and a 50% deposit to secure a confirmed catering order
+- Live price estimate and 50% deposit calculation. **An inquiry is not a confirmed booking** and does not collect money on submission
+- The optional 8×8 cake add-on is available on the mixed packages
 
-Do not delete your existing Code.gs or your Sheets data.
+### Cart and owner calendar
 
-### 2. Make two small edits in your existing Code.gs
+- The bag and checkout contain **Add More Items** buttons. They return to the shopping tabs without navigating away or clearing the bag
+- The owner dashboard enhancement adds **multi-select pickup times** for both normal pickup and UMass Boston. Tap several times and then click **Add Selected Times**
+- The owner dashboard also gets private **Catering Requests** and **T-shirt Orders** panels. The latter tracks arrivals, pickup arrangements and payment status
 
-**Edit A (owner dashboard preview):** In doGet(), find this existing call:
+## Important: activate Google Apps Script separately
 
-    getSecureAdminHtml_()
+GitHub commits **do not** modify Tina's Google Apps Script deployment. The catering and arrival-based T-shirt submission routes will **not work live** until the Apps Script changes below are installed and the existing web app is redeployed.
 
-Replace only that call with:
+### Step 1 — Add three files to the existing spreadsheet-bound Apps Script project
 
-    getSecureAdminHtmlEnhanced_()
+In the existing spreadsheet, go to **Extensions → Apps Script**. Add three Script files using **+ → Script**. Copy the full code from:
 
-**Edit B (catering routing):** In doPost(), immediately after:
+1. [CateringAddon.gs](apps-script/CateringAddon.gs)
+2. [ShirtOrdersAddon.gs](apps-script/ShirtOrdersAddon.gs)
+3. [AdminEnhancements.gs](apps-script/AdminEnhancements.gs)
 
-    const data = JSON.parse(e.postData.contents);
+Keep the current `Code.gs` and all existing tabs, data, settings, password hashes and sessions intact. These addon source files are *not* automatically installed by GitHub.
 
-Insert:
+### Step 2 — Make these two tiny edits to Code.gs
 
-    if (String(data.action || "") === "submitCateringRequest") {
-      return jsonResponse_(submitCateringRequest_(data));
-    }
+**Edit A:** In `doGet(e)`, within the `page === "admin"` branch, change
 
-Keep the existing submitOrder handling below this insertion unchanged.
+```js
+getSecureAdminHtml_()
+```
 
-### 3. Setup and deploy
+to
 
-1. Save all Apps Script files.
-2. Select **setupCateringRequests** in the function dropdown and run it **once**. Grant the requested Sheets/Mail permissions in your own Google account.
-3. Go to **Deploy → Manage deployments → Edit** (pencil) → choose **New version** → **Deploy**. Updating the existing deployment helps preserve the storefront's configured /exec URL.
-4. Open the owner dashboard via the existing admin URL and sign in. Check **Catering Requests** and the multiple-time selector for both calendars.
-5. Test one catering inquiry dated at least 10 days ahead. Confirm it creates a row in the new sheet and sends your notifications. The event date is **not automatically confirmed**; do so only after you can accept it.
+```js
+getSecureAdminHtmlEnhanced_()
+```
 
-### 4. Optional owner checks
+**Edit B:** In `doPost(e)`, immediately after
 
-- Shirts appear as a separate **T-SHIRTS** section in the enhanced dashboard's pickup preparation cards. The original Orders sheet is not migrated or overwritten.
-- Shirt orders still follow the existing checkout rule: approved regular/UMass pickup date, payment required in 24 hours, and normal owner processing.
-- Catering inquiries are recorded independently of the ordinary weekly order limit. They require your review and a 50% deposit to secure the date. Any delivery fee is quoted separately.
-- Individual cake bow prices were supplied only for the four **mixed packages**, so the form does not invent a price for mini-cake-only orders.
-- The 8×8 add-on is enabled for the four **mixed catering packages**, matching the placement of the offer in the new price list.
-- A customer may choose the number of dessert boxes receiving a Signature Box Bow, at $2 each.
-- The catering sheet contains customer contact information; keep access restricted.
+```js
+const data = JSON.parse(e.postData.contents);
+```
 
-## Full code and preview
+insert this **before** the existing `submitOrder` action check:
 
-- [Catering page](catering.html)
-- [Storefront](orders.html)
-- [Shirt builder code](shop-experience.js)
-- [Checkout code](test-checkout.js)
-- [Catering backend addon](apps-script/CateringAddon.gs)
-- [Owner dashboard addon](apps-script/AdminEnhancements.gs)
+```js
+if (String(data.action || "") === "submitCateringRequest") {
+  return jsonResponse_(submitCateringRequest_(data));
+}
+if (String(data.action || "") === "submitShirtOrder") {
+  return jsonResponse_(submitShirtOrder_(data));
+}
+```
 
-The site files were edited in the **Bargain-Depot/bakedwithhope-preview** repository. A CNAME file in that repository references bakedwithhope.com; check which repository GitHub Pages is currently publishing before announcing the changes publicly.
+Do not remove the existing `submitOrder` branch or its locking and validation.
+
+### Step 3 — Set up and redeploy
+
+Save all files. Run **setupCateringRequests()** and **setupShirtOrders()** once each from the Apps Script function dropdown. Authorize access as the bakery account owner.
+
+Go to **Deploy → Manage deployments → Edit (pencil) → New version → Deploy**. Update the *existing* deployment so its `/exec` URL stays unchanged.
+
+### Step 4 — Verify before announcing the launch
+
+1. Sign into the owner dashboard and confirm both new panels appear.
+2. Test a normal pickup day and UMass pickup day using multi-select, then check the stored times.
+3. Test a catering inquiry at least 10 days ahead; check the new **Catering Requests** tab and both confirmation emails.
+4. Test a shirt-only order; verify it asks for no pickup date, arrives in **Shirt Orders**, sends confirmations, and does not change the dessert capacity.
+5. Test a mixed shirt-and-dessert order, and make sure the dessert pickup date is recorded but the shirt pickup note says Tina will contact the customer after arrival.
+6. Test the bag **Add More Items** flow on mobile: add an item, close the bag via that button, add another item, and verify both remain in the same bag.
+
+If the browser displays old wording, refresh once and clear its site cache. The orders page asset version numbers have been updated.
+
+## Files
+
+- [Orders/shop page](orders.html)
+- [Catering form](catering.html)
+- [Ordering builder](shop-experience.js)
+- [Checkout](test-checkout.js)
+- [Order availability bridge](ordering-availability.js)
+- [Catering backend](apps-script/CateringAddon.gs)
+- [Shirts backend](apps-script/ShirtOrdersAddon.gs)
+- [Dashboard enhancements](apps-script/AdminEnhancements.gs)
+
+**Sweet Club was intentionally left unchanged.**
