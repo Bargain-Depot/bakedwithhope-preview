@@ -111,7 +111,7 @@ function productList(){
 }
 function flavorStage(){
  if(state.category==='T-Shirts')return '<div class="ux-intro"><h3>Find your fit ♡</h3><p>Sizes XS–XL · $25 per shirt</p></div><div class="bwh-shirt-selection"><div class="bwh-shirt-summary"><strong>'+shirtCombos[state.shirtCombo].shirt+' shirt · '+shirtCombos[state.shirtCombo].print+' writing</strong><span>$25 each</span></div><label class="ux-field">Select size <select data-ux-shirt-size>'+shirtSizes.map(v=>'<option value="'+v+'" '+(state.shirtSize===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><label class="ux-field">Quantity (up to 20 per order) <input type="number" min="1" max="20" step="1" value="'+state.shirtQty+'" data-ux-shirt-qty></label><p class="bwh-shirt-total">Subtotal: <strong>'+fmt(totalCost())+'</strong></p></div>';
- if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p><p>'+esc(drinks[state.drink].description)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$4.00</strong><p>All dirty sodas are 16 oz and $4 each. No add-ons or extra charges.</p></div>';
+ if(state.category==='Dirty Sodas')return '<div class="ux-intro"><h3>Your sweet sip ♡</h3><p>'+drinks[state.drink].icon+' '+esc(drinks[state.drink].name)+'</p><p>'+esc(drinks[state.drink].description)+'</p></div><div class="ux-drink-fixed"><span>SIZE</span><strong>16 oz</strong><span>PRICE</span><strong>$3.00</strong><p>All dirty sodas are 16 oz and $3 each. No add-ons or extra charges.</p></div>';
  return productList();
 }
 function swatches(values,selected,attr){
@@ -131,7 +131,7 @@ function reviewStage(){
  if(c==='T-Shirts'){const v=shirtCombos[state.shirtCombo];return '<div class="ux-intro"><h3>Ready to wear your hope? ♡</h3></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SHIRTS</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+v.shirt+' shirt + '+v.print+' writing</h4><p>Size: '+esc(state.shirtSize)+' · Quantity: '+state.shirtQty+'</p><p>$25 per shirt · Regular or UMass Boston pickup at approved dates</p></div>';}
  const selection=c==='Dirty Sodas'?drinks[state.drink].icon+' '+drinks[state.drink].name+' · '+'16 oz':pickedNames();
  const name=c==='Sweet Bundles'?chosen().name:c==='8×8 Cakes'?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name:c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' treats':chosen().name;
- return '<div class="ux-intro"><h3>Your sweet little order ♡</h3><p>Everything together in one tidy place.</p></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SELECTION</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(name)+'</h4><p>'+esc(selection)+'</p><dl><div><dt>Base price</dt><dd>'+fmt(baseCost())+'</dd></div>'+(miniTres()+selectedCaramel()>0?'<div><dt>Flavor upgrades</dt><dd>'+fmt(miniTres()+selectedCaramel())+'</dd></div>':'')+(eventCharge()>0&&(full()||c==='Mini Cakes'||c==='Cookie Bars')?'<div><dt>Occasion extras</dt><dd>'+fmt(eventCharge())+'</dd></div>':'')+'<div class="ux-total"><dt>Estimated subtotal</dt><dd>'+fmt(totalCost())+'</dd></div></dl></div>'+eventOptions()+'<p class="ux-note">No checkout or payment is processed in this preview. Availability and final pricing require Tina’s confirmation.</p>';
+ return '<div class="ux-intro"><h3>Your sweet little order ♡</h3><p>Everything together in one tidy place.</p></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SELECTION</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(name)+'</h4><p>'+esc(selection)+'</p><dl><div><dt>Base price</dt><dd>'+fmt(baseCost())+'</dd></div>'+(miniTres()+selectedCaramel()>0?'<div><dt>Flavor upgrades</dt><dd>'+fmt(miniTres()+selectedCaramel())+'</dd></div>':'')+(eventCharge()>0&&(full()||c==='Mini Cakes'||c==='Cookie Bars')?'<div><dt>Occasion extras</dt><dd>'+fmt(eventCharge())+'</dd></div>':'')+'<div class="ux-total"><dt>Estimated subtotal</dt><dd>'+fmt(totalCost())+'</dd></div></dl></div>'+eventOptions()+'<p class="ux-note">No online payment is collected. Checkout sends your request to the bakery and shows approved pickup availability.</p>';
 }
 function render(){
  const root=$('builder');if(!root)return;
@@ -139,7 +139,7 @@ function render(){
  const [icon,title,description]=heading();
  const content=state.stage===0?sizeStage():state.stage===1?flavorStage():reviewStage();
  const canContinue=state.stage===1?complete():true;
- root.innerHTML='<div class="ux-builder"><div class="ux-builder-heading"><span class="ux-micro">THE SWEET SHOP · '+esc(icon)+'</span><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p></div>'+stages()+'<div class="ux-stage" aria-live="polite">'+content+'</div><div class="ux-footer"><div class="ux-estimate"><small>ESTIMATED TOTAL</small><strong>'+fmt(totalCost())+'</strong></div><div class="ux-buttons">'+(state.stage>0?'<button type="button" class="ux-back" data-ux-action="back">← Back</button>':'')+(state.stage<2?'<button type="button" class="ux-next" data-ux-action="next" '+(!canContinue?'disabled':'')+'>'+(state.stage===0?'Choose flavors':'Review my order')+' →</button>':'<button type="button" class="ux-next" data-ux-action="add">Add to my bag ♡</button>')+'</div></div></div>';
+ root.innerHTML='<div class="ux-builder"><div class="ux-builder-heading"><span class="ux-micro">THE SWEET SHOP · '+esc(icon)+'</span><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p></div>'+stages()+'<div class="ux-stage" aria-live="polite">'+content+'</div><div class="ux-footer"><div class="ux-estimate"><small>ESTIMATED TOTAL</small><strong>'+fmt(totalCost())+'</strong></div><div class="ux-buttons">'+(state.stage>0?'<button type="button" class="ux-back" data-ux-action="back">← Back</button>':'')+(state.stage<2?'<button type="button" class="ux-next" data-ux-action="next" '+(!canContinue?'disabled':'')+'>'+(state.stage===0?(state.category==='T-Shirts'?'Choose size':'Choose flavors'):'Review my order')+' →</button>':'<button type="button" class="ux-next" data-ux-action="add">Add to my bag ♡</button>')+'</div></div></div>';
  bind();
 }
 function goStage(next){state.stage=Math.min(2,Math.max(0,next));render();$('builder').scrollIntoView({behavior:'smooth',block:'start'})}
@@ -221,7 +221,7 @@ function addToBag(){
  const msg=document.createElement('p');msg.className='ux-success';msg.setAttribute('role','status');msg.textContent='Added to your sweet bag! ♡';
  $('builder').querySelector('.ux-buttons')?.before(msg);
  state.picks={};state.tres={};state.stage=0;
- setTimeout(()=>{render()},850);
+ render();
 }
 const previousBagRender=renderBag;
 renderBag=function(){previousBagRender();document.body.classList.toggle('bag-has-items',bag.length>0);window.dispatchEvent(new Event('bwh:cart-changed'))};
