@@ -21,7 +21,67 @@ function getSecureAdminHtmlEnhanced_() {
   const css="<style>\n.bwh-bulk-time-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:235px;overflow-y:auto;padding:9px;background:#fffafd;border:2px solid #f0d1e0;border-radius:14px;margin-bottom:14px}\n.bwh-bulk-time{padding:8px 3px;background:#fff;border:1px solid #ebc5d8;border-radius:9px;color:#71465b;font-size:12px;box-shadow:none}\n.bwh-bulk-time[aria-pressed=\"true\"]{background:#b95781;color:#fff;border-color:#b95781;font-weight:900}\n.bwh-bulk-help{font-size:12px;line-height:1.5;color:#955275}\n#bwhAdminCateringList{display:grid;gap:15px;margin-top:15px}\n.bwh-catering-card{border:2px solid #efd0dc;border-radius:17px;background:#fff8fc;padding:17px;overflow-wrap:anywhere}\n.bwh-catering-card h3{margin:0 0 10px;color:#a95176}\n.bwh-catering-card p{margin:6px 0;font-size:13px;line-height:1.6}\n.bwh-catering-card select{padding:9px;max-width:100%;border:1px solid #e4b5c9;border-radius:10px;background:white}\n@media(max-width:580px){.bwh-bulk-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}\n</style>";
   const script="<script>(function(){\n\"use strict\";\n\n/* Include shirts as a separate preparation category without touching historical orders. */\nconst originalRenderDashboard=renderDashboard;\nrenderDashboard=function(){\n if(dashboardData&&Array.isArray(dashboardData.upcomingPickups)){\n  dashboardData.upcomingPickups.forEach(function(order){\n   const raw=String(order.flavorInfo||\"\");\n   if(!raw.includes(\"[T-SHIRTS]\"))return;\n   order.categories=Array.isArray(order.categories)?order.categories.slice():[];\n   order.categories=order.categories.filter(function(cat){return cat!==\"UNCLASSIFIED TREATS\";});\n   if(!order.categories.includes(\"T-SHIRTS\"))order.categories.push(\"T-SHIRTS\");\n   const prepared=order.preparedOrder||{};\n   const shirts=[];let inShirts=false;\n   raw.split(/\\r?\\n/).forEach(function(line){\n    const text=line.trim();\n    if(/^\\[[A-Z -]+\\]$/.test(text)){inShirts=text===\"[T-SHIRTS]\";return;}\n    if(!inShirts||!text)return;\n    const qtyMatch=text.match(/^(\\d+)\\s*[×x]\\s*/);\n    const qty=qtyMatch?Number(qtyMatch[1]):1;\n    shirts.push({name:text.replace(/^\\d+\\s*[×x]\\s*/,\"\").replace(/\\s*\\(\\$\\d+(?:\\.\\d{2})?\\)\\s*$/,\"\"),quantity:qty});\n   });\n   prepared.shirts=shirts;\n   if(Array.isArray(prepared.unclassified)){\n    prepared.unclassified=prepared.unclassified.filter(function(it){\n     return !/Baked with Hope T-Shirt/i.test(String(it.name||\"\"));\n    });\n   }\n   prepared.summary=[prepared.summary||\"\",shirts.reduce((n,it)=>n+it.quantity,0)+\" T-shirt(s)\"].filter(Boolean).join(\" · \");\n   order.preparedOrder=prepared;\n   order.orderType=order.categories.length>1?\"Mixed treats + shirts\":\"T-shirts\";\n  });\n }\n return originalRenderDashboard();\n};\n\nfunction enhancePickupRows(){\n document.querySelectorAll(\".timeframe-date-row\").forEach(function(row){\n  const select=row.querySelector(\"select.pickup-time\");\n  if(!select||select.dataset.bulkReady)return;\n  select.dataset.bulkReady=\"true\";select.style.display=\"none\";\n  const grid=document.createElement(\"div\");grid.className=\"bwh-bulk-time-grid\";\n  grid.setAttribute(\"aria-label\",\"Select multiple pickup times\");\n  Array.from(select.options).filter(function(o){return !!o.value}).forEach(function(option){\n   const button=document.createElement(\"button\");\n   button.type=\"button\";button.className=\"bwh-bulk-time\";\n   button.textContent=option.textContent;button.dataset.time=option.textContent;\n   button.setAttribute(\"aria-pressed\",\"false\");\n   button.addEventListener(\"click\",function(){\n    button.setAttribute(\"aria-pressed\",button.getAttribute(\"aria-pressed\")===\"true\"?\"false\":\"true\");\n   });\n   grid.appendChild(button);\n  });\n  const instruction=document.createElement(\"p\");\n  instruction.className=\"bwh-bulk-help\";\n  instruction.textContent=\"Tap as many pickup times as you like. Then add all selected times together.\";\n  select.after(instruction,grid);\n  const add=row.querySelector(\".add-window\");\n  if(add)add.textContent=\"Add Selected Times\";\n });\n}\ndocument.addEventListener(\"click\",function(event){\n const add=event.target.closest(\".timeframe-date-row .add-window\");\n if(!add)return;\n event.preventDefault();event.stopImmediatePropagation();event.stopPropagation();\n const row=add.closest(\".timeframe-date-row\"),date=row.dataset.pickupDate;\n if(!date){alert(\"Refresh the owner dashboard and try again.\");return;}\n const selected=Array.from(row.querySelectorAll('.bwh-bulk-time[aria-pressed=\"true\"]')).map(b=>b.dataset.time);\n if(!selected.length){alert(\"Select at least one pickup time first.\");return;}\n const existing=Array.from(row.querySelectorAll(\".timeframe-chip\")).map(b=>b.textContent.replace(/ ×$/,\"\").trim());\n const times=Array.from(new Set(existing.concat(selected)));\n const umass=!!row.closest(\"#umassApprovedDatesList\");\n showLoading();\n const runner=google.script.run.withSuccessHandler(function(data){\n  dashboardData=data;renderDashboard();hideLoading();\n  showMessage(umass?\"umassCalendarMessage\":\"calendarMessage\",selected.length+\" pickup time(s) added.\",false);\n }).withFailureHandler(handleProtectedFailure);\n if(umass)runner.adminSaveUmassDateTimeframes(sessionToken,date,times);\n else runner.adminSaveDateTimeframes(sessionToken,date,times);\n},true);\n[\"approvedDatesList\",\"umassApprovedDatesList\"].forEach(function(id){\n const list=document.getElementById(id);\n if(list)new MutationObserver(enhancePickupRows).observe(list,{childList:true});\n});\nenhancePickupRows();\n\nfunction loadCatering(){\n const list=document.getElementById(\"bwhAdminCateringList\"),msg=document.getElementById(\"bwhAdminCateringMsg\");\n if(!list||!sessionToken)return;\n msg.textContent=\"Loading catering requests…\";\n google.script.run.withSuccessHandler(function(rows){\n  list.replaceChildren();\n  msg.textContent=rows.length?rows.length+\" recent requests\":\"No catering inquiries yet.\";\n  rows.forEach(function(r){\n   const card=document.createElement(\"article\");card.className=\"bwh-catering-card\";\n   const title=document.createElement(\"h3\");title.textContent=r.number+\" · \"+r.name;card.appendChild(title);\n   const details=[\n    r.eventDate+\" at \"+r.eventTime+\" — \"+r.occasion,\n    r.packageName+\": \"+r.cakes+\" mini cakes + \"+r.bars+\" cookie bars\",\n    \"Cake flavors: \"+r.cakeFlavors,\"Bar flavors: \"+r.barFlavors,\n    \"Tres Leches: \"+r.tres+\" · 8×8 cake: \"+r.celebration,\n    \"Packaging: \"+r.packaging+\" \"+r.ribbon,\n    \"Total: \"+r.total+\" · Deposit: \"+r.deposit+\" · Payment: \"+r.payment,\n    \"Customer: \"+r.phone+\" · \"+r.email,r.fulfillment+\" \"+r.deliveryAddress,\n    \"Notes: \"+r.notes\n   ];\n   details.filter(Boolean).forEach(function(value){\n    const p=document.createElement(\"p\");p.textContent=value;card.appendChild(p);\n   });\n   const label=document.createElement(\"label\");label.textContent=\"Status: \";\n   const select=document.createElement(\"select\");\n   [\"New inquiry\",\"Approved\",\"Declined\",\"Deposit Paid\",\"Completed\"].forEach(function(s){select.add(new Option(s,s));});\n   select.value=r.status;\n   select.addEventListener(\"change\",function(){\n    msg.textContent=\"Saving status…\";\n    google.script.run.withSuccessHandler(loadCatering)\n     .withFailureHandler(function(error){msg.textContent=error.message||\"Could not save.\";})\n     .adminUpdateCateringStatus(sessionToken,r.row,select.value);\n   });\n   label.appendChild(select);card.appendChild(label);list.appendChild(card);\n  });\n }).withFailureHandler(function(error){msg.textContent=error.message||\"Could not load requests.\";})\n .getAdminCateringRequests(sessionToken);\n}\ndocument.getElementById(\"bwhRefreshCatering\").addEventListener(\"click\",loadCatering);\nconst dashboard=document.getElementById(\"dashboardScreen\");\nif(dashboard)new MutationObserver(function(){\n if(!dashboard.classList.contains(\"hidden\"))loadCatering();\n}).observe(dashboard,{attributes:true,attributeFilter:[\"class\"]});\n})();</script>";
   html=html.replace('["unclassified","UNCLASSIFIED — CHECK ORDER DETAILS"]','["shirts","T-SHIRTS"],["unclassified","UNCLASSIFIED — CHECK ORDER DETAILS"]');
-  html=html.replace("</main>",cateringPanel+"</main>");
-  html=html.replace("</body>",css+script+"</body>");
+  const shirtPanel='<section class="card" id="bwhShirtAdminPanel" style="margin-top:28px"><h2>♡ T-shirt Orders</h2><p>Shirts are separate from weekly dessert capacity. Pickup is arranged once the shirts arrive.</p><button type="button" class="action-button small" id="bwhRefreshShirts">Refresh Shirt Orders</button><p id="bwhShirtAdminMsg" role="status"></p><div id="bwhShirtAdminList" style="display:grid;gap:15px;margin-top:15px"></div></section>';
+  const shirtScript=`<script>(function(){
+ "use strict";
+ const list=document.getElementById("bwhShirtAdminList");
+ const message=document.getElementById("bwhShirtAdminMsg");
+ if(!list||!message)return;
+ function loadShirts(){
+  if(!sessionToken)return;
+  message.textContent="Loading shirt orders…";
+  google.script.run.withSuccessHandler(function(rows){
+   list.replaceChildren();
+   message.textContent=rows.length?rows.length+" recent shirt orders":"No shirt orders yet.";
+   rows.forEach(function(order){
+    const card=document.createElement("article");
+    card.className="bwh-catering-card";
+    const h=document.createElement("h3");
+    h.textContent=order.number+" · "+order.name;
+    card.appendChild(h);
+    [
+     order.quantity+" shirt(s) — $"+Number(order.total).toFixed(2),
+     order.designs,
+     "Contact: "+order.email+" · "+order.phone,
+     "Payment method: "+order.method,
+     "Notes: "+(order.notes||"None"),
+     "Placed: "+order.submitted
+    ].forEach(function(value){
+     const p=document.createElement("p");p.textContent=value;
+     p.style.whiteSpace="pre-wrap";card.appendChild(p);
+    });
+    const statusLabel=document.createElement("label");statusLabel.textContent="Pickup status: ";
+    const select=document.createElement("select");
+    ["Awaiting arrival","Arrived — contact customer","Pickup arranged","Picked up","Cancelled"].forEach(function(status){select.add(new Option(status,status));});
+    select.value=order.pickupStatus;statusLabel.appendChild(select);
+    card.appendChild(statusLabel);
+    const paidLabel=document.createElement("label");paidLabel.textContent=" Payment: ";
+    const paid=document.createElement("select");
+    ["UNPAID","PAID"].forEach(function(value){paid.add(new Option(value,value));});
+    paid.value=order.payment;paidLabel.appendChild(paid);
+    card.appendChild(paidLabel);
+    const save=document.createElement("button");save.type="button";
+    save.className="action-button small";save.textContent="Save Shirt Status";
+    save.style.marginTop="12px";
+    save.addEventListener("click",function(){
+     save.disabled=true;message.textContent="Saving shirt status…";
+     google.script.run.withSuccessHandler(loadShirts)
+      .withFailureHandler(function(error){save.disabled=false;message.textContent=error.message||"Could not save shirt status.";})
+      .adminUpdateShirtOrder(sessionToken,order.row,select.value,paid.value);
+    });
+    card.appendChild(save);list.appendChild(card);
+   });
+  }).withFailureHandler(function(err){
+   message.textContent=err.message||"Shirt orders could not be loaded. Make sure ShirtOrdersAddon.gs is installed.";
+  }).getAdminShirtOrders(sessionToken);
+ }
+ document.getElementById("bwhRefreshShirts").addEventListener("click",loadShirts);
+ const dashboard=document.getElementById("dashboardScreen");
+ if(dashboard)new MutationObserver(function(){
+  if(!dashboard.classList.contains("hidden"))loadShirts();
+ }).observe(dashboard,{attributes:true,attributeFilter:["class"]});
+})();</script>`;
+  html=html.replace("</main>",cateringPanel+shirtPanel+"</main>");
+  html=html.replace("</body>",css+script+shirtScript+"</body>");
   return html;
 }
