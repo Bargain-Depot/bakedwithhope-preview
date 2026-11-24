@@ -138,7 +138,7 @@ function pickedNames(){
 }
 function reviewStage(){
  const c=state.category;
-  if(c==='T-Shirts'){const v=shirtCombos[state.shirtCombo];return '<div class="ux-intro"><h3>Ready to wear your hope? ♡</h3></div><div class="ux-review bwh-shirt-review">'+shirtPhoto(state.shirtCombo,'bwh-shirt-review-photo',v)+'<div class="ux-review-header"><span>YOUR SHIRTS</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(shirtLabel(v))+'</h4><p>Size: '+esc(state.shirtSize)+' · Quantity: '+state.shirtQty+'</p><p>$25 per shirt · Regular or UMass Boston pickup at approved dates</p></div>';}
+  if(c==='T-Shirts'){const v=shirtCombos[state.shirtCombo];return '<div class="ux-intro"><h3>Ready to wear your hope? ♡</h3></div><div class="ux-review bwh-shirt-review">'+shirtPhoto(state.shirtCombo,'bwh-shirt-review-photo',v)+'<div class="ux-review-header"><span>YOUR SHIRTS</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(shirtLabel(v))+'</h4><p>Size: '+esc(state.shirtSize)+' · Quantity: '+state.shirtQty+'</p><p>$25 per shirt · Pickup will be arranged after your shirt arrives. Tina will contact you directly.</p></div>';}
  const selection=c==='Dirty Sodas'?drinks[state.drink].icon+' '+drinks[state.drink].name+' · '+'16 oz':pickedNames();
  const name=c==='Sweet Bundles'?chosen().name:c==='8×8 Cakes'?'8×8 Celebration Cake':c==='Dirty Sodas'?drinks[state.drink].name:c==='Build Your Own Treat Box'?'Mix & Match · '+state.size+' treats':chosen().name;
  return '<div class="ux-intro"><h3>Your sweet little order ♡</h3><p>Everything together in one tidy place.</p></div><div class="ux-review"><div class="ux-review-header"><span>YOUR SELECTION</span><strong>'+fmt(totalCost())+'</strong></div><h4>'+esc(name)+'</h4><p>'+esc(selection)+'</p><dl><div><dt>Base price</dt><dd>'+fmt(baseCost())+'</dd></div>'+(miniTres()+selectedCaramel()>0?'<div><dt>Flavor upgrades</dt><dd>'+fmt(miniTres()+selectedCaramel())+'</dd></div>':'')+(eventCharge()>0&&(full()||c==='Mini Cakes'||c==='Cookie Bars')?'<div><dt>Occasion extras</dt><dd>'+fmt(eventCharge())+'</dd></div>':'')+'<div class="ux-total"><dt>Estimated subtotal</dt><dd>'+fmt(totalCost())+'</dd></div></dl></div>'+eventOptions()+'<p class="ux-note">No online payment is collected. Checkout sends your request to the bakery and shows approved pickup availability.</p>';
@@ -203,7 +203,7 @@ function addToBag(){
  if(state.category==='T-Shirts'){
   if(!complete())return;
   const color=shirtCombos[state.shirtCombo];
-  bag.push({name:'Baked with Hope T-Shirt',detail:color.shirt+' shirt + '+color.print+' writing · '+state.shirtSize,price:25,quantity:state.shirtQty,category:'T-Shirts'});
+  bag.push({name:'Baked with Hope T-Shirt',detail:color.shirt+' shirt + '+color.print+' writing · '+state.shirtSize+' · Pickup arranged after arrival',price:25,quantity:state.shirtQty,category:'T-Shirts'});
   renderBag();document.querySelector('.shop-header .bagbtn')?.click();
   state.stage=0;state.shirtQty=1;state.shirtSize='Small';render();return;
  }
