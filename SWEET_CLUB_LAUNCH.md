@@ -30,7 +30,7 @@ firebase login
 npm --prefix functions ci
 npm --prefix functions test
 npm --prefix functions run lint
-firebase deploy --project baked-with-hope-preview --only auth,firestore:rules,functions
+firebase deploy --project baked-with-hope-preview --only firestore:rules,functions
 ```
 
 Firestore rules prevent customer-side edits to punch balances, reward records,
@@ -62,25 +62,44 @@ In the Firebase Console > Authentication:
 
 Do not share or commit service-account credentials or passwords.
 
-## 3. Set up the one authorized bakery owner
+## 3. Grant Sweet Club owner permission securely
 
-Create the account for `bakedwithhope.ma@gmail.com` in Firebase
-Authentication. Verify ownership of that inbox and mark the email
-**verified** before granting privileges.
+Choose the owner who will maintain the rewards program. Their Firebase
+Authentication account must exist, must not be disabled, and the email must
+be **verified**. Other bakery owners can be authorized later by repeating
+this step for each verified account.
 
-On a trusted owner-admin machine with Google Cloud CLI available:
+Only a trusted administrator with Firebase Authentication user-management
+permission may execute this one-time script. Never expose service account keys
+or privileged credentials to the website or GitHub.
+
+From a trusted Google Cloud Shell or other securely authenticated admin
+environment, clone or check out this repository, then run:
 
 ```bash
-cd functions
-gcloud auth application-default login
-GOOGLE_CLOUD_PROJECT=baked-with-hope-preview node scripts/set-owner-claim.js bakedwithhope.ma@gmail.com
+cd bakedwithhope-preview/functions
+npm ci --omit=dev
+GOOGLE_CLOUD_PROJECT=baked-with-hope-preview \
+CONFIRM_OWNER_EMAIL="YOUR_VERIFIED_OWNER_EMAIL" \
+node scripts/set-owner-claim.js "YOUR_VERIFIED_OWNER_EMAIL"
 ```
 
-The account running the script needs permission to manage Firebase
-Authentication users. The script explicitly refuses other project IDs/emails.
+Replace the placeholder **in both places** with the exact verified Firebase
+Authentication account email. The two values must match; the script also
+refuses a wrong project, unverified account, or disabled account. It preserves
+existing custom claims and grants the `admin: true` claim only in the
+Firebase project `baked-with-hope-preview`.
 
-Sign out and sign back in. Visit `sweet-club-owner.html`; only an account with
-the privileged claim can use the owner tools.
+Google Cloud Shell has its own Google Cloud credentials and should only be used
+when the active identity is authorized to manage Firebase Authentication users.
+When running locally, standard `gcloud auth application-default login`
+credentials can be rejected by Firebase Authentication; use a supported
+trusted admin credential/impersonation flow rather than downloading long-lived
+service-account JSON keys.
+
+The code in GitHub **does not** set owner claims by itself. Successfully
+executing the script is required. After the script succeeds, sign out of the
+Sweet Club owner website and sign in again to refresh the ID token.
 
 ## 4. Test the actual rewards flow before exposing signup
 
@@ -88,17 +107,17 @@ Use test customers and separate, unique test order IDs. Confirm:
 
 - A new **verified** member starts at 0/10; email verification is mandatory.
 - An unverified or logged-out customer cannot read or change reward records.
-- Tina sees a customer by exact email in the protected owner interface.
+- An authorized owner sees a customer by exact email in the protected owner interface.
 - One completed order gives **one** punch; retrying its ID does not double-credit.
 - At 10 punches, the card returns to 0/10 and **one free Signature Pack reward**
   appears. A 12th lifetime punch means 2/10 on the next card.
 - Transferring paper-card punches keeps the correct carryover; a retry with the
   same transfer ID never gives extra punches.
-- Only Tina can mark rewards redeemed; a second redemption does not duplicate.
+- Only an authorized owner can mark rewards redeemed; a second redemption does not duplicate.
 - Try accessing another customer's Firestore records as a normal customer:
   access must be denied.
 
-Owner punch award is **manual for now**. Tina must confirm a completed order in
+Owner punch award is **manual for now**. The bakery owner must confirm a completed order in
 the Orders spreadsheet or confirmation email before crediting it through the
 owner tool. Sending an order from checkout or merely marking it paid does not
 automatically grant a punch. The owner tool does not schedule the free pickup.
