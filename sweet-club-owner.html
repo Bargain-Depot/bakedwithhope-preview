@@ -68,6 +68,7 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),fn=getFunctions(app,fu
 const $=id=>document.getElementById(id);
 const call=(name,data)=>httpsCallable(fn,name)(data).then(x=>x.data);
 let selectedCustomer=null;
+let authExitReason='';
 function status(message,error=false){$('status').textContent=message;$('status').className='notice'+(error?' error':'');}
 function setBusy(button,value){button.disabled=value;button.setAttribute('aria-busy',String(value));}
 const uid=()=>selectedCustomer?.uid||'';
@@ -77,7 +78,7 @@ function selected(){if(!uid()){status('Find and verify a customer first.',true);
 function errorText(e){return String(e?.message||'Please retry.').replace(/^Firebase: /,'').slice(0,350);}
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();let b=$('signIn');setBusy(b,true);status('Signing in…');
- try{await signInWithEmailAndPassword(auth,$('ownerEmail').value.trim(),$('ownerPassword').value);}
+ try{authExitReason='';await signInWithEmailAndPassword(auth,$('ownerEmail').value.trim(),$('ownerPassword').value);}
  catch(e){status('Could not sign in: '+errorText(e),true);}
  finally{setBusy(b,false);$('ownerPassword').value='';}
 });
@@ -99,7 +100,7 @@ onAuthStateChanged(auth,async user=>{
  if(!user){
   $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
   $('loginSection').classList.remove('hidden');$('adminSection').classList.add('hidden');
-  status('Owner sign-in required.');return;
+  status(authExitReason||'Owner sign-in required.',Boolean(authExitReason));authExitReason='';return;
  }
  try{
   await reload(user);
@@ -112,7 +113,8 @@ onAuthStateChanged(auth,async user=>{
   $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
   const token=await user.getIdTokenResult(true);
   if(token.claims.admin!==true){$('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
-   status('This account is not authorized as a Sweet Club owner. Contact the Firebase project administrator to assign the private admin claim.',true);await signOut(auth);return;}
+   authExitReason='Your email is verified, but this account has not been granted Sweet Club owner permission yet. A Firebase administrator needs to add the admin claim. This is not a password problem.';
+   await signOut(auth);return;}
   $('loginSection').classList.add('hidden');$('adminSection').classList.remove('hidden');
   status('Signed in as Sweet Club owner. Verify the bakery order before awarding any punches.');
  }catch(e){status('Unable to check owner permission: '+errorText(e),true);}
