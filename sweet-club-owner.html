@@ -25,7 +25,12 @@ footer{margin-top:35px;color:#816b71;font-size:12px}
 <p>Use the Firebase owner account with the private admin permission. This is separate from your Apps Script dashboard passcode.</p>
 <form id="loginForm"><label>Email<input type="email" id="ownerEmail" autocomplete="email" required></label>
 <label>Password<input type="password" id="ownerPassword" autocomplete="current-password" required></label>
-<div class="row"><button type="submit" id="signIn">Sign in securely</button></div></form></section>
+<div class="row"><button type="submit" id="signIn">Sign in securely</button></div></form>
+<div class="row hidden" id="verificationActions" style="margin-top:14px">
+<button type="button" class="secondary" id="sendVerification">Send verification email</button>
+</div>
+<p id="verificationHint" class="hint hidden">After clicking the link in your email, refresh this page and sign in again. Email verification does not itself grant owner access.</p>
+</section>
 <section id="adminSection" class="hidden">
 <div class="card"><div class="row" style="justify-content:space-between"><h2>Customer lookup</h2><button type="button" class="secondary" id="signOut">Log out</button></div>
 <p class="hint">Only look up customers who have opted into Sweet Club. Confirm their email against their completed bakery order.</p>
@@ -55,7 +60,7 @@ footer{margin-top:35px;color:#816b71;font-size:12px}
 </main>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js';
-import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js';
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,sendEmailVerification,reload} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js';
 import {getFunctions,httpsCallable} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-functions.js';
 import {getFirestore,collection,getDocs,query,where} from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js';
 import {firebaseConfig,functionsRegion} from './firebase-config.js';
@@ -76,11 +81,35 @@ $('loginForm').addEventListener('submit',async e=>{
  catch(e){status('Could not sign in: '+errorText(e),true);}
  finally{setBusy(b,false);$('ownerPassword').value='';}
 });
+$('sendVerification').addEventListener('click',async()=>{
+ const user=auth.currentUser;
+ if(!user){status('Sign in with your new account first.',true);return;}
+ const button=$('sendVerification');setBusy(button,true);
+ try{
+   await reload(user);
+   if(user.emailVerified){status('Your email is already verified. Sign out and sign in again after the administrator grants your owner permission.');return;}
+   await sendEmailVerification(user);
+   status('Verification email sent. Check your inbox and spam folder, click the verification link, then refresh this page.');
+ }catch(error){status('Could not send verification email: '+errorText(error),true);}
+ finally{setBusy(button,false);}
+});
 $('signOut').addEventListener('click',()=>signOut(auth));
 onAuthStateChanged(auth,async user=>{
  selectedCustomer=null;$('customerResult').classList.add('hidden');$('rewardsList').textContent='Find a customer to see their rewards.';
- if(!user){$('loginSection').classList.remove('hidden');$('adminSection').classList.add('hidden');status('Owner sign-in required.');return;}
+ if(!user){
+  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
+  $('loginSection').classList.remove('hidden');$('adminSection').classList.add('hidden');
+  status('Owner sign-in required.');return;
+ }
  try{
+  await reload(user);
+  if(!user.emailVerified){
+    $('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
+    $('verificationActions').classList.remove('hidden');$('verificationHint').classList.remove('hidden');
+    status('Your account is created, but its email address is not verified. Choose Send verification email below.',true);
+    return;
+  }
+  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
   const token=await user.getIdTokenResult(true);
   if(token.claims.admin!==true){$('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
    status('This account is not authorized as a Sweet Club owner. Contact the Firebase project administrator to assign the private admin claim.',true);await signOut(auth);return;}
