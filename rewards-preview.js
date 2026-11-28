@@ -11,18 +11,19 @@
   },{
     collection,doc,getDoc,getDocs,getFirestore,query,serverTimestamp,setDoc,where
   },{firebaseConfig}]=await Promise.all([
-    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js'),
-    import('https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js'),
+    import('https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js'),
+    import('https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js'),
     import('./firebase-config.js')
   ]);
 
   const app=initializeApp(firebaseConfig);
   const auth=getAuth(app);
   const db=getFirestore(app);
-  const actionSettings={url:'https://bargain-depot.github.io/bakedwithhope-preview/orders.html#sweetClub'};
+  const actionSettings={url:'https://bakedwithhope.com/orders.html#sweetClub'};
   const dialog=modal.querySelector('.club-dialog');
   let opener=null;
+  let creatingAccount=false;
   dialog.innerHTML=`
     <button class="club-close" id="clubClose" aria-label="Close Sweet Club">×</button>
     <span class="club-preview-tag">BAKED WITH HOPE · SWEET CLUB</span>
@@ -37,7 +38,7 @@
           <input id="clubEmail" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com">
         </label>
         <label class="club-field">Password
-          <input id="clubPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+          <input id="clubPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters">
         </label>
         <div class="club-actions">
           <button class="primary" id="clubSignIn" type="submit">Log in</button>
@@ -55,14 +56,14 @@
         <h3 id="clubBalanceHeading">Your punch card</h3>
         <div class="club-punches" id="clubPunches" aria-label="Sweet Club punch progress"></div>
         <strong id="clubPunchSummary">0 of 10 punches</strong>
-        <p>Every verified completed order earns one punch. Extra punches carry forward.</p>
+        <p>Every completed order verified by Tina earns one punch. Extra punches carry forward.</p>
       </section>
       <div class="club-dashboard-grid">
         <section><h3>Available rewards</h3><div id="clubAvailableRewards" class="club-list"></div></section>
         <section><h3>Punch history</h3><div id="clubPunchHistory" class="club-list"></div></section>
       </div>
       <section><h3>Redeemed rewards</h3><div id="clubRedeemedRewards" class="club-list"></div></section>
-      <a id="clubAdminLink" class="club-admin-link" href="admin.html" hidden>Open Tina's owner dashboard →</a>
+      <a id="clubAdminLink" class="club-admin-link" href="sweet-club-owner.html" hidden>Open Sweet Club owner rewards →</a>
     </div>
     <p id="clubStatus" class="club-note" role="status" aria-live="polite" hidden></p>`;
 
@@ -180,8 +181,10 @@
   });
   $('clubCreate').addEventListener('click',async()=>{
     const name=$('clubName').value.trim();
+    if (creatingAccount) return;
     if(!name){status('Please enter your first name.',true);$('clubName').focus();return;}
     status('Creating your Sweet Club account…');
+    creatingAccount=true;
     try{
       const credential=await createUserWithEmailAndPassword(auth,$('clubEmail').value.trim(),$('clubPassword').value);
       await updateProfile(credential.user,{displayName:name});
@@ -189,6 +192,7 @@
       await signOut(auth);
       status('Account created! Check your inbox to verify your email. Then return here to log in.');
     }catch(error){status(friendlyError(error),true);}
+    finally{creatingAccount=false;}
   });
   $('clubReset').addEventListener('click',async()=>{
     const email=$('clubEmail').value.trim();
@@ -202,10 +206,10 @@
     $('clubSignedOut').hidden=Boolean(user);
     $('clubDashboard').hidden=!user;
     if(!user){$('clubGreeting').textContent='Sign in to see your punches, rewards, and history.';return;}
+    if(creatingAccount) return;
     if(!user.emailVerified){
-      await sendEmailVerification(user,actionSettings).catch(()=>{});
       await signOut(auth);
-      status('Please verify your email before signing in. We sent a new verification message.',true);
+      status('Please verify your email before signing in. Check your inbox for the verification link.',true);
       return;
     }
     $('clubGreeting').textContent=`Welcome${user.displayName?', '+user.displayName:''} ♡`;
