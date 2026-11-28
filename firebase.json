@@ -20,7 +20,9 @@
   "auth": {
     "authorizedDomains": [
       "localhost",
-      "bargain-depot.github.io"
+      "bargain-depot.github.io",
+      "bakedwithhope.com",
+      "www.bakedwithhope.com"
     ],
     "providers": {
       "emailPassword": true
