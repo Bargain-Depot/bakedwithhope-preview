@@ -69,6 +69,14 @@ const $=id=>document.getElementById(id);
 const call=(name,data)=>httpsCallable(fn,name)(data).then(x=>x.data);
 let selectedCustomer=null;
 let authExitReason='';
+let loginSubmitted=false;
+const withTimeout=(promise,ms,message)=>new Promise((resolve,reject)=>{
+ const timer=setTimeout(()=>reject(new Error(message)),ms);
+ Promise.resolve(promise).then(
+  result=>{clearTimeout(timer);resolve(result);},
+  error=>{clearTimeout(timer);reject(error);}
+ );
+});
 function status(message,error=false){$('status').textContent=message;$('status').className='notice'+(error?' error':'');}
 function setBusy(button,value){button.disabled=value;button.setAttribute('aria-busy',String(value));}
 const uid=()=>selectedCustomer?.uid||'';
@@ -76,49 +84,81 @@ const freshId=()=>window.crypto?.randomUUID?.()||'card_'+Date.now()+'_'+Math.ran
 $('transferId').value=freshId();
 function selected(){if(!uid()){status('Find and verify a customer first.',true);return false;}return true;}
 function errorText(e){return String(e?.message||'Please retry.').replace(/^Firebase: /,'').slice(0,350);}
+async function checkOwnerAccess(user){
+ selectedCustomer=null;$('customerResult').classList.add('hidden');
+ $('rewardsList').textContent='Find a customer to see their rewards.';
+ if(!user){
+  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
+  $('loginSection').classList.remove('hidden');$('adminSection').classList.add('hidden');
+  const notice=authExitReason;authExitReason='';
+  status(notice||'Owner sign-in required.',Boolean(notice));
+  return;
+ }
+ try{
+  if(!user.emailVerified){
+   status('Checking email verification…');
+   await withTimeout(reload(user),12000,'Email verification check timed out. Please refresh and try again.');
+  }
+  if(!user.emailVerified){
+   $('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
+   $('verificationActions').classList.remove('hidden');$('verificationHint').classList.remove('hidden');
+   status('Your account exists, but its email address is not verified. Choose Send verification email below.',true);
+   return;
+  }
+  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
+  status('Email verified. Checking Sweet Club owner permission…');
+  const token=await withTimeout(
+   user.getIdTokenResult(true),12000,
+   'Owner permission check timed out. Please refresh and try again.'
+  );
+  if(token.claims.admin!==true){
+   $('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
+   authExitReason='Your email is verified and your login worked! This account still needs Sweet Club owner permission from the Firebase administrator. This is not a password issue.';
+   status(authExitReason,true);
+   try{await withTimeout(signOut(auth),12000,'Sign-out timed out. Refresh the page before trying again.');}
+   catch(e){status(authExitReason+' '+errorText(e),true);}
+   return;
+  }
+  $('loginSection').classList.add('hidden');$('adminSection').classList.remove('hidden');
+  status('Signed in as Sweet Club owner. Verify the bakery order before awarding any punches.');
+ }catch(e){
+  $('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
+  status('Unable to finish checking your account: '+errorText(e),true);
+ }
+}
 $('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();let b=$('signIn');setBusy(b,true);status('Signing in…');
- try{authExitReason='';await signInWithEmailAndPassword(auth,$('ownerEmail').value.trim(),$('ownerPassword').value);}
- catch(e){status('Could not sign in: '+errorText(e),true);}
- finally{setBusy(b,false);$('ownerPassword').value='';}
+ e.preventDefault();
+ if(loginSubmitted)return;
+ loginSubmitted=true;authExitReason='';
+ const b=$('signIn');setBusy(b,true);status('Signing in…');
+ try{
+  const credential=await withTimeout(
+   signInWithEmailAndPassword(auth,$('ownerEmail').value.trim(),$('ownerPassword').value),
+   15000,
+   'Sign-in timed out. Check your connection and try again using a regular Safari or Chrome window.'
+  );
+  status('Sign-in accepted. Checking your account…');
+  await checkOwnerAccess(credential.user);
+ }catch(e){
+  status('Could not complete sign-in: '+errorText(e),true);
+ }finally{
+  loginSubmitted=false;setBusy(b,false);$('ownerPassword').value='';
+ }
 });
 $('sendVerification').addEventListener('click',async()=>{
  const user=auth.currentUser;
  if(!user){status('Sign in with your new account first.',true);return;}
  const button=$('sendVerification');setBusy(button,true);
  try{
-   await reload(user);
-   if(user.emailVerified){status('Your email is already verified. Sign out and sign in again after the administrator grants your owner permission.');return;}
-   await sendEmailVerification(user);
-   status('Verification email sent. Check your inbox and spam folder, click the verification link, then refresh this page.');
+  await withTimeout(reload(user),12000,'Verification check timed out. Please try again.');
+  if(user.emailVerified){status('Your email is already verified. Please sign in again after an administrator grants owner access.');return;}
+  await withTimeout(sendEmailVerification(user),12000,'Verification email request timed out. Please try again.');
+  status('Verification email sent. Check your inbox and spam folder, click the verification link, then refresh this page.');
  }catch(error){status('Could not send verification email: '+errorText(error),true);}
  finally{setBusy(button,false);}
 });
-$('signOut').addEventListener('click',()=>signOut(auth));
-onAuthStateChanged(auth,async user=>{
- selectedCustomer=null;$('customerResult').classList.add('hidden');$('rewardsList').textContent='Find a customer to see their rewards.';
- if(!user){
-  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
-  $('loginSection').classList.remove('hidden');$('adminSection').classList.add('hidden');
-  status(authExitReason||'Owner sign-in required.',Boolean(authExitReason));authExitReason='';return;
- }
- try{
-  await reload(user);
-  if(!user.emailVerified){
-    $('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
-    $('verificationActions').classList.remove('hidden');$('verificationHint').classList.remove('hidden');
-    status('Your account is created, but its email address is not verified. Choose Send verification email below.',true);
-    return;
-  }
-  $('verificationActions').classList.add('hidden');$('verificationHint').classList.add('hidden');
-  const token=await user.getIdTokenResult(true);
-  if(token.claims.admin!==true){$('adminSection').classList.add('hidden');$('loginSection').classList.remove('hidden');
-   authExitReason='Your email is verified, but this account has not been granted Sweet Club owner permission yet. A Firebase administrator needs to add the admin claim. This is not a password problem.';
-   await signOut(auth);return;}
-  $('loginSection').classList.add('hidden');$('adminSection').classList.remove('hidden');
-  status('Signed in as Sweet Club owner. Verify the bakery order before awarding any punches.');
- }catch(e){status('Unable to check owner permission: '+errorText(e),true);}
-});
+$('signOut').addEventListener('click',()=>{authExitReason='';signOut(auth);});
+onAuthStateChanged(auth,user=>{if(!loginSubmitted)void checkOwnerAccess(user);});
 async function loadRewards(){
  const ref=query(collection(db,'rewards'),where('customerId','==',uid()));
  const snap=await getDocs(ref);
