@@ -45,6 +45,7 @@
           <button class="club-secondary" id="clubCreate" type="button">Create account</button>
         </div>
         <button class="club-link" id="clubReset" type="button">Forgot your password?</button>
+        <button class="club-link" id="clubResend" type="button">Resend verification email</button>
       </form>
     </div>
     <div id="clubDashboard" hidden>
@@ -199,6 +200,18 @@
     if(!email){status('Enter your email first, then choose password reset.',true);return;}
     try{await sendPasswordResetEmail(auth,email,actionSettings);status('Password reset email sent.');}
     catch(error){status(friendlyError(error),true);}
+  });
+  $('clubResend').addEventListener('click',async()=>{
+    const email=$('clubEmail').value.trim(),password=$('clubPassword').value;
+    if(!email||!password){status('Enter your email and password to resend verification.',true);return;}
+    creatingAccount=true;
+    try{
+      const credential=await signInWithEmailAndPassword(auth,email,password);
+      if(credential.user.emailVerified){status('This email is already verified. You can log in.');return;}
+      await sendEmailVerification(credential.user,actionSettings);
+      status('A new verification email was sent. Check your inbox and spam folder.');
+    }catch(error){status(friendlyError(error),true);}
+    finally{await signOut(auth).catch(()=>{});creatingAccount=false;}
   });
   $('clubSignOut').addEventListener('click',()=>signOut(auth));
 
