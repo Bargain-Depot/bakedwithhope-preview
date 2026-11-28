@@ -6,7 +6,7 @@
   try {
     const { sweetClubConfig } = await import('./sweet-club-config.js?v=1');
     if (!sweetClubConfig.enabled) return;
-    await import('./rewards-preview.js?v=4');
+    await import('./rewards-preview.js?v=5');
     const sectionText = root.querySelector('.club-grid > div > p:not(.club-steps)');
     if (sectionText) sectionText.textContent =
       'Create your free account, follow your verified purchases, and earn one free Signature Pack every 10 punches. Tina confirms each punch after an order is completed.';
